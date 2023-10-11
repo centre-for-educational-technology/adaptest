@@ -45,3 +45,6 @@ http://0.0.0.0/
 ## Run automated tests
 `./vendor/bin/sail test`
 
+## Convert GeoJson files taken from public sources from L-EST97 Estonian Coordinate System of 1997 to WGS84
+Use Python package ConvertGeoJson
+https://github.com/GlebRed/est97-to-wgs84-convertor
