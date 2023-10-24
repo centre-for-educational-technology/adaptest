@@ -35,11 +35,21 @@
 
                 <l-tile-layer
                     url="https://tiles.maaamet.ee/tm/tms/1.0.0/vreljeef/{z}/{x}/{y}.png&ASUTUS=TLU&KESKKOND=ALLIKAD"
-                    attribution="Värviline reljeefvarjutus, <a href='http://www.maaamet.ee'>Maa-amet</a>"
                     :tms="tms"
                     :full-screen="false"
                     :worldCopyJump="true"
-                    :options="{ maxNativeZoom: 13, maxZoom:13 }"
+                    :z-index="1"
+                    :options="{ maxNativeZoom: 13, maxZoom:13, minZoom: 3 }"
+                />
+
+                <l-tile-layer
+                    url="https://tiles.maaamet.ee/tm/tms/1.0.0/hybriid/{z}/{x}/{y}.png&ASUTUS=TLU&KESKKOND=ALLIKAD"
+                    attribution="Maa-ameti kaart, <a href='http://www.maaamet.ee'>Maa-amet</a>"
+                    :tms="tms"
+                    :full-screen="false"
+                    :worldCopyJump="true"
+                    :z-index="2"
+                    :options="{ maxNativeZoom: 13, maxZoom:13, minZoom: 3 }"
                 />
 
                 <l-geo-json
@@ -56,10 +66,11 @@
 import {LGeoJson, LMap, LTileLayer} from "@vue-leaflet/vue-leaflet";
 import AppLayout from "@/Layouts/AppLayout.vue";
 import "leaflet/dist/leaflet.css";
-import {onMounted, ref} from 'vue';
+import {onMounted, ref, watch} from 'vue';
 import {latLng, latLngBounds} from "leaflet/dist/leaflet-src.esm.js";
 import {relief_layers} from "@/constants.js";
 import * as L from 'leaflet';
+import 'proj4leaflet';
 
 function featureStyle(feature) {
     const color = feature.properties && feature.properties.color ? feature.properties.color : 'blue';
@@ -149,10 +160,27 @@ onMounted(() => {
     fetch('/geojson/transformed_geojson.json')
         .then(response => response.json())
         .then(data => {
+            //transform coordinates
             geojson = data;
         }).then(() => {
         geojsonFetched.value = true;
     })
+});
+
+if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(position => {
+        // Set the map center to the user's current location
+        center.value = [position.coords.latitude, position.coords.longitude];
+        zoom.value = 9; // Adjust this value as needed
+    }, error => {
+        console.error("Error obtaining geolocation: ", error);
+    });
+}
+
+watch([center, zoom], ([newCenter, newZoom]) => {
+    if (map.value) {
+        map.value = { center: newCenter, zoom: newZoom };
+    }
 });
 
 
