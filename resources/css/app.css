@@ -28,3 +28,15 @@ body {
 
     --rounded-btn: 9999px;
 }
+
+.leaflet-interactive:focus {
+    outline: none;
+}
+
+.fixed.z-10 {
+    z-index: 1000 !important
+}
+
+.modal{
+    z-index: 1000 !important
+}
