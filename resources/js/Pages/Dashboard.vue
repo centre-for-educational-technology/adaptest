@@ -28,12 +28,12 @@
 
 
                 <l-tile-layer
-                    url="https://tiles.maaamet.ee/tm/tms/1.0.0/vreljeef/{z}/{x}/{y}.png&ASUTUS=TLU&KESKKOND=ALLIKAD"
+                    url="https://tiles.maaamet.ee/tm/tms/1.0.0/vreljeef/{z}/{x}/{y}.png&ASUTUS=TLU&KESKKOND=ADAPTEST"
                     :tms="tms" :full-screen="false" :worldCopyJump="true" :z-index="1"
                     :options="{ maxNativeZoom: 13, maxZoom: 13, minZoom: 3 }" />
 
                 <l-tile-layer
-                    url="https://tiles.maaamet.ee/tm/tms/1.0.0/hybriid/{z}/{x}/{y}.png&ASUTUS=TLU&KESKKOND=ALLIKAD"
+                    url="https://tiles.maaamet.ee/tm/tms/1.0.0/hybriid/{z}/{x}/{y}.png&ASUTUS=TLU&KESKKOND=ADAPTEST"
                     attribution="Maa-ameti kaart, <a href='http://www.maaamet.ee'>Maa-amet</a>" :tms="tms"
                     :full-screen="false" :worldCopyJump="true" :z-index="2"
                     :options="{ maxNativeZoom: 13, maxZoom: 13, minZoom: 3 }" />
@@ -60,7 +60,7 @@
             <!-- Modal for when a GeoJSON layer is not selected -->
             <div class="modal" :class="{ 'modal-open': showGeoJsonModal }">
                 <div class="modal-box">
-                    <h3 class="font-bold text-lg">Please select a GeoJSON layer first</h3>
+                    <h3 class="font-bold text-lg">Please select a water source first</h3>
                     <div class="modal-action">
                         <button class="btn" @click="toggleGeoJsonModal">
                             Ok
