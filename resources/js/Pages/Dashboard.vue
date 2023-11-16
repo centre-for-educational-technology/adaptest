@@ -115,6 +115,7 @@ import 'proj4leaflet';
 import Modal from "@/CustomComponents/LakeModal.vue";
 import {router} from '@inertiajs/vue3'
 import ApplicationMark from "@/Components/ApplicationMark.vue";
+import markerIconUrl from '@/assets/pin.svg';
 
 const map = ref(null);
 const zoom = ref(4);
@@ -215,6 +216,12 @@ function mapReady() {
 
 
 function addMarker(event) {
+    const markerIcon = L.icon({
+        iconUrl: markerIconUrl,
+        iconSize: [38, 95],
+        iconAnchor: [22, 94],
+        popupAnchor: [-3, -76],
+      });
     if (!selectedLayer) {
 
         showGeoJsonModal.value = true;
@@ -226,12 +233,12 @@ function addMarker(event) {
     }
 
     const latlng = event.latlng;
-    const marker = L.marker(latlng);
+    const marker = L.marker(latlng, { icon: markerIcon });
     const popup = L.popup().setContent(`
-      <p class="mb-2 text-lg font-semibold text-gray-900">Add new observation spot?</p>
+      <p class="mb-2 text-lg font-semibold text-gray-900">Add a new observation spot?</p>
       <div class="flex space-x-2">
-        <button id="yesButton" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Yes</button>
-        <button id="noButton" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">No</button>
+        <button id="yesButton" class="px-4 py-2 btn btn-primary">Yes</button>
+        <button id="noButton" class="px-4 py-2 btn">No</button>
       </div>
     `);
     marker.bindPopup(popup);
