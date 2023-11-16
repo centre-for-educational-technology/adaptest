@@ -127,6 +127,7 @@ function featureStyle(feature) {
 
 let geojsonFetched = ref(false);
 let selectedLayer = null;
+let mapLoaded = ref(false);
 
 
 const onEachFeature = (feature, layer) => {
@@ -178,12 +179,10 @@ let bounds = latLngBounds(
 
 let markers = []
 let mapInstance = null;
-let mapLoaded = false;
 
 
 function mapReady() {
     console.log('map ready');
-    mapLoaded = true;
     mapInstance = map.value.leafletObject;
 }
 
@@ -295,8 +294,9 @@ onMounted(() => {
             geojson = data;
         }).then(() => {
         geojsonFetched.value = true;
+        mapLoaded.value = true;
     })
-    mapLoaded = true;
+
 });
 
 if (navigator.geolocation) {
