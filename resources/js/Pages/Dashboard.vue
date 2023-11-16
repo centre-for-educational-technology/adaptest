@@ -225,7 +225,7 @@ function addMarker(event) {
     const latlng = event.latlng;
     const marker = L.marker(latlng);
     const popup = L.popup().setContent(`
-      <p class="mb-2 text-lg font-semibold text-gray-900">Add new observation?</p>
+      <p class="mb-2 text-lg font-semibold text-gray-900">Add new observation spot?</p>
       <div class="flex space-x-2">
         <button id="yesButton" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Yes</button>
         <button id="noButton" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">No</button>
