@@ -6,7 +6,7 @@
             </h2>
         </template>
 
-        <main>
+        <main class="relative" style="height: calc(100vh - 138px); width: 100%;">
             <!--                        <l-map ref="map" v-model:zoom="zoom" :center=center :useGlobalLeaflet="false"-->
             <!--                               :crs="projection"-->
             <!--                               :tilelayers="relief_layers"-->
@@ -20,11 +20,17 @@
 
             <!--                            <l-geo-json :geojson="geojson"/>-->
             <!--                        </l-map>-->
+            <div v-if="!mapLoaded"
+                 class="absolute inset-0 flex items-center justify-center bg-primary opacity-80 z-10">
+                <div class="spinner z-50">
+                    <span class="loading text-secondary loading-infinity loading-lg"></span>
+                </div>
+            </div>
 
 
-            <l-map ref="map" style="height: calc(100vh - 138px); width: 100%;" :crs="crs" v-model:zoom="zoom"
+            <l-map ref="map" :crs="crs" v-model:zoom="zoom"
                    :useGlobalLeaflet="false" :center="maaametCenter" :bounds="bounds" :maxZoom="14" :minZoom="3"
-                   :scrollWheelZoom="false" @click="addMarker" @ready="mapReady">
+                   :scrollWheelZoom="false" @click="addMarker">
 
 
                 <l-tile-layer
@@ -172,12 +178,15 @@ let bounds = latLngBounds(
 
 let markers = []
 let mapInstance = null;
+let mapLoaded = false;
 
 
 function mapReady() {
     console.log('map ready');
+    mapLoaded = true;
     mapInstance = map.value.leafletObject;
 }
+
 
 function addMarker(event) {
     if (!selectedLayer) {
@@ -287,6 +296,7 @@ onMounted(() => {
         }).then(() => {
         geojsonFetched.value = true;
     })
+    mapReady();
 });
 
 if (navigator.geolocation) {
