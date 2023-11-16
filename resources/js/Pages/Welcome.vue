@@ -14,7 +14,7 @@ defineProps({
     <Head title="Welcome"/>
 
     <div
-        class="relative sm:flex sm:justify-center sm:items-center min-h-screen bg-gradient-to-r from-blue-300 bg-center selection:bg-red-500 selection:text-white">
+        class="relative sm:flex sm:justify-center sm:items-center min-h-screen  bg-center selection:bg-red-500 selection:text-white">
         <div v-if="canLogin" class="sm:fixed sm:top-0 sm:right-0 p-6 text-right z-10">
             <Link v-if="$page.props.auth.user" :href="route('dashboard')"
                   class="font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">
@@ -25,28 +25,34 @@ defineProps({
         </div>
 
 
-        <section class="m-auto text-gray-600 body-font align-middle">
-            <div class="container mx-auto flex px-5 py-24 items-center justify-center flex-col">
-                <ApplicationLogo class="h-250 mb-10 w-auto"/>
-                <div class="text-center w-full prose">
-                    <h1>
-                        AdaptEst</h1>
-                    <div class="flex justify-center">
+        <div class="hero min-h-screen" style="background-image: url(https://source.unsplash.com/Gj8d1NoEBlE/1600x900)">
+            <div class="hero-overlay bg-opacity-60"></div>
+            <div class="hero-content text-center text-neutral-content">
+                <div class="max-w-xs">
+                    <ApplicationLogo class="mb-10"/>
+                    <div class="text-center w-full prose">
+                        <h1 class="text-white">
+                            AdaptEST</h1>
+                        <p class="text-2xl text-white">
+                            Database of observations of Estonian water bodies
+                        </p>
+                        <div class="flex space-x-4 justify-center">
 
-                        <Link :href="route('login')"
-                              class="btn inline-flex text-white bg-green-500 border-0 py-2 px-6 focus:outline-none hover:bg-green-600 rounded text-lg transition ease-in-out duration-500">
-                            Log in
-                        </Link>
+                            <Link :href="route('login')"
+                                  class="btn btn-lg btn-primary">
+                                Log in
+                            </Link>
 
-                        <Link v-if="canRegister" :href="route('register')"
-                              class="btn ml-4 inline-flex text-gray-700 bg-gray-100 border-0 py-2 px-6 focus:outline-none hover:bg-gray-200 rounded text-lg transition ease-in-out duration-500">
-                            Register
-                        </Link>
+                            <Link v-if="canRegister" :href="route('register')"
+                                  class="btn btn-success btn-lg">
+                                Register
+                            </Link>
 
+                        </div>
                     </div>
                 </div>
             </div>
-        </section>
+        </div>
 
 
     </div>

@@ -33,7 +33,7 @@ body {
     outline: none;
 }
 
-.fixed.z-10 {
+.fixed.z-10, .z-10 {
     z-index: 1000 !important
 }
 

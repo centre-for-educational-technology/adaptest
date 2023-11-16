@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ObservationController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -32,4 +33,7 @@ Route::middleware([
     Route::get('/dashboard', function () {
         return Inertia::render('Dashboard');
     })->name('dashboard');
+
+    //create a new observation route
+    Route::post('/observations/create', ObservationController::class . '@create')->name('observations.create');
 });

@@ -2,6 +2,11 @@
 
 namespace App\Models;
 
+use App\Enums\AquaticVegetations;
+use App\Enums\Bottoms;
+use App\Enums\Natures;
+use App\Enums\RiparianVegetations;
+use App\Enums\VegetationCoverages;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -46,6 +51,11 @@ class Observation extends Model
 
     protected $casts = [
         'measuring_time' => 'datetime',
+        'nature' => Natures::class,
+        'riparian_vegetation' => RiparianVegetations::class,
+        'vegetation_coverage' => VegetationCoverages::class,
+        'bottom' => Bottoms::class,
+        'aquatic_vegetation' => AquaticVegetations::class
     ];
 
     public function user()
@@ -57,4 +67,6 @@ class Observation extends Model
     {
         return $this->belongsTo(WaterBody::class);
     }
+
+
 }

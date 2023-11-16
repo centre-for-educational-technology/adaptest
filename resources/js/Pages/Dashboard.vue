@@ -23,23 +23,23 @@
 
 
             <l-map ref="map" style="height: calc(100vh - 138px); width: 100%;" :crs="crs" v-model:zoom="zoom"
-                :useGlobalLeaflet="false" :center="maaametCenter" :bounds="bounds" :maxZoom="14" :minZoom="3"
-                :scrollWheelZoom="false" @click="addMarker" @ready="mapReady">
+                   :useGlobalLeaflet="false" :center="maaametCenter" :bounds="bounds" :maxZoom="14" :minZoom="3"
+                   :scrollWheelZoom="false" @click="addMarker" @ready="mapReady">
 
 
                 <l-tile-layer
                     url="https://tiles.maaamet.ee/tm/tms/1.0.0/vreljeef/{z}/{x}/{y}.png&ASUTUS=TLU&KESKKOND=ADAPTEST"
                     :tms="tms" :full-screen="false" :worldCopyJump="true" :z-index="1"
-                    :options="{ maxNativeZoom: 13, maxZoom: 13, minZoom: 3 }" />
+                    :options="{ maxNativeZoom: 13, maxZoom: 13, minZoom: 3 }"/>
 
                 <l-tile-layer
                     url="https://tiles.maaamet.ee/tm/tms/1.0.0/hybriid/{z}/{x}/{y}.png&ASUTUS=TLU&KESKKOND=ADAPTEST"
                     attribution="Maa-ameti kaart, <a href='http://www.maaamet.ee'>Maa-amet</a>" :tms="tms"
                     :full-screen="false" :worldCopyJump="true" :z-index="2"
-                    :options="{ maxNativeZoom: 13, maxZoom: 13, minZoom: 3 }" />
+                    :options="{ maxNativeZoom: 13, maxZoom: 13, minZoom: 3 }"/>
 
                 <l-geo-json :visible="geojsonFetched" :options="{ style: featureStyle, onEachFeature: onEachFeature }"
-                    :geojson="geojson"></l-geo-json>
+                            :geojson="geojson"></l-geo-json>
 
                 <!--                <l-marker v-for="marker, index in markers" :lat-lng="marker" @click="removeMarker(index)"></l-marker>-->
 
@@ -52,9 +52,7 @@
             </l-map>
 
 
-            <Modal :showModal="showModal" :selectedAreaName="selectedAreaName" @update:showModal="showModal = $event" />
-
-
+            <Modal :showModal="showModal" :selectedAreaName="selectedAreaName" @update:showModal="showModal = $event"/>
 
 
             <!-- Modal for when a GeoJSON layer is not selected -->
@@ -75,14 +73,15 @@
 </template>
 
 <script setup>
-import { LGeoJson, LIcon, LMap, LMarker, LPopup, LTileLayer } from "@vue-leaflet/vue-leaflet";
+import {LGeoJson, LIcon, LMap, LMarker, LPopup, LTileLayer} from "@vue-leaflet/vue-leaflet";
 import AppLayout from "@/Layouts/AppLayout.vue";
 import "leaflet/dist/leaflet.css";
-import { nextTick, onMounted, ref, watch } from 'vue';
-import { latLng, latLngBounds } from "leaflet/dist/leaflet-src.esm.js";
+import {nextTick, onMounted, ref, watch} from 'vue';
+import {latLng, latLngBounds} from "leaflet/dist/leaflet-src.esm.js";
 import * as L from 'leaflet';
 import 'proj4leaflet';
 import Modal from "@/CustomComponents/LakeModal.vue";
+import {router} from '@inertiajs/vue3'
 
 const map = ref(null);
 const zoom = ref(4);
@@ -96,6 +95,7 @@ const keyboard = ref(false);
 const zoomControl = ref(true);
 const url = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 const attribution = 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors';
+
 
 let selectedAreaName = ref('');
 let showGeoJsonModal = ref(false);
@@ -117,7 +117,6 @@ function featureStyle(feature) {
         fillOpacity: 0.7,
     };
 }
-
 
 
 let geojsonFetched = ref(false);
@@ -157,7 +156,6 @@ const onEachFeature = (feature, layer) => {
         direction: "center",
         className: "my-tooltip",
     });
-
 
 
 };
@@ -216,6 +214,8 @@ function addMarker(event) {
         yesButton.addEventListener('click', () => {
             observationAdded = true;
             markers.push(event.latlng);
+            //call add new observation
+            addNewObservation(event.latlng);
         });
 
 
@@ -236,6 +236,16 @@ function addMarker(event) {
 
 }
 
+function addNewObservation(latlng) {
+    console.log('add new observation');
+    if (selectedLayer) {
+        console.log('selected layer')
+        const coordinates = latlng
+        const name = selectedLayer.feature.properties.nimi;
+        router.post('/observations/create', {coordinates: coordinates, name: name});
+    }
+
+}
 
 
 // let projection = new L.Proj.CRS('EPSG:3301', '+proj=lcc +lat_1=59.33333333333334 +lat_2=58 +lat_0=57.51755393055556 +lon_0=24 +x_0=500000 +y_0=6375000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs', {
@@ -275,8 +285,8 @@ onMounted(() => {
             //transform coordinates
             geojson = data;
         }).then(() => {
-            geojsonFetched.value = true;
-        })
+        geojsonFetched.value = true;
+    })
 });
 
 if (navigator.geolocation) {
@@ -291,7 +301,7 @@ if (navigator.geolocation) {
 
 watch([center, zoom], ([newCenter, newZoom]) => {
     if (map.value) {
-        map.value = { center: newCenter, zoom: newZoom };
+        map.value = {center: newCenter, zoom: newZoom};
     }
 });
 
@@ -302,16 +312,3 @@ const addObservation = (event) => {
 
 
 </script>
-
-<style>
-html,
-body {
-    margin: 0;
-    padding: 0;
-}
-
-main {
-    height: 100vh;
-    width: 100vw;
-}
-</style>

@@ -5,6 +5,7 @@ namespace App\Policies;
 use App\Models\Observation;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Support\Facades\Auth;
 
 class ObservationPolicy
 {
@@ -21,6 +22,9 @@ class ObservationPolicy
 
     public function create(User $user): bool
     {
+        //allow if logged in user
+        return Auth::check();
+
     }
 
     public function update(User $user, Observation $observation): bool

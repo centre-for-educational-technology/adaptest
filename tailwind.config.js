@@ -21,8 +21,7 @@ export default {
     },
 
     daisyui: {
-        themes: ["autumn", "dark"],
+        themes: ["winter", "dark"],
     },
-
-    plugins: [forms, require("@tailwindcss/typography"), require("daisyui")],
+    plugins: [require('@tailwindcss/typography'), require('daisyui')],
 };

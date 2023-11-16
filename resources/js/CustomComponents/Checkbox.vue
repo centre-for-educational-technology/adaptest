@@ -1,6 +1,6 @@
 <template>
     <input type="checkbox" :value="value" v-model="proxyChecked"
-           class="toggle toggle-md">
+           class="toggle toggle-md"/>
 </template>
 
 <script>

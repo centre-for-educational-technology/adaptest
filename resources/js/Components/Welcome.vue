@@ -8,7 +8,7 @@ import ApplicationLogo from '@/Components/ApplicationLogo.vue';
             <ApplicationLogo class="block h-12 w-auto" />
             <div class="text-center w-full">
                 <h1 class="title-font sm:text-4xl text-3xl mb-4 font-medium text-gray-900 dark:text-white">
-                    AdaptEst</h1>
+                    AdaptEST</h1>
                 <p class="mb-8 text-xl leading-relaxed dark:text-gray-200">Our mission is to organize the world's
                     information and make it universally accessible and useful</p>
                 <div class="flex justify-center">

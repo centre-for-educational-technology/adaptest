@@ -7,6 +7,8 @@ import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
+import Label from "@/CustomComponents/Label.vue";
+import Input from "@/CustomComponents/Input.vue";
 
 const passwordInput = ref(null);
 const currentPasswordInput = ref(null);
@@ -49,8 +51,8 @@ const updatePassword = () => {
 
         <template #form>
             <div class="col-span-6 sm:col-span-4">
-                <InputLabel for="current_password" value="Current Password" />
-                <TextInput
+                <Label for="current_password" value="Current Password" />
+                <Input
                     id="current_password"
                     ref="currentPasswordInput"
                     v-model="form.current_password"
@@ -62,8 +64,8 @@ const updatePassword = () => {
             </div>
 
             <div class="col-span-6 sm:col-span-4">
-                <InputLabel for="password" value="New Password" />
-                <TextInput
+                <Label for="password" value="New Password" />
+                <Input
                     id="password"
                     ref="passwordInput"
                     v-model="form.password"
@@ -75,8 +77,8 @@ const updatePassword = () => {
             </div>
 
             <div class="col-span-6 sm:col-span-4">
-                <InputLabel for="password_confirmation" value="Confirm Password" />
-                <TextInput
+                <Label for="password_confirmation" value="Confirm Password" />
+                <Input
                     id="password_confirmation"
                     v-model="form.password_confirmation"
                     type="password"
