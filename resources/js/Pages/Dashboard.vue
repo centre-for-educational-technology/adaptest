@@ -21,14 +21,33 @@
             <!--                            <l-geo-json :geojson="geojson"/>-->
             <!--                        </l-map>-->
             <div v-if="!mapLoaded"
-                 class="absolute inset-0 flex flex-col items-center justify-center bg-primary opacity-80 z-10">
+                 class="absolute inset-0 flex items-center justify-center bg-primary opacity-80 z-10">
                 <div class="spinner z-50">
-                    <span class="loading text-secondary loading-infinity loading-lg"></span>
+
+
+                    <div class="loader">
+                        <div class="loader-bg">
+                            <span class="flex items-center justify-center">
+                                <ApplicationMark class="w-20 mt-4 h-20 fill-white"/>
+                            </span>
+                        </div>
+                        <div class="drops">
+                            <div class="drop1"></div>
+                            <div class="drop2"></div>
+                        </div>
+                    </div>
+                    <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+                        <defs>
+                            <filter id="liquid">
+                                <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur"/>
+                                <feColorMatrix in="blur" mode="matrix"
+                                               values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7" result="liquid"/>
+                            </filter>
+                        </defs>
+                    </svg>
 
                 </div>
-                <p class="text-white text-2xl font-semibold">
-                    Laen veekogud...
-                </p>
+
             </div>
 
 
@@ -92,6 +111,7 @@ import * as L from 'leaflet';
 import 'proj4leaflet';
 import Modal from "@/CustomComponents/LakeModal.vue";
 import {router} from '@inertiajs/vue3'
+import ApplicationMark from "@/Components/ApplicationMark.vue";
 
 const map = ref(null);
 const zoom = ref(4);
