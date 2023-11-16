@@ -21,10 +21,14 @@
             <!--                            <l-geo-json :geojson="geojson"/>-->
             <!--                        </l-map>-->
             <div v-if="!mapLoaded"
-                 class="absolute inset-0 flex items-center justify-center bg-primary opacity-80 z-10">
+                 class="absolute inset-0 flex flex-col items-center justify-center bg-primary opacity-80 z-10">
                 <div class="spinner z-50">
                     <span class="loading text-secondary loading-infinity loading-lg"></span>
+
                 </div>
+                <p class="text-white text-2xl font-semibold">
+                    Laeb jarvekaarte...
+                </p>
             </div>
 
 
