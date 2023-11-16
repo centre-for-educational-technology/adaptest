@@ -47,7 +47,7 @@
                         </defs>
                     </svg>
                     <p class="text-white flex items-center justify-center text-2xl font-semibold">
-                        Laeb veekogud...
+                        Laen veekogud...
                     </p>
                 </div>
 
