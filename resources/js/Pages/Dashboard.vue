@@ -30,7 +30,7 @@
 
             <l-map ref="map" :crs="crs" v-model:zoom="zoom"
                    :useGlobalLeaflet="false" :center="maaametCenter" :bounds="bounds" :maxZoom="14" :minZoom="3"
-                   :scrollWheelZoom="false" @click="addMarker" @ready="mapReady">
+                   :scrollWheelZoom="false" @click="addMarker">
 
 
                 <l-tile-layer
@@ -305,6 +305,7 @@ if (navigator.geolocation) {
         center.value = [position.coords.latitude, position.coords.longitude];
         zoom.value = 9; // Adjust this value as needed
     }, error => {
+        zoom.value = 9;
         console.error("Error obtaining geolocation: ", error);
     });
 }
