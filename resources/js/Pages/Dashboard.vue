@@ -30,7 +30,7 @@
 
             <l-map ref="map" :crs="crs" v-model:zoom="zoom"
                    :useGlobalLeaflet="false" :center="maaametCenter" :bounds="bounds" :maxZoom="14" :minZoom="3"
-                   :scrollWheelZoom="false" @click="addMarker">
+                   :scrollWheelZoom="false" @click="addMarker" @ready="mapReady">
 
 
                 <l-tile-layer
@@ -296,7 +296,7 @@ onMounted(() => {
         }).then(() => {
         geojsonFetched.value = true;
     })
-    mapReady();
+    mapLoaded = true;
 });
 
 if (navigator.geolocation) {
