@@ -21,7 +21,7 @@
             <!--                            <l-geo-json :geojson="geojson"/>-->
             <!--                        </l-map>-->
             <div v-if="!mapLoaded"
-                 class="absolute inset-0 flex items-center justify-center bg-primary opacity-80 z-10">
+                 class="absolute inset-0 flex flex-col items-center justify-center bg-primary opacity-80 z-10">
                 <div class="spinner z-50">
 
 
@@ -36,6 +36,7 @@
                             <div class="drop2"></div>
                         </div>
                     </div>
+
                     <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
                         <defs>
                             <filter id="liquid">
@@ -45,7 +46,9 @@
                             </filter>
                         </defs>
                     </svg>
-
+                    <p class="text-white flex items-center justify-center text-2xl font-semibold">
+                        Laeb veekogud...
+                    </p>
                 </div>
 
             </div>
