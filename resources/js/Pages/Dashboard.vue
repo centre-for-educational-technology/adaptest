@@ -27,7 +27,7 @@
 
                 </div>
                 <p class="text-white text-2xl font-semibold">
-                    Laeb veekogud...
+                    Laen veekogud...
                 </p>
             </div>
 
