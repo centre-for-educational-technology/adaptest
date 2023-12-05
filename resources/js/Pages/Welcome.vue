@@ -25,11 +25,12 @@ defineProps({
         </div>
 
 
-        <div class="hero min-h-screen" style="background-image: url(https://source.unsplash.com/Gj8d1NoEBlE/1600x900)">
+        <div class="hero min-h-screen"
+             :style="{ backgroundImage: 'url(https://source.unsplash.com/Gj8d1NoEBlE/1600x900)' }">
             <div class="hero-overlay bg-opacity-60"></div>
             <div class="hero-content text-center text-neutral-content">
                 <div class="max-w-xs">
-                    <ApplicationLogo />
+                    <ApplicationLogo/>
                     <div class="text-center w-full prose">
                         <p class="text-2xl text-white">
                             Database of observations of Estonian water bodies
