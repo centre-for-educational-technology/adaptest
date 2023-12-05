@@ -189,7 +189,7 @@ let submit = () => {
     <form @submit.prevent="submit">
 
         <div
-            class="px-4 max-w-screen-lg card bg-base-100 shadow-xl my-5 mx-auto py-5 sm:p-6 shadow rounded-md">
+            class="px-4 max-w-screen-lg card bg-white dark:bg-base-100 shadow-xl my-5 mx-auto py-5 sm:p-6 rounded-md">
             <div class="alert mb-5 alert-info">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                      class="stroke-current shrink-0 w-6 h-6">
