@@ -41,6 +41,8 @@ class ObservationRequest extends FormRequest
             'dams' => 'required|boolean',
             'littering' => 'required|boolean',
             'water_pollution' => 'required|boolean',
+            'water_body_sys_id' => 'required|numeric',
+            'observation_spot_id' => 'required|numeric',
         ];
     }
 }

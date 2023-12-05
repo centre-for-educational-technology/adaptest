@@ -16,9 +16,9 @@ class WaterBody extends Model
         'sys_id',
     ];
 
-    public function observations()
+    public function observationSpots()
     {
-        return $this->hasMany(Observation::class);
+        return $this->hasMany(ObservationSpot::class);
     }
 
 }

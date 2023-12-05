@@ -29,10 +29,8 @@ defineProps({
             <div class="hero-overlay bg-opacity-60"></div>
             <div class="hero-content text-center text-neutral-content">
                 <div class="max-w-xs">
-                    <ApplicationLogo class="mb-10"/>
+                    <ApplicationLogo />
                     <div class="text-center w-full prose">
-                        <h1 class="text-white">
-                            AdaptEST</h1>
                         <p class="text-2xl text-white">
                             Database of observations of Estonian water bodies
                         </p>

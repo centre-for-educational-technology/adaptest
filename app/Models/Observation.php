@@ -63,10 +63,6 @@ class Observation extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function waterBody()
-    {
-        return $this->belongsTo(WaterBody::class);
-    }
 
 
 }

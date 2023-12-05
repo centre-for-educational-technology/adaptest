@@ -2,13 +2,18 @@
 
 import Input from "@/CustomComponents/Input.vue";
 
-import {defineProps, onMounted} from "vue";
+import {defineProps, ref, watch} from "vue";
 import {useForm} from "@inertiajs/vue3";
 import InputError from "@/CustomComponents/InputError.vue";
 import Label from "@/CustomComponents/Label.vue";
 import Checkbox from "@/CustomComponents/Checkbox.vue";
 import SelectOption from "@/CustomComponents/Select.vue";
 import {usePage} from '@inertiajs/vue3'
+import {LMap, LMarker, LTileLayer} from "@vue-leaflet/vue-leaflet";
+import {latLng, latLngBounds} from "leaflet";
+import * as L from "leaflet";
+import markerIconUrl from '@/assets/pin.svg';
+import {Link} from '@inertiajs/vue3'
 
 const page = usePage()
 
@@ -50,6 +55,16 @@ let props = defineProps({
         type: String,
         required: true,
     },
+    water_body_sys_id: {
+        type: String,
+        required: true,
+    },
+    observation_spot_id: {
+        type: String,
+        required: true,
+        default: null,
+    },
+
 });
 
 let hasObservation = props.observation !== null;
@@ -87,18 +102,94 @@ let form = useForm({
     dams: hasObservation ? observation.dams : false,
     littering: hasObservation ? observation.littering : false,
     water_pollution: hasObservation ? observation.water_pollution : false,
+    water_body_sys_id: props.water_body_sys_id,
+    observation_spot_id: props.observation_spot_id,
 });
+
+const map = ref(null);
+const marker = ref(null);
+const zoom = ref(10);
+let mapInstance = null;
+let tms = ref(true);
+let maaametCenter = latLng(58.379, 24.554);
+let bounds = latLngBounds(
+    [60.4349, 29.4338],
+    [56.7458, 20.373]
+);
+var crs = new L.Proj.CRS('EPSG:3301', '+proj=lcc +lat_1=59.33333333333334 +lat_2=58 +lat_0=57.51755393055556 +lon_0=24 +x_0=500000 +y_0=6375000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs', {
+    resolutions: [4000, 2000, 1000, 500, 250, 125, 62.5, 31.25, 15.625, 7.8125, 3.90625, 1.953125, 0.9765625, 0.48828125, 0.244140625, 0.122070313, 0.061035156, 0.030517578, 0.015258789],
+    origin: [40500, 5993000],
+    bounds: L.bounds([40500, 5993000], [1064500, 7017000])
+})
+
+const newMarkerIcon = L.icon({
+  iconUrl: markerIconUrl,
+  iconSize: [55, 55],
+  iconAnchor: [25, 55],
+  popupAnchor: [0, -55],
+});
+
+watch(props.coordinates, (newCoordinates) => {
+    if (newCoordinates && mapInstance) {
+        mapInstance.setView(newCoordinates, zoom.value);
+    }
+});
+
+
+function mapReady() {
+    console.log('map ready');
+    mapInstance = map.value.leafletObject;
+
+    if (mapInstance) {
+        mapInstance.scrollWheelZoom.disable();
+
+        if (props.coordinates) {
+            mapInstance.setView(props.coordinates, zoom.value);
+        }
+    }
+}
+
+let submit = () => {
+
+    form.transform((data) => ({
+        ...data,
+        water_body_sys_id: props.water_body_sys_id,
+        observation_spot_id: props.observation_spot_id,
+    }));
+    console.log(form);
+    form.post(route('observations.store'), {
+        preserveScroll: true,
+    });
+}
 
 
 </script>
 
 <template>
+    <l-map ref="map" :crs="crs" v-model:zoom="zoom" style="height: 400px; width: 100%;" :useGlobalLeaflet="false"
+           :center="maaametCenter" :bounds="bounds" :maxZoom="14" :minZoom="3" :scrollWheelZoom="false"
+           @ready="mapReady">
+
+
+        <l-tile-layer url="https://tiles.maaamet.ee/tm/tms/1.0.0/vreljeef/{z}/{x}/{y}.png&ASUTUS=TLU&KESKKOND=ADAPTEST"
+                      :tms="tms" :full-screen="false" :worldCopyJump="true" :z-index="1"
+                      :options="{ maxNativeZoom: 13, maxZoom: 13, minZoom: 3 }"/>
+
+        <l-tile-layer url="https://tiles.maaamet.ee/tm/tms/1.0.0/hybriid/{z}/{x}/{y}.png&ASUTUS=TLU&KESKKOND=ADAPTEST"
+                      attribution="Maa-ameti kaart, <a href='http://www.maaamet.ee'>Maa-amet</a>" :tms="tms"
+                      :full-screen="false"
+                      :worldCopyJump="true" :z-index="2" :options="{ maxNativeZoom: 13, maxZoom: 13, minZoom: 3 }"/>
+
+        <l-marker v-if="props.coordinates" :lat-lng="props.coordinates" :icon="newMarkerIcon" ref="marker"></l-marker>
+
+
+    </l-map>
 
 
     <form @submit.prevent="submit">
 
         <div
-            class="px-4 max-w-screen-lg card bg-base-100 shadow-xl my-5 mx-auto py-5 bg-white sm:p-6 shadow rounded-md">
+            class="px-4 max-w-screen-lg card bg-base-100 shadow-xl my-5 mx-auto py-5 sm:p-6 shadow rounded-md">
             <div class="alert mb-5 alert-info">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                      class="stroke-current shrink-0 w-6 h-6">
@@ -121,78 +212,56 @@ let form = useForm({
 
                 <div class="col-span-12">
                     <Label for="measuring_time" :value="'Measuring time'"/>
-                    <Input id="measuring_time" class="mt-1 block w-full"
-                           v-model.trim="form.measuring_time" type="datetime-local"
-                           ref="measuring_time"
-                           autocomplete="measuring_time"
-                           dusk="measuring_time"
-                    />
+                    <Input id="measuring_time" class="mt-1 block w-full" v-model.trim="form.measuring_time"
+                           type="datetime-local" ref="measuring_time" autocomplete="measuring_time"
+                           dusk="measuring_time"/>
                     <InputError :message="form.errors.measuring_time" class="mt-2"/>
                 </div>
 
                 <div class="col-span-12">
                     <Label for="odor" :value="'Odor'"/>
-                    <Input id="odor" class="mt-1 block w-full"
-                           v-model.trim="form.odor" type="text"
-                           ref="odor"
-                           autocomplete="odor"
-                           dusk="odor"
-                    />
+                    <Input id="odor" class="mt-1 block w-full" v-model.trim="form.odor" type="text" ref="odor"
+                           autocomplete="odor" dusk="odor"/>
                     <InputError :message="form.errors.odor" class="mt-2"/>
                 </div>
 
                 <div class="col-span-12">
                     <Label for="color_turbidity" :value="'Color turbidity'"/>
-                    <Input id="color_turbidity" class="mt-1 block w-full"
-                           v-model.trim="form.color_turbidity" type="text"
-                           ref="color_turbidity"
-                           autocomplete="color_turbidity"
-                           dusk="color_turbidity"
-                    />
+                    <Input id="color_turbidity" class="mt-1 block w-full" v-model.trim="form.color_turbidity"
+                           type="text"
+                           ref="color_turbidity" autocomplete="color_turbidity" dusk="color_turbidity"/>
                     <InputError :message="form.errors.color_turbidity" class="mt-2"/>
                 </div>
 
                 <div class="col-span-6">
                     <Label for="ph" :value="'PH'"/>
-                    <Input id="ph" class="mt-1 block w-full"
-                           v-model.trim="form.ph" type="text"
-                           ref="ph"
+                    <Input id="ph" class="mt-1 block w-full" v-model.trim="form.ph" type="number" ref="ph"
                            autocomplete="ph"
-                           dusk="ph"
-                    />
+                           dusk="ph"/>
                     <InputError :message="form.errors.ph" class="mt-2"/>
                 </div>
 
                 <div class="col-span-6">
                     <Label for="water_temperature" :value="'Water temperature'"/>
-                    <Input id="water_temperature" class="mt-1 block w-full"
-                           v-model.trim="form.water_temperature" type="text"
-                           ref="water_temperature"
-                           autocomplete="water_temperature"
-                           dusk="water_temperature"
-                    />
+                    <Input id="water_temperature" class="mt-1 block w-full" v-model.trim="form.water_temperature"
+                           type="number" ref="water_temperature" autocomplete="water_temperature"
+                           dusk="water_temperature"/>
                     <InputError :message="form.errors.water_temperature" class="mt-2"/>
                 </div>
 
                 <div class="col-span-6">
                     <Label for="air_temperature" :value="'Air temperature'"/>
-                    <Input id="air_temperature" class="mt-1 block w-full"
-                           v-model.trim="form.air_temperature" type="text"
-                           ref="air_temperature"
-                           autocomplete="air_temperature"
-                           dusk="air_temperature"
-                    />
+                    <Input id="air_temperature" class="mt-1 block w-full" v-model.trim="form.air_temperature"
+                           type="number"
+                           ref="air_temperature" autocomplete="air_temperature" dusk="air_temperature"/>
                     <InputError :message="form.errors.air_temperature" class="mt-2"/>
                 </div>
 
                 <div class="col-span-6">
                     <Label for="specific_conductance" :value="'Specific conductance'"/>
-                    <Input id="specific_conductance" class="mt-1 block w-full"
-                           v-model.trim="form.specific_conductance" type="text"
-                           ref="specific_conductance"
-                           autocomplete="specific_conductance"
-                           dusk="specific_conductance"
-                    />
+                    <Input id="specific_conductance" class="mt-1 block w-full" v-model.trim="form.specific_conductance"
+                           type="number" ref="specific_conductance" autocomplete="specific_conductance"
+                           dusk="specific_conductance"/>
                     <InputError :message="form.errors.specific_conductance" class="mt-2"/>
 
                 </div>
@@ -200,90 +269,63 @@ let form = useForm({
                 <div class="col-span-6">
                     <Label for="total_dissolved_solids" :value="'Total dissolved solids'"/>
                     <Input id="total_dissolved_solids" class="mt-1 block w-full"
-                           v-model.trim="form.total_dissolved_solids" type="text"
-                           ref="total_dissolved_solids"
-                           autocomplete="total_dissolved_solids"
-                           dusk="total_dissolved_solids"
-                    />
+                           v-model.trim="form.total_dissolved_solids"
+                           type="number" ref="total_dissolved_solids" autocomplete="total_dissolved_solids"
+                           dusk="total_dissolved_solids"/>
                     <InputError :message="form.errors.total_dissolved_solids" class="mt-2"/>
                 </div>
 
                 <div class="col-span-6">
                     <Label for="nitrate" :value="'Nitrate'"/>
-                    <Input id="nitrate" class="mt-1 block w-full"
-                           v-model.trim="form.nitrate" type="text"
-                           ref="nitrate"
-                           autocomplete="nitrate"
-                           dusk="nitrate"
-                    />
+                    <Input id="nitrate" class="mt-1 block w-full" v-model.trim="form.nitrate" type="number" ref="nitrate"
+                           autocomplete="nitrate" dusk="nitrate"/>
                     <InputError :message="form.errors.nitrate" class="mt-2"/>
                 </div>
 
                 <div class="col-span-6">
                     <Label for="bicarbonate" :value="'Bicarbonate'"/>
-                    <Input id="bicarbonate" class="mt-1 block w-full"
-                           v-model.trim="form.bicarbonate" type="text"
-                           ref="bicarbonate"
-                           autocomplete="bicarbonate"
-                           dusk="bicarbonate"
-                    />
+                    <Input id="bicarbonate" class="mt-1 block w-full" v-model.trim="form.bicarbonate" type="number"
+                           ref="bicarbonate" autocomplete="bicarbonate" dusk="bicarbonate"/>
                     <InputError :message="form.errors.bicarbonate" class="mt-2"/>
 
                 </div>
 
                 <div class="col-span-6">
                     <Label for="redox_potential" :value="'Redox potential'"/>
-                    <Input id="redox_potential" class="mt-1 block w-full"
-                           v-model.trim="form.redox_potential" type="text"
-                           ref="redox_potential"
-                           autocomplete="redox_potential"
-                           dusk="redox_potential"
-                    />
+                    <Input id="redox_potential" class="mt-1 block w-full" v-model.trim="form.redox_potential"
+                           type="number"
+                           ref="redox_potential" autocomplete="redox_potential" dusk="redox_potential"/>
                     <InputError :message="form.errors.redox_potential" class="mt-2"/>
                 </div>
 
                 <div class="col-span-6">
                     <Label for="dissolved_oxygen_percent" :value="'Dissolved oxygen percent'"/>
                     <Input id="dissolved_oxygen_percent" class="mt-1 block w-full"
-                           v-model.trim="form.dissolved_oxygen_percent" type="text"
-                           ref="dissolved_oxygen_percent"
-                           autocomplete="dissolved_oxygen_percent"
-                           dusk="dissolved_oxygen_percent"
-                    />
+                           v-model.trim="form.dissolved_oxygen_percent" type="number" ref="dissolved_oxygen_percent"
+                           autocomplete="dissolved_oxygen_percent" dusk="dissolved_oxygen_percent"/>
                     <InputError :message="form.errors.dissolved_oxygen_percent" class="mt-2"/>
                 </div>
 
                 <div class="col-span-6">
                     <Label for="dissolved_oxygen_ppm" :value="'Dissolved oxygen ppm'"/>
-                    <Input id="dissolved_oxygen_ppm" class="mt-1 block w-full"
-                           v-model.trim="form.dissolved_oxygen_ppm" type="text"
-                           ref="dissolved_oxygen_ppm"
-                           autocomplete="dissolved_oxygen_ppm"
-                           dusk="dissolved_oxygen_ppm"
-                    />
+                    <Input id="dissolved_oxygen_ppm" class="mt-1 block w-full" v-model.trim="form.dissolved_oxygen_ppm"
+                           type="number" ref="dissolved_oxygen_ppm" autocomplete="dissolved_oxygen_ppm"
+                           dusk="dissolved_oxygen_ppm"/>
                     <InputError :message="form.errors.dissolved_oxygen_ppm" class="mt-2"/>
                 </div>
 
                 <div class="col-span-6">
                     <Label for="discharge" :value="'Discharge'"/>
-                    <Input id="discharge" class="mt-1 block w-full"
-                           v-model.trim="form.discharge" type="text"
-                           ref="discharge"
-                           autocomplete="discharge"
-                           dusk="discharge"
-                    />
+                    <Input id="discharge" class="mt-1 block w-full" v-model.trim="form.discharge" type="number"
+                           ref="discharge" autocomplete="discharge" dusk="discharge"/>
                     <InputError :message="form.errors.discharge" class="mt-2"/>
 
                 </div>
 
                 <div class="col-span-6">
                     <Label for="water_flow" :value="'Vooluveekogu voolukiirus'"/>
-                    <SelectOption v-model="form.water_flow"
-                                  :options="water_flows"
-                                  :placeholder="'Please select one'"
-                                  class="mt-2 block w-full"
-                                  ref="water_flow"
-                                  autocomplete="water_flow"/>
+                    <SelectOption v-model="form.water_flow" :options="water_flows" :placeholder="'Please select one'"
+                                  class="mt-2 block w-full" ref="water_flow" autocomplete="water_flow"/>
                     <InputError :message="form.errors.water_flow" class="mt-2"/>
 
                 </div>
@@ -306,33 +348,23 @@ let form = useForm({
 
                 <div class="col-span-12">
                     <Label for="nature" :value="'Kaldaala looduslikkus'"/>
-                    <SelectOption v-model="form.nature"
-                                  :options="natures"
-                                  :placeholder="'Please select one'"
-                                  class="mt-2 block w-full"
-                                  ref="nature"
-                                  autocomplete="nature"/>
+                    <SelectOption v-model="form.nature" :options="natures" :placeholder="'Please select one'"
+                                  class="mt-2 block w-full" ref="nature" autocomplete="nature"/>
                     <InputError :message="form.errors.nature" class="mt-2"/>
                 </div>
 
                 <div class="col-span-12">
                     <Label for="riparian_vegetation" :value="'Kaldaala taimestik'"/>
-                    <SelectOption v-model="form.riparian_vegetation"
-                                  :options="riparian_vegetations"
-                                  :placeholder="'Please select one'"
-                                  class="mt-2 block w-full"
-                                  ref="riparian_vegetation"
+                    <SelectOption v-model="form.riparian_vegetation" :options="riparian_vegetations"
+                                  :placeholder="'Please select one'" class="mt-2 block w-full" ref="riparian_vegetation"
                                   autocomplete="riparian_vegetation"/>
                     <InputError :message="form.errors.riparian_vegetation" class="mt-2"/>
                 </div>
 
                 <div class="col-span-12">
                     <Label for="vegetation_coverage" :value="'Taimestiku katvus'"/>
-                    <SelectOption v-model="form.vegetation_coverage"
-                                  :options="vegetation_coverages"
-                                  :placeholder="'Please select one'"
-                                  class="mt-2 block w-full"
-                                  ref="vegetation_coverage"
+                    <SelectOption v-model="form.vegetation_coverage" :options="vegetation_coverages"
+                                  :placeholder="'Please select one'" class="mt-2 block w-full" ref="vegetation_coverage"
                                   autocomplete="vegetation_coverage"/>
                     <InputError :message="form.errors.vegetation_coverage" class="mt-2"/>
                 </div>
@@ -352,22 +384,15 @@ let form = useForm({
 
                 <div class="col-span-12">
                     <Label for="bottom" :value="'Veekogu põhi'"/>
-                    <SelectOption v-model="form.bottom"
-                                  :options="bottoms"
-                                  :placeholder="'Please select one'"
-                                  class="mt-2 block w-full"
-                                  ref="bottom"
-                                  autocomplete="bottom"/>
+                    <SelectOption v-model="form.bottom" :options="bottoms" :placeholder="'Please select one'"
+                                  class="mt-2 block w-full" ref="bottom" autocomplete="bottom"/>
                     <InputError :message="form.errors.bottom" class="mt-2"/>
                 </div>
 
                 <div class="col-span-12">
                     <Label for="aquatic_vegetation" :value="'Veetaimestik'"/>
-                    <SelectOption v-model="form.aquatic_vegetation"
-                                  :options="aquatic_vegetations"
-                                  :placeholder="'Please select one'"
-                                  class="mt-2 block w-full"
-                                  ref="aquatic_vegetation"
+                    <SelectOption v-model="form.aquatic_vegetation" :options="aquatic_vegetations"
+                                  :placeholder="'Please select one'" class="mt-2 block w-full" ref="aquatic_vegetation"
                                   autocomplete="aquatic_vegetation"/>
                     <InputError :message="form.errors.aquatic_vegetation" class="mt-2"/>
                 </div>
@@ -462,20 +487,19 @@ let form = useForm({
 
                 <div class="col-span-12">
                     <div class="flex justify-end">
-                        <button type="submit" class="btn btn-primary">
-                            {{ "Submit" }}
-                        </button>
+                        <Link v-on:click="submit" class="btn btn-primary" dusk="save"
+                              href="#"
+                              :class="{ 'btn-disabled': form.processing }">
+                            Submit
+                        </Link>
                     </div>
                 </div>
+
             </div>
         </div>
 
 
     </form>
-
-
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

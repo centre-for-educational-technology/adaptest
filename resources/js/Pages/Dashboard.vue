@@ -105,7 +105,7 @@
 </template>
 
 <script setup>
-import {LGeoJson, LIcon, LMap, LMarker, LPopup, LTileLayer} from "@vue-leaflet/vue-leaflet";
+import {LGeoJson, LMap, LMarker, LPopup, LTileLayer} from "@vue-leaflet/vue-leaflet";
 import AppLayout from "@/Layouts/AppLayout.vue";
 import "leaflet/dist/leaflet.css";
 import {nextTick, onMounted, ref, watch} from 'vue';
@@ -120,15 +120,11 @@ import markerIconUrl from '@/assets/pin.svg';
 const map = ref(null);
 const zoom = ref(4);
 const center = ref([51.505, -0.09]);
-const maxZoom = ref(13);
-const minZoom = ref(3);
 const dragging = ref(true);
 const touchZoom = ref(true);
 const scrollWheelZoom = ref(true);
 const keyboard = ref(false);
-const zoomControl = ref(true);
 const url = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
-const attribution = 'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors';
 
 
 let selectedAreaName = ref('');
@@ -212,16 +208,20 @@ let mapInstance = null;
 function mapReady() {
     console.log('map ready');
     mapInstance = map.value.leafletObject;
+
+    if (mapInstance) {
+        mapInstance.scrollWheelZoom.disable();
+    }
 }
 
 
 function addMarker(event) {
     const markerIcon = L.icon({
         iconUrl: markerIconUrl,
-        iconSize: [38, 95],
-        iconAnchor: [22, 94],
-        popupAnchor: [-3, -76],
-      });
+        iconSize: [55, 55],
+        iconAnchor: [25, 55],
+        popupAnchor: [0, -55],
+    });
     if (!selectedLayer) {
 
         showGeoJsonModal.value = true;
@@ -233,7 +233,7 @@ function addMarker(event) {
     }
 
     const latlng = event.latlng;
-    const marker = L.marker(latlng, { icon: markerIcon });
+    const marker = L.marker(latlng, {icon: markerIcon});
     const popup = L.popup().setContent(`
       <p class="mb-2 text-lg font-semibold text-gray-900">Add a new observation spot?</p>
       <div class="flex space-x-2">
@@ -282,30 +282,15 @@ function addNewObservation(latlng) {
     console.log('add new observation');
     if (selectedLayer) {
         console.log('selected layer')
-        const coordinates = latlng
+        const coordinates = JSON.stringify(latlng);
         const name = selectedLayer.feature.properties.nimi;
-        router.post('/observations/create', {coordinates: coordinates, name: name});
+        const water_body_sys_id = selectedLayer.feature.properties.sys_id;
+        //TODO get observation spot id
+        const observation_spot_id = null;
+        router.get(`/observations/create?coordinates=${coordinates}&name=${name}&water_body_sys_id=${water_body_sys_id}&observation_spot_id=${observation_spot_id}`)
     }
 
 }
-
-
-// let projection = new L.Proj.CRS('EPSG:3301', '+proj=lcc +lat_1=59.33333333333334 +lat_2=58 +lat_0=57.51755393055556 +lon_0=24 +x_0=500000 +y_0=6375000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs', {
-//     resolutions: [4000, 2000, 1000, 500, 250, 125, 62.5, 31.25, 15.625, 7.8125, 3.90625, 1.953125, 0.9765625, 0.48828125, 0.244140625, 0.122070313, 0.061035156, 0.030517578, 0.015258789],
-//     origin: [40500, 5993000],
-//     bounds: L.bounds([40500, 5993000], [1064500, 7017000])
-// });
-
-
-// let projection  = ref({
-//     code: "EPSG:3301",
-//     def: "+proj=lcc +lat_1=59.33333333333334 +lat_2=58 +lat_0=57.51755393055556 +lon_0=24 +x_0=500000 +y_0=6375000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
-//     origin: [40500, 5993000],
-//     resolutions: [4000, 2000, 1000, 500, 250, 125, 62.5, 31.25, 15.625, 7.8125, 3.90625, 1.953125, 0.9765625, 0.48828125, 0.244140625, 0.122070313, 0.061035156, 0.030517578, 0.015258789],
-// });
-//
-//
-//
 
 
 //init geojson
@@ -349,11 +334,6 @@ watch([center, zoom], ([newCenter, newZoom]) => {
         map.value = {center: newCenter, zoom: newZoom};
     }
 });
-
-
-const addObservation = (event) => {
-
-};
 
 
 </script>

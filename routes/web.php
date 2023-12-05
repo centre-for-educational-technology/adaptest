@@ -35,5 +35,13 @@ Route::middleware([
     })->name('dashboard');
 
     //create a new observation route
-    Route::post('/observations/create', ObservationController::class . '@create')->name('observations.create');
+    //Route::post('/observations/create', ObservationController::class . '@create')->name('observations.create');
+    Route::get('/observations/create', [ObservationController::class, 'create'])->name('observations.create');
+    //redirect get request to dashboard
+//    Route::get('/observations/create', function () {
+//        return redirect()->route('dashboard');
+//    });
+
+//store a new observation route
+    Route::post('/observations/store', ObservationController::class . '@store')->name('observations.store');
 });

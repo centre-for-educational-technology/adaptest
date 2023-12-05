@@ -318,7 +318,7 @@ const logout = () => {
 
             <slot/>
 
-            <footer class="footer footer-center p-10 bg-primary text-primary-content">
+            <footer class="footer footer-center p-10 bg-secondary text-primary-content">
                 <aside>
                     <ApplicationMark class="inline-block fill-white w-20 h-20 mr-2"/>
                     <p class="font-bold">

@@ -5,8 +5,10 @@ namespace App\Providers;
 // use Illuminate\Support\Facades\Gate;
 use App\Models\Obser;
 use App\Models\Observation;
+use App\Models\ObservationSpot;
 use App\Policies\ObserPolicy;
 use App\Policies\ObservationPolicy;
+use App\Policies\ObservationSpotPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 class AuthServiceProvider extends ServiceProvider
@@ -20,6 +22,7 @@ class AuthServiceProvider extends ServiceProvider
         //
         Observation::class => ObservationPolicy::class,
         Obser::class => ObserPolicy::class,
+        ObservationSpot::class => ObservationSpotPolicy::class,
     ];
 
     /**

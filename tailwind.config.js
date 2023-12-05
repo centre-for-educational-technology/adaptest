@@ -21,7 +21,21 @@ export default {
     },
 
     daisyui: {
-        themes: ["winter", "dark"],
+        themes: [
+            {
+                'adaptest': {
+                    "primary": "#74956C",
+                    "secondary": "#E2D9C2",
+                    "accent": "#FDAA63",
+                    "neutral": "#3D3935",
+                    "base-100": "#1d232a",
+                    "info": "#00b5ff",
+                    "success": "#ffffff",
+                    "warning": "#ffbe00",
+                    "error": "#ff5861",
+                },
+            }
+        ]
     },
     plugins: [require('@tailwindcss/typography'), require('daisyui')],
 };
