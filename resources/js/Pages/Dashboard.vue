@@ -328,31 +328,31 @@ var crs = new L.Proj.CRS('EPSG:3301', '+proj=lcc +lat_1=59.33333333333334 +lat_2
 })
 
 
-onMounted(() => {
-    //fetch geosjon from file
-    fetch('/geojson/jarved')
-        .then(response => response.json())
-        .then(data => {
-            loaderText.value = 'Laen vooluveekogud...';
-            //transform coordinates
-            jarvedData = data;
-        }).then(() => {
-        // Fetch vooluvesi.json after jarved
+onMounted(async () => {
+    const cache = await caches.open('geojson-cache');
 
-        return fetch('/geojson/vooluvesi');
-    })
-        .then(response => response.json())
-        .then(data => {
-            // Handle the data from vooluvesi.json
-            vooluvesiData = data;
-        })
-        .then(() => {
-            geojsonFetched.value = true;
-            mapLoaded.value = true;
-        })
+    // Fetch jarved.json
+    let response = await cache.match('/geojson/jarved');
+    if (!response) {
+        response = await fetch('/geojson/jarved');
+        cache.put('/geojson/jarved', response.clone());
+    }
+    let data = await response.json();
+    loaderText.value = 'Laen vooluveekogud...';
+    jarvedData = data;
 
+    // Fetch vooluvesi.json
+    response = await cache.match('/geojson/vooluvesi');
+    if (!response) {
+        response = await fetch('/geojson/vooluvesi');
+        cache.put('/geojson/vooluvesi', response.clone());
+    }
+    data = await response.json();
+    vooluvesiData = data;
+
+    geojsonFetched.value = true;
+    mapLoaded.value = true;
 });
-
 if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(position => {
         // Set the map center to the user's current location
