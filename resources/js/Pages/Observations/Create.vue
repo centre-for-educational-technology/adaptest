@@ -42,7 +42,7 @@ let props = defineProps({
         required: false,
         default: null,
     },
-    water_body_sys_id: {
+    water_body_kr_code: {
         type: String,
         required: true,
     },
@@ -75,7 +75,7 @@ let props = defineProps({
                                   :aquatic_vegetations="aquatic_vegetations"
                                   :name="name"
                                   :coordinates="coordinates"
-                                  :water_body_sys_id="water_body_sys_id"
+                                  :water_body_kr_code="water_body_kr_code"
                                   :observation_spot_id="observation_spot_id"
                 ></observation-form>
             </div>

@@ -55,7 +55,7 @@ let props = defineProps({
         type: String,
         required: true,
     },
-    water_body_sys_id: {
+    water_body_kr_code: {
         type: String,
         required: true,
     },
@@ -73,6 +73,7 @@ let form = useForm({
     measuring_time: hasObservation ? observation.measuring_time : '',
     odor: hasObservation ? observation.odor : '',
     color_turbidity: hasObservation ? observation.color_turbidity : '',
+    conditions: hasObservation ? observation.conditions : '',
     ph: hasObservation ? observation.ph : '',
     water_temperature: hasObservation ? observation.water_temperature : '',
     air_temperature: hasObservation ? observation.air_temperature : '',
@@ -82,9 +83,10 @@ let form = useForm({
     bicarbonate: hasObservation ? observation.bicarbonate : '',
     redox_potential: hasObservation ? observation.redox_potential : '',
     dissolved_oxygen_percent: hasObservation ? observation.dissolved_oxygen_percent : '',
-    dissolved_oxygen_ppm: hasObservation ? observation.dissolved_oxygen_ppm : '',
+    dissolved_oxygen_mgl: hasObservation ? observation.dissolved_oxygen_mgl : '',
     discharge: hasObservation ? observation.discharge : '',
     water_flow: hasObservation ? observation.water_flow : '',
+    flow_direction: hasObservation ? observation.flow_direction : '',
     erosion: hasObservation ? observation.erosion : false,
     nature: hasObservation ? observation.nature : '',
     riparian_vegetation: hasObservation ? observation.riparian_vegetation : '',
@@ -102,8 +104,12 @@ let form = useForm({
     dams: hasObservation ? observation.dams : false,
     littering: hasObservation ? observation.littering : false,
     water_pollution: hasObservation ? observation.water_pollution : false,
-    water_body_sys_id: props.water_body_sys_id,
+    water_body_kr_code: props.water_body_kr_code,
     observation_spot_id: props.observation_spot_id,
+    latitude: props.coordinates.lat,
+    longitude: props.coordinates.lng,
+    observation_spot_name: '',
+    observation_spot_description: ''
 });
 
 const map = ref(null);
@@ -123,10 +129,10 @@ var crs = new L.Proj.CRS('EPSG:3301', '+proj=lcc +lat_1=59.33333333333334 +lat_2
 })
 
 const newMarkerIcon = L.icon({
-  iconUrl: markerIconUrl,
-  iconSize: [55, 55],
-  iconAnchor: [25, 55],
-  popupAnchor: [0, -55],
+    iconUrl: markerIconUrl,
+    iconSize: [55, 55],
+    iconAnchor: [25, 55],
+    popupAnchor: [0, -55],
 });
 
 watch(props.coordinates, (newCoordinates) => {
@@ -150,16 +156,18 @@ function mapReady() {
 }
 
 let submit = () => {
+    const options = {
+        forceFormData: true,
+    }
 
     form.transform((data) => ({
         ...data,
-        water_body_sys_id: props.water_body_sys_id,
+        water_body_kr_code: props.water_body_kr_code,
         observation_spot_id: props.observation_spot_id,
     }));
     console.log(form);
-    form.post(route('observations.store'), {
-        preserveScroll: true,
-    });
+    form.post(route('observations.store'), options)
+
 }
 
 
@@ -190,28 +198,50 @@ let submit = () => {
 
         <div
             class="px-4 max-w-screen-lg card bg-white dark:bg-base-100 shadow-xl my-5 mx-auto py-5 sm:p-6 rounded-md">
-            <div class="alert mb-5 alert-info">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                     class="stroke-current shrink-0 w-6 h-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-                <span>Not all fields are required. You can fill only the ones you know.</span>
-            </div>
-
-
             <div class="hero-content text-center rounded bg-blue-700">
                 <div class="max-w-md">
-                    <h1 class="text-xl text-white font-bold">Selected water body: {{ name }}</h1>
+                    <h1 class="text-xl text-white font-bold">{{ $t('Selected water body:') }} {{ name }}</h1>
                 </div>
             </div>
+
+            <!--            <div class="alert mt-5 alert-info">-->
+            <!--                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"-->
+            <!--                     class="stroke-current shrink-0 w-6 h-6">-->
+            <!--                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"-->
+            <!--                          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>-->
+            <!--                </svg>-->
+            <!--                <span>Not all fields are required. You can fill only the ones you know.</span>-->
+            <!--            </div>-->
 
 
             <div class="grid grid-cols-12 gap-6">
 
+                <div class="col-span-12"
+                     v-if="props.observation_spot_id === null || props.observation_spot_id === 'null'">
+                    <div class="alert mt-5">
+                        {{ $t('This is a new observation spot. Please fill the fields below.') }}
+                    </div>
+
+
+                    <Label for="observation_spot_name" :value="$t('New observation spot name *')"/>
+                    <Input id="observation_spot_name" class="mt-1 block w-full" type="text"
+                           ref="observation_spot_name" autocomplete="observation_spot_name"
+                           v-model.trim="form.observation_spot_name"
+                    />
+
+                    <Label for="observation_spot_description" :value="$t('New observation spot description *')"/>
+                    <Input id="observation_spot_description" class="mt-1 block w-full" type="text"
+                           ref="observation_spot_description" autocomplete="observation_spot_description"
+                           v-model.trim="form.observation_spot_description"
+                    />
+
+                    <div class="divider"></div>
+
+
+                </div>
 
                 <div class="col-span-12">
-                    <Label for="measuring_time" :value="'Measuring time'"/>
+                    <Label for="measuring_time" :value="$t('Time of measurement *')"/>
                     <Input id="measuring_time" class="mt-1 block w-full" v-model.trim="form.measuring_time"
                            type="datetime-local" ref="measuring_time" autocomplete="measuring_time"
                            dusk="measuring_time"/>
@@ -219,22 +249,30 @@ let submit = () => {
                 </div>
 
                 <div class="col-span-12">
-                    <Label for="odor" :value="'Odor'"/>
+                    <Label for="odor" :value="$t('Odor')"/>
                     <Input id="odor" class="mt-1 block w-full" v-model.trim="form.odor" type="text" ref="odor"
                            autocomplete="odor" dusk="odor"/>
                     <InputError :message="form.errors.odor" class="mt-2"/>
                 </div>
 
                 <div class="col-span-12">
-                    <Label for="color_turbidity" :value="'Color turbidity'"/>
+                    <Label for="color_turbidity" :value="$t('Color and turbidity')"/>
                     <Input id="color_turbidity" class="mt-1 block w-full" v-model.trim="form.color_turbidity"
                            type="text"
                            ref="color_turbidity" autocomplete="color_turbidity" dusk="color_turbidity"/>
                     <InputError :message="form.errors.color_turbidity" class="mt-2"/>
                 </div>
 
+                <div class="col-span-12">
+                    <Label for="conditions" :value="$t('Description of natural conditions *')"/>
+                    <Input id="conditions" class="mt-1 block w-full" v-model.trim="form.conditions"
+                           type="text"
+                           ref="conditions" autocomplete="conditions" dusk="conditions"/>
+                    <InputError :message="form.errors.conditions" class="mt-2"/>
+                </div>
+
                 <div class="col-span-6">
-                    <Label for="ph" :value="'PH'"/>
+                    <Label for="ph" :value="$t('pH')"/>
                     <Input id="ph" class="mt-1 block w-full" v-model.trim="form.ph" type="number" ref="ph"
                            autocomplete="ph"
                            dusk="ph"/>
@@ -242,92 +280,111 @@ let submit = () => {
                 </div>
 
                 <div class="col-span-6">
-                    <Label for="water_temperature" :value="'Water temperature'"/>
+                    <Label for="water_temperature" :value="$t('Water temperature')"/>
                     <Input id="water_temperature" class="mt-1 block w-full" v-model.trim="form.water_temperature"
                            type="number" ref="water_temperature" autocomplete="water_temperature"
+                           placeholder="°C"
                            dusk="water_temperature"/>
                     <InputError :message="form.errors.water_temperature" class="mt-2"/>
                 </div>
 
                 <div class="col-span-6">
-                    <Label for="air_temperature" :value="'Air temperature'"/>
+                    <Label for="air_temperature" :value="$t('Air temperature')"/>
                     <Input id="air_temperature" class="mt-1 block w-full" v-model.trim="form.air_temperature"
+                           placeholder="°C"
                            type="number"
                            ref="air_temperature" autocomplete="air_temperature" dusk="air_temperature"/>
                     <InputError :message="form.errors.air_temperature" class="mt-2"/>
                 </div>
 
                 <div class="col-span-6">
-                    <Label for="specific_conductance" :value="'Specific conductance'"/>
+                    <Label for="specific_conductance" :value="$t('Specific conductance')"/>
                     <Input id="specific_conductance" class="mt-1 block w-full" v-model.trim="form.specific_conductance"
                            type="number" ref="specific_conductance" autocomplete="specific_conductance"
+                           placeholder="µS/cm"
                            dusk="specific_conductance"/>
                     <InputError :message="form.errors.specific_conductance" class="mt-2"/>
 
                 </div>
 
                 <div class="col-span-6">
-                    <Label for="total_dissolved_solids" :value="'Total dissolved solids'"/>
+                    <Label for="total_dissolved_solids" :value="$t('Total dissolved solids')"/>
                     <Input id="total_dissolved_solids" class="mt-1 block w-full"
                            v-model.trim="form.total_dissolved_solids"
+                           placeholder="mg/l"
                            type="number" ref="total_dissolved_solids" autocomplete="total_dissolved_solids"
                            dusk="total_dissolved_solids"/>
                     <InputError :message="form.errors.total_dissolved_solids" class="mt-2"/>
                 </div>
 
                 <div class="col-span-6">
-                    <Label for="nitrate" :value="'Nitrate'"/>
-                    <Input id="nitrate" class="mt-1 block w-full" v-model.trim="form.nitrate" type="number" ref="nitrate"
+                    <Label for="nitrate" :value="$t('Nitrate (NO3)')"/>
+                    <Input id="nitrate" class="mt-1 block w-full" v-model.trim="form.nitrate" type="number"
+                           ref="nitrate"
+                           placeholder="mg/l"
                            autocomplete="nitrate" dusk="nitrate"/>
                     <InputError :message="form.errors.nitrate" class="mt-2"/>
                 </div>
 
                 <div class="col-span-6">
-                    <Label for="bicarbonate" :value="'Bicarbonate'"/>
+                    <Label for="bicarbonate" :value="$t('Bicarbonate (HCO3)')"/>
                     <Input id="bicarbonate" class="mt-1 block w-full" v-model.trim="form.bicarbonate" type="number"
+                           placeholder="mg/l"
                            ref="bicarbonate" autocomplete="bicarbonate" dusk="bicarbonate"/>
                     <InputError :message="form.errors.bicarbonate" class="mt-2"/>
 
                 </div>
 
                 <div class="col-span-6">
-                    <Label for="redox_potential" :value="'Redox potential'"/>
+                    <Label for="redox_potential" :value="$t('Redox potential')"/>
                     <Input id="redox_potential" class="mt-1 block w-full" v-model.trim="form.redox_potential"
+                           placeholder="mV"
                            type="number"
                            ref="redox_potential" autocomplete="redox_potential" dusk="redox_potential"/>
                     <InputError :message="form.errors.redox_potential" class="mt-2"/>
                 </div>
 
                 <div class="col-span-6">
-                    <Label for="dissolved_oxygen_percent" :value="'Dissolved oxygen percent'"/>
+                    <Label for="dissolved_oxygen_percent" :value="$t('Dissolved oxygen (%)')"/>
                     <Input id="dissolved_oxygen_percent" class="mt-1 block w-full"
+                           placeholder="%"
                            v-model.trim="form.dissolved_oxygen_percent" type="number" ref="dissolved_oxygen_percent"
                            autocomplete="dissolved_oxygen_percent" dusk="dissolved_oxygen_percent"/>
                     <InputError :message="form.errors.dissolved_oxygen_percent" class="mt-2"/>
                 </div>
 
                 <div class="col-span-6">
-                    <Label for="dissolved_oxygen_ppm" :value="'Dissolved oxygen ppm'"/>
-                    <Input id="dissolved_oxygen_ppm" class="mt-1 block w-full" v-model.trim="form.dissolved_oxygen_ppm"
-                           type="number" ref="dissolved_oxygen_ppm" autocomplete="dissolved_oxygen_ppm"
-                           dusk="dissolved_oxygen_ppm"/>
-                    <InputError :message="form.errors.dissolved_oxygen_ppm" class="mt-2"/>
+                    <Label for="dissolved_oxygen_mgl" :value="$t('Dissolved oxygen (mg/l)')"/>
+                    <Input id="dissolved_oxygen_mgl" class="mt-1 block w-full" v-model.trim="form.dissolved_oxygen_mgl"
+                           type="number" ref="dissolved_oxygen_mgl" autocomplete="dissolved_oxygen_mgl"
+                           placeholder="mg/l"
+                           dusk="dissolved_oxygen_mgl"/>
+                    <InputError :message="form.errors.dissolved_oxygen_mgl" class="mt-2"/>
                 </div>
 
                 <div class="col-span-6">
-                    <Label for="discharge" :value="'Discharge'"/>
+                    <Label for="discharge" :value="$t('Discharge')"/>
                     <Input id="discharge" class="mt-1 block w-full" v-model.trim="form.discharge" type="number"
+                           placeholder="l/s"
                            ref="discharge" autocomplete="discharge" dusk="discharge"/>
                     <InputError :message="form.errors.discharge" class="mt-2"/>
 
                 </div>
 
                 <div class="col-span-6">
-                    <Label for="water_flow" :value="'Vooluveekogu voolukiirus'"/>
+                    <Label for="water_flow" :value="$t('Flow velocity')"/>
                     <SelectOption v-model="form.water_flow" :options="water_flows" :placeholder="'Please select one'"
                                   class="mt-2 block w-full" ref="water_flow" autocomplete="water_flow"/>
                     <InputError :message="form.errors.water_flow" class="mt-2"/>
 
+                </div>
+
+                <div class="col-span-12">
+                    <Label for="flow_direction" :value="$t('Flow direction/water level')"/>
+                    <Input id="flow_direction" class="mt-1 block w-full" v-model.trim="form.flow_direction"
+                           type="text"
+                           ref="flow_direction" autocomplete="flow_direction" dusk="flow_direction"/>
+                    <InputError :message="form.errors.flow_direction" class="mt-2"/>
                 </div>
 
 

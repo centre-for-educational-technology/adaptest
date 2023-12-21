@@ -10,8 +10,8 @@ return new class extends Migration {
         Schema::create('observation_spots', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->decimal('latitude');
-            $table->decimal('longitude');
+            $table->decimal('latitude', 16, 14);
+            $table->decimal('longitude', 16, 14);
             $table->text('description')->nullable();
             $table->foreignId('user_id')->references('id')->on('users')->cascadeOnDelete();
             $table->foreignId('water_body_id')->references('id')->on('water_bodies')->cascadeOnDelete();

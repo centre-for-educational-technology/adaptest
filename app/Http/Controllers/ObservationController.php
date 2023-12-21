@@ -45,7 +45,7 @@ class ObservationController extends Controller
             'aquatic_vegetations' => AquaticVegetations::getAquaticVegetationLabels(),
             'coordinates' => json_decode($data['coordinates']),
             'name' => $data['name'],
-            'water_body_sys_id' => $data['water_body_sys_id'],
+            'water_body_kr_code' => $data['water_body_kr_code'],
             'observation_spot_id' => $data['observation_spot_id'],
 
         ]);
@@ -53,30 +53,28 @@ class ObservationController extends Controller
 
     public function store(ObservationRequest $request): RedirectResponse
     {
-
-        dd($request->input('pH'));
-
-
         $this->authorize('create', Observation::class);
 
 
-
         //check if this is a first observation for this spot, we need to create a new observation spot first
-        if ($request->input('observation_spot_id') == null) {
-            //find WaterBody id by sys_id
-            $waterBody = WaterBody::where('sys_id', $request->input('water_body_sys_id'))->first();
+        if ($request->input('observation_spot_id') == null || $request->input('observation_spot_id') == 'null') {
+            //find WaterBody id by water_body_kr_code
+            $waterBody = WaterBody::where('code', $request->input('water_body_kr_code'))->first();
             $observationSpot = ObservationSpot::create([
-                'name' => $request->input('name'),
+                'name' => $request->input('observation_spot_name'),
                 'latitude' => $request->input('latitude'),
                 'longitude' => $request->input('longitude'),
-                'description' => $request->input('description'),
+                'description' => $request->input('observation_spot_description'),
                 'user_id' => $request->user()->id,
+                'water_body_id' => $waterBody->id,
             ]);
-            $observationSpot->waterBody()->associate($waterBody);
-            $request->merge(['observation_spot_id' => $observationSpot->id]);
+
         }
 
-        Observation::create($request->validated());
+        $observation = Observation::create(array_merge($request->validated(), [
+            'observation_spot_id' => $observationSpot->id,
+            'user_id' => $request->user()->id,
+        ]));
 
         return Redirect::route('dashboard');
     }

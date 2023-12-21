@@ -12,7 +12,8 @@ return new class extends Migration {
             $table->string('title');
             $table->string('code');
             $table->string('type');
-            $table->float('area');
+            $table->float('area')->nullable();
+            $table->string('watershed')->nullable();
             $table->integer('sys_id');
         });
     }

@@ -14,6 +14,7 @@ class WaterBody extends Model
         'type',
         'area',
         'sys_id',
+        'watershed',
     ];
 
     public function observationSpots()

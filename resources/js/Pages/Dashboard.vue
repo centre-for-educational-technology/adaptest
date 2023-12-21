@@ -18,7 +18,7 @@
             <!--                                name="OpenStreetMap"-->
             <!--                            ></l-tile-layer>-->
 
-            <!--                            <l-geo-json :geojson="geojson"/>-->
+            <!--                            <l-geo-json :geojson_jarved="geojson_jarved"/>-->
             <!--                        </l-map>-->
             <div v-if="!mapLoaded"
                  class="absolute inset-0 flex flex-col items-center justify-center bg-primary opacity-80 z-10">
@@ -47,7 +47,7 @@
                         </defs>
                     </svg>
                     <p class="text-white flex items-center justify-center text-2xl font-semibold">
-                        Laen veekogud...
+                        {{ loaderText }}
                     </p>
                 </div>
 
@@ -55,7 +55,7 @@
 
 
             <l-map ref="map" :crs="crs" v-model:zoom="zoom"
-                   :useGlobalLeaflet="false" :center="maaametCenter" :bounds="bounds" :maxZoom="14" :minZoom="3"
+                   :useGlobalLeaflet="true" :center="maaametCenter" :bounds="bounds" :maxZoom="14" :minZoom="3"
                    :scrollWheelZoom="false" @click="addMarker" @ready="mapReady">
 
 
@@ -70,8 +70,17 @@
                     :full-screen="false" :worldCopyJump="true" :z-index="2"
                     :options="{ maxNativeZoom: 13, maxZoom: 13, minZoom: 3 }"/>
 
+                <!--                <l-wms-tile-layer-->
+                <!--                    url="https://gsavalik.envir.ee/geoserver/eelis/ows?service=WMS"-->
+                <!--                    layers="eelis:kr_jarv"-->
+
+                <!--                ></l-wms-tile-layer>-->
+
                 <l-geo-json :visible="geojsonFetched" :options="{ style: featureStyle, onEachFeature: onEachFeature }"
-                            :geojson="geojson"></l-geo-json>
+                            :geojson="jarvedData"></l-geo-json>
+
+                <l-geo-json :visible="geojsonFetched" :options="{ style: featureStyle, onEachFeature: onEachFeature }"
+                            :geojson="vooluvesiData"></l-geo-json>
 
                 <!--                <l-marker v-for="marker, index in markers" :lat-lng="marker" @click="removeMarker(index)"></l-marker>-->
 
@@ -81,6 +90,14 @@
                     </l-popup>
                 </l-marker>
 
+                <l-marker
+                    v-for="(spot, index) in props.observation_spots.data" :key="index"
+                    :lat-lng="[spot.latitude, spot.longitude]"
+                    :icon="markerIcon">
+                    <l-popup>
+                        {{ spot.name }} <!-- Display the name of the observation spot in the popup -->
+                    </l-popup>
+                </l-marker>
             </l-map>
 
 
@@ -105,7 +122,7 @@
 </template>
 
 <script setup>
-import {LGeoJson, LMap, LMarker, LPopup, LTileLayer} from "@vue-leaflet/vue-leaflet";
+import {LGeoJson, LMap, LMarker, LPopup, LTileLayer, LWmsTileLayer} from "@vue-leaflet/vue-leaflet";
 import AppLayout from "@/Layouts/AppLayout.vue";
 import "leaflet/dist/leaflet.css";
 import {nextTick, onMounted, ref, watch} from 'vue';
@@ -125,6 +142,10 @@ const touchZoom = ref(true);
 const scrollWheelZoom = ref(true);
 const keyboard = ref(false);
 const url = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+
+let props = defineProps({
+    observation_spots: Array,
+});
 
 
 let selectedAreaName = ref('');
@@ -214,14 +235,15 @@ function mapReady() {
     }
 }
 
+const markerIcon = L.icon({
+    iconUrl: markerIconUrl,
+    iconSize: [55, 55],
+    iconAnchor: [25, 55],
+    popupAnchor: [0, -55],
+});
 
 function addMarker(event) {
-    const markerIcon = L.icon({
-        iconUrl: markerIconUrl,
-        iconSize: [55, 55],
-        iconAnchor: [25, 55],
-        popupAnchor: [0, -55],
-    });
+
     if (!selectedLayer) {
 
         showGeoJsonModal.value = true;
@@ -284,17 +306,19 @@ function addNewObservation(latlng) {
         console.log('selected layer')
         const coordinates = JSON.stringify(latlng);
         const name = selectedLayer.feature.properties.nimi;
-        const water_body_sys_id = selectedLayer.feature.properties.sys_id;
-        //TODO get observation spot id
+        const water_body_kr_code = selectedLayer.feature.properties.kr_kood;
+        //TODO get observation spot id when i have them
         const observation_spot_id = null;
-        router.get(`/observations/create?coordinates=${coordinates}&name=${name}&water_body_sys_id=${water_body_sys_id}&observation_spot_id=${observation_spot_id}`)
+        router.get(`/observations/create?coordinates=${coordinates}&name=${name}&water_body_kr_code=${water_body_kr_code}&observation_spot_id=${observation_spot_id}`)
     }
 
 }
 
 
 //init geojson
-var geojson = null;
+var jarvedData = null;
+var vooluvesiData = null;
+var loaderText = 'Laen järved...';
 
 
 var crs = new L.Proj.CRS('EPSG:3301', '+proj=lcc +lat_1=59.33333333333334 +lat_2=58 +lat_0=57.51755393055556 +lon_0=24 +x_0=500000 +y_0=6375000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs', {
@@ -306,15 +330,25 @@ var crs = new L.Proj.CRS('EPSG:3301', '+proj=lcc +lat_1=59.33333333333334 +lat_2
 
 onMounted(() => {
     //fetch geosjon from file
-    fetch('/geojson/transformed_geojson.json')
+    fetch('/geojson/jarved')
         .then(response => response.json())
         .then(data => {
             //transform coordinates
-            geojson = data;
+            jarvedData = data;
         }).then(() => {
-        geojsonFetched.value = true;
-        mapLoaded.value = true;
+        // Fetch vooluvesi.json after jarved
+        loaderText = 'Laen vooluveekogud...';
+        return fetch('/geojson/vooluvesi');
     })
+        .then(response => response.json())
+        .then(data => {
+            // Handle the data from vooluvesi.json
+            vooluvesiData = data;
+        })
+        .then(() => {
+            geojsonFetched.value = true;
+            mapLoaded.value = true;
+        })
 
 });
 

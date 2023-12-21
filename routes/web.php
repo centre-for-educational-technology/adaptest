@@ -1,6 +1,11 @@
 <?php
 
 use App\Http\Controllers\ObservationController;
+use App\Http\Middleware\GzipMiddleware;
+use App\Http\Resources\ObservationResource;
+use App\Http\Resources\ObservationSpotResource;
+use App\Models\Observation;
+use App\Models\ObservationSpot;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -25,13 +30,16 @@ Route::get('/', function () {
     ]);
 });
 
+
+
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
     Route::get('/dashboard', function () {
-        return Inertia::render('Dashboard');
+        $obervationSpots = ObservationSpotResource::collection(ObservationSpot::all());
+        return Inertia::render('Dashboard')->with('observation_spots', $obervationSpots);
     })->name('dashboard');
 
     //create a new observation route
@@ -43,5 +51,20 @@ Route::middleware([
 //    });
 
 //store a new observation route
-    Route::post('/observations/store', ObservationController::class . '@store')->name('observations.store');
+    Route::post('/observations/store', [ObservationController::class, 'store'])->name('observations.store');
 });
+
+
+Route::get('geojson/jarved', function () {
+    $path = public_path('geojson/jarved.json');
+    return Response::make(file_get_contents($path), 200, [
+        'Content-Type' => 'application/json',
+    ]);
+})->middleware(GzipMiddleware::class);
+
+Route::get('geojson/vooluvesi', function () {
+    $path = public_path('geojson/vooluvesi.json');
+    return Response::make(file_get_contents($path), 200, [
+        'Content-Type' => 'application/json',
+    ]);
+})->middleware(GzipMiddleware::class);

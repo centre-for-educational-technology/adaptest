@@ -14,6 +14,8 @@ class ObservationSpot extends Model
         'latitude',
         'longitude',
         'description',
+        'user_id',
+        'water_body_id',
     ];
 
     public function user()

@@ -6,43 +6,55 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class ObservationRequest extends FormRequest
 {
+
+    public function authorize(): bool
+    {
+        return true;
+    }
     public function rules(): array
     {
         return [
             'measuring_time' => 'required|date',
-            'odor' => 'required|string',
-            'color_turbidity' => 'required|string',
-            'water_temperature' => 'required|numeric',
-            'air_temperature' => 'required|numeric',
-            'pH' => 'required|numeric',
-            'specific_conductance' => 'required|numeric',
-            'total_dissolved_solids' => 'required|numeric',
-            'nitrate' => 'required|numeric',
-            'bicarbonate' => 'required|numeric',
-            'redox_potential' => 'required|numeric',
-            'dissolved_oxygen_percent' => 'required|numeric',
-            'dissolved_oxygen_ppm' => 'required|numeric',
-            'discharge' => 'required|numeric',
-            'water_flow' => 'required|numeric',
-            'erosion' => 'required|boolean',
-            'nature' => 'required|numeric',
-            'riparian_vegetation' => 'required|numeric',
-            'vegetation_coverage' => 'required|numeric',
-            'tree_roots' => 'required|boolean',
-            'bottom' => 'required|numeric',
-            'aquatic_vegetation' => 'required|numeric',
-            'buildings' => 'required|boolean',
-            'agricultural_activity' => 'required|boolean',
-            'roads' => 'required|boolean',
-            'park' => 'required|boolean',
-            'beach' => 'required|boolean',
-            'boat_bridge' => 'required|boolean',
-            'shore_facility' => 'required|boolean',
-            'dams' => 'required|boolean',
-            'littering' => 'required|boolean',
-            'water_pollution' => 'required|boolean',
-            'water_body_sys_id' => 'required|numeric',
-            'observation_spot_id' => 'required|numeric',
+            'odor' => 'string',
+            'color_turbidity' => 'string',
+            'conditions' => 'required|string',
+            'water_temperature' => 'numeric',
+            'air_temperature' => 'numeric',
+            'ph' => 'numeric',
+            'specific_conductance' => 'numeric',
+            'total_dissolved_solids' => 'numeric',
+            'nitrate' => 'numeric',
+            'bicarbonate' => 'numeric',
+            'redox_potential' => 'numeric',
+            'dissolved_oxygen_percent' => 'numeric',
+            'dissolved_oxygen_mgl' => 'numeric',
+            'discharge' => 'numeric',
+            'water_flow' => 'numeric',
+            'flow_direction' => 'string',
+            'erosion' => 'boolean',
+            'nature' => 'numeric',
+            'riparian_vegetation' => 'numeric',
+            'vegetation_coverage' => 'numeric',
+            'tree_roots' => 'boolean',
+            'bottom' => 'numeric',
+            'aquatic_vegetation' => 'numeric',
+            'buildings' => 'boolean',
+            'agricultural_activity' => 'boolean',
+            'roads' => 'boolean',
+            'park' => 'boolean',
+            'beach' => 'boolean',
+            'boat_bridge' => 'boolean',
+            'shore_facility' => 'boolean',
+            'dams' => 'boolean',
+            'littering' => 'boolean',
+            'water_pollution' => 'boolean',
+            'water_body_kr_code' => 'required|string',
+
+
+            'latitude' => 'numeric',
+            'longitude' => 'numeric',
+            'observation_spot_name' => 'string',
+            'observation_spot_description' => 'string',
         ];
     }
 }
