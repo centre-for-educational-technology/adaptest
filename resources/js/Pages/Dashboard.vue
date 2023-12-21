@@ -318,7 +318,7 @@ function addNewObservation(latlng) {
 //init geojson
 var jarvedData = null;
 var vooluvesiData = null;
-var loaderText = 'Laen järved...';
+let loaderText = ref('Laen järved...');
 
 
 var crs = new L.Proj.CRS('EPSG:3301', '+proj=lcc +lat_1=59.33333333333334 +lat_2=58 +lat_0=57.51755393055556 +lon_0=24 +x_0=500000 +y_0=6375000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs', {
@@ -333,7 +333,7 @@ onMounted(() => {
     fetch('/geojson/jarved')
         .then(response => response.json())
         .then(data => {
-            loaderText = 'Laen vooluveekogud...';
+            loaderText.value = 'Laen vooluveekogud...';
             //transform coordinates
             jarvedData = data;
         }).then(() => {
