@@ -333,11 +333,12 @@ onMounted(() => {
     fetch('/geojson/jarved')
         .then(response => response.json())
         .then(data => {
+            loaderText = 'Laen vooluveekogud...';
             //transform coordinates
             jarvedData = data;
         }).then(() => {
         // Fetch vooluvesi.json after jarved
-        loaderText = 'Laen vooluveekogud...';
+
         return fetch('/geojson/vooluvesi');
     })
         .then(response => response.json())
