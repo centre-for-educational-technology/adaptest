@@ -157,3 +157,9 @@ body {
 .drop2 {
     animation: drop 1.3s cubic-bezier(1,.19,.66,.12) .5s infinite;
 }
+
+
+.marker-icon {
+    pointer-events: auto;
+    cursor: pointer !important;
+}

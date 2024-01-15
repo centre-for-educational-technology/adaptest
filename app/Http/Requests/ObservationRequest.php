@@ -17,7 +17,7 @@ class ObservationRequest extends FormRequest
             'measuring_time' => 'required|date',
             'odor' => 'string',
             'color_turbidity' => 'string',
-            'conditions' => 'required|string',
+            'conditions' => 'string',
             'water_temperature' => 'numeric',
             'air_temperature' => 'numeric',
             'ph' => 'numeric',
@@ -53,8 +53,9 @@ class ObservationRequest extends FormRequest
 
             'latitude' => 'numeric',
             'longitude' => 'numeric',
-            'observation_spot_name' => 'string',
-            'observation_spot_description' => 'string',
+
+            'observation_spot_name' => 'sometimes',
+            'observation_spot_description' => 'sometimes',
         ];
     }
 }

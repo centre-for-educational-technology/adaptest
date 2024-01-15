@@ -35,6 +35,20 @@ class ObservationController extends Controller
         //get data from post request
         $data = request()->all();
 
+        //if we have observation_spot_id, we need to get the data from observation_spot
+        if($data['observation_spot_id'] != null && $data['observation_spot_id'] != 'null'){
+            $observationSpot = ObservationSpot::find($data['observation_spot_id']);
+            $data['name'] = $observationSpot->waterBody->title;
+            $data['water_body_kr_code'] = $observationSpot->waterBody->code;
+
+            $data['coordinates'] = [
+                'lat' => $observationSpot->latitude,
+                'lng' => $observationSpot->longitude,
+            ];
+        }else{
+            $data['coordinates'] = json_decode($data['coordinates']);
+        }
+
         return Inertia::render('Observations/Create', [
             'observation' => null,
             'water_flows' => WaterFlows::getWaterFlowLabels(),
@@ -43,12 +57,16 @@ class ObservationController extends Controller
             'vegetation_coverages' => VegetationCoverages::getVegetationCoverageLabels(),
             'bottoms' => Bottoms::getBottomLabels(),
             'aquatic_vegetations' => AquaticVegetations::getAquaticVegetationLabels(),
-            'coordinates' => json_decode($data['coordinates']),
+
+            'coordinates' => $data['coordinates'],
             'name' => $data['name'],
             'water_body_kr_code' => $data['water_body_kr_code'],
             'observation_spot_id' => $data['observation_spot_id'],
 
         ]);
+
+
+
     }
 
     public function store(ObservationRequest $request): RedirectResponse
@@ -69,9 +87,11 @@ class ObservationController extends Controller
                 'water_body_id' => $waterBody->id,
             ]);
 
+        }else{
+            $observationSpot = ObservationSpot::find($request->input('observation_spot_id'));
         }
 
-        $observation = Observation::create(array_merge($request->validated(), [
+        Observation::create(array_merge($request->validated(), [
             'observation_spot_id' => $observationSpot->id,
             'user_id' => $request->user()->id,
         ]));

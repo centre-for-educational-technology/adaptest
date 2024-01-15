@@ -108,8 +108,8 @@ let form = useForm({
     observation_spot_id: props.observation_spot_id,
     latitude: props.coordinates.lat,
     longitude: props.coordinates.lng,
-    observation_spot_name: '',
-    observation_spot_description: ''
+    observation_spot_name: hasObservation? observation.observation_spot_name : '',
+    observation_spot_description: hasObservation? observation.observation_spot_description : '',
 });
 
 const map = ref(null);
@@ -264,7 +264,7 @@ let submit = () => {
                 </div>
 
                 <div class="col-span-12">
-                    <Label for="conditions" :value="$t('Description of natural conditions *')"/>
+                    <Label for="conditions" :value="$t('Description of natural conditions')"/>
                     <Input id="conditions" class="mt-1 block w-full" v-model.trim="form.conditions"
                            type="text"
                            ref="conditions" autocomplete="conditions" dusk="conditions"/>

@@ -93,10 +93,8 @@
                 <l-marker
                     v-for="(spot, index) in props.observation_spots.data" :key="index"
                     :lat-lng="[spot.latitude, spot.longitude]"
-                    :icon="markerIcon">
-                    <l-popup>
-                        {{ spot.name }} <!-- Display the name of the observation spot in the popup -->
-                    </l-popup>
+                    :icon="markerIcon"
+                    @click="askForObservation(spot)">
                 </l-marker>
             </l-map>
 
@@ -122,7 +120,7 @@
 </template>
 
 <script setup>
-import {LGeoJson, LMap, LMarker, LPopup, LTileLayer, LWmsTileLayer} from "@vue-leaflet/vue-leaflet";
+import {LGeoJson, LMap, LMarker, LPopup, LTileLayer} from "@vue-leaflet/vue-leaflet";
 import AppLayout from "@/Layouts/AppLayout.vue";
 import "leaflet/dist/leaflet.css";
 import {nextTick, onMounted, ref, watch} from 'vue';
@@ -174,7 +172,7 @@ let geojsonFetched = ref(false);
 let selectedLayer = null;
 let mapLoaded = ref(false);
 
-
+// Add a click event listener to the map
 const onEachFeature = (feature, layer) => {
     layer.on('click', () => {
 
@@ -240,8 +238,11 @@ const markerIcon = L.icon({
     iconSize: [55, 55],
     iconAnchor: [25, 55],
     popupAnchor: [0, -55],
+    className: 'marker-icon'
 });
 
+
+// Add a marker to the map
 function addMarker(event) {
 
     if (!selectedLayer) {
@@ -279,7 +280,7 @@ function addMarker(event) {
             observationAdded = true;
             markers.push(event.latlng);
             //call add new observation
-            addNewObservation(event.latlng);
+            addNewSpotAndObservation(event.latlng);
         });
 
 
@@ -300,17 +301,54 @@ function addMarker(event) {
 
 }
 
-function addNewObservation(latlng) {
-    console.log('add new observation');
+
+function askForObservation(spot) {
+    console.log('mapInstance:', mapInstance); // Add this line
+
+    const popupContent = `
+      <p class="mb-2 text-lg font-semibold text-gray-900">Add a new observation to the spot ${spot.name}?</p>
+      <div class="flex space-x-2">
+        <button id="yesButton" class="px-4 py-2 btn btn-primary">Yes</button>
+        <button id="noButton" class="px-4 py-2 btn">No</button>
+      </div>
+    `;
+
+    const popup = L.popup()
+        .setLatLng([spot.latitude, spot.longitude])
+        .setContent(popupContent)
+        .openOn(mapInstance);
+
+    // Add click event listener to the "Yes" button
+    const yesButton = document.getElementById('yesButton');
+    yesButton.addEventListener('click', () => {
+        addNewObservation(spot.id);
+
+    });
+
+    // Add click event listener to the "No" button
+    const noButton = document.getElementById('noButton');
+    noButton.addEventListener('click', () => {
+        mapInstance.closePopup();
+    });
+}
+
+// Add a new spot and observation
+function addNewSpotAndObservation(latlng) {
+    console.log('add new spot and observation');
     if (selectedLayer) {
-        console.log('selected layer')
         const coordinates = JSON.stringify(latlng);
         const name = selectedLayer.feature.properties.nimi;
         const water_body_kr_code = selectedLayer.feature.properties.kr_kood;
-        //TODO get observation spot id when i have them
         const observation_spot_id = null;
         router.get(`/observations/create?coordinates=${coordinates}&name=${name}&water_body_kr_code=${water_body_kr_code}&observation_spot_id=${observation_spot_id}`)
     }
+
+}
+
+// Add a new observation
+function addNewObservation(spotId) {
+    console.log('add new observation');
+    router.get(`/observations/create?observation_spot_id=${spotId}`)
 
 }
 
