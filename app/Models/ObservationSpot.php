@@ -27,4 +27,9 @@ class ObservationSpot extends Model
     {
         return $this->belongsTo(WaterBody::class);
     }
+
+    public function observations()
+    {
+        return $this->hasMany(Observation::class);
+    }
 }

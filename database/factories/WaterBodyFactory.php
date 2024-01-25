@@ -15,7 +15,7 @@ class WaterBodyFactory extends Factory
             'title' => $this->faker->word(),
             'code' => $this->faker->word(),
             'type' => $this->faker->word(),
-            'area' => $this->faker->randomFloat(),
+            'area' => $this->faker->randomFloat(2, 0, 999999.99),
             'watershed' => $this->faker->word(),
             'sys_id' => $this->faker->randomNumber(),
         ];

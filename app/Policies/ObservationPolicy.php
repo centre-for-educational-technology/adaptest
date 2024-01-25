@@ -18,6 +18,8 @@ class ObservationPolicy
 
     public function view(User $user, Observation $observation): bool
     {
+        //allow if logged in user
+        return Auth::check();
     }
 
     public function create(User $user): bool

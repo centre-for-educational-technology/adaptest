@@ -7,6 +7,7 @@ use App\Enums\Bottoms;
 use App\Enums\Natures;
 use App\Enums\RiparianVegetations;
 use App\Enums\VegetationCoverages;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -67,6 +68,15 @@ class Observation extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function observationSpot()
+    {
+        return $this->belongsTo(ObservationSpot::class);
+    }
+
+    public function getMeasuringTimeAttribute($value)
+    {
+        return Carbon::parse($value)->format('d M Y, H:i');
+    }
 
 
 }

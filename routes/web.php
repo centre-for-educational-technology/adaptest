@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ObservationController;
+use App\Http\Controllers\ObservationSpotController;
 use App\Http\Middleware\GzipMiddleware;
 use App\Http\Resources\ObservationResource;
 use App\Http\Resources\ObservationSpotResource;
@@ -31,7 +32,6 @@ Route::get('/', function () {
 });
 
 
-
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
@@ -43,15 +43,15 @@ Route::middleware([
     })->name('dashboard');
 
     //create a new observation route
-    //Route::post('/observations/create', ObservationController::class . '@create')->name('observations.create');
     Route::get('/observations/create', [ObservationController::class, 'create'])->name('observations.create');
-    //redirect get request to dashboard
-//    Route::get('/observations/create', function () {
-//        return redirect()->route('dashboard');
-//    });
 
-//store a new observation route
+    //store a new observation route
     Route::post('/observations/store', [ObservationController::class, 'store'])->name('observations.store');
+
+    //show an observation spot route
+    Route::get('/observation-spots/{observationSpot}', [ObservationSpotController::class, 'show'])->name('observation-spots.show');
+
+
 });
 
 

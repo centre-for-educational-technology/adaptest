@@ -5,6 +5,7 @@ namespace App\Policies;
 use App\Models\ObservationSpot;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Support\Facades\Auth;
 
 class ObservationSpotPolicy
 {
@@ -17,6 +18,9 @@ class ObservationSpotPolicy
 
     public function view(User $user, ObservationSpot $observationSpot): bool
     {
+        //allow if logged in user
+        return Auth::check();
+
     }
 
     public function create(User $user): bool

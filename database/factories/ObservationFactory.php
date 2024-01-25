@@ -13,7 +13,6 @@ class ObservationFactory extends Factory
     {
         return [
 
-            'water_body_id' => $this->faker->numberBetween(1, 100),
             'odor' => $this->faker->word,
             'measuring_time' => $this->faker->dateTime(),
             'color_turbidity' => $this->faker->word,
@@ -28,14 +27,14 @@ class ObservationFactory extends Factory
             'dissolved_oxygen_percent' => $this->faker->randomFloat(2, 0, 10.99),
             'dissolved_oxygen_mgl' => $this->faker->randomFloat(2, 0, 10.99),
             'discharge' => $this->faker->randomFloat(2, 0, 10.99),
-            'water_flow' => $this->faker->randomNumber(),
+            'water_flow' => 1,
             'erosion' => $this->faker->boolean,
-            'nature' => $this->faker->randomNumber(),
-            'riparian_vegetation' => $this->faker->randomNumber(),
-            'vegetation_coverage' => $this->faker->randomNumber(),
+            'nature' => 1,
+            'riparian_vegetation' => 1,
+            'vegetation_coverage' => 1,
             'tree_roots' => $this->faker->boolean,
-            'bottom' => $this->faker->randomNumber(),
-            'aquatic_vegetation' => $this->faker->randomNumber(),
+            'bottom' => 1,
+            'aquatic_vegetation' => 1,
             'buildings' => $this->faker->boolean,
             'agricultural_activity' => $this->faker->boolean,
             'roads' => $this->faker->boolean,
@@ -46,13 +45,11 @@ class ObservationFactory extends Factory
             'dams' => $this->faker->boolean,
             'littering' => $this->faker->boolean,
             'water_pollution' => $this->faker->boolean,
-            'user_id' => $this->faker->numberBetween(1, 100),
-
-
+            'user_id' => 1,
+            'observation_spot_id' => 1,
 
         ];
     }
-
 
 
 }

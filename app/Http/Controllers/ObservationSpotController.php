@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ObservationSpotRequest;
 use App\Http\Resources\ObservationSpotResource;
 use App\Models\ObservationSpot;
+use Inertia\Inertia;
+use Inertia\Response as InertiaResponse;
 
 class ObservationSpotController extends Controller
 {
@@ -22,11 +24,21 @@ class ObservationSpotController extends Controller
         return new ObservationSpotResource(ObservationSpot::create($request->validated()));
     }
 
-    public function show(ObservationSpot $observationSpot)
+    public function show(ObservationSpot $observationSpot): InertiaResponse
     {
         $this->authorize('view', $observationSpot);
 
-        return new ObservationSpotResource($observationSpot);
+
+        return Inertia::render('ObservationSpots/Show', [
+            'observation_spot' => $observationSpot,
+            'water_body' => $observationSpot->waterBody,
+            'coordinates' => [
+                'lat' => $observationSpot->latitude,
+                'lng' => $observationSpot->longitude,
+            ],
+            'observations' => $observationSpot->observations->load('user'),
+        ]);
+
     }
 
     public function update(ObservationSpotRequest $request, ObservationSpot $observationSpot)
