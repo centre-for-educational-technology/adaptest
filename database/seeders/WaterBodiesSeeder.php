@@ -48,5 +48,7 @@ class WaterBodiesSeeder extends Seeder
                 Log::error("Error inserting feature at index {$index}: {$e->getMessage()}");
             }
         }
+
+        Log::info('WaterBodiesSeeder completed');
     }
 }
