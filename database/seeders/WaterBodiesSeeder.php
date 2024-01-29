@@ -10,6 +10,9 @@ class WaterBodiesSeeder extends Seeder
 {
     public function run()
     {
+
+        Log::info('WaterBodiesSeeder started');
+
         $geojson = file_get_contents(public_path('geojson/jarved.json'));
         $data = json_decode($geojson, true);
 
