@@ -58,9 +58,9 @@ let props = defineProps({
 
 <template>
 
-    <app-layout title="Create">
+    <app-layout title="{{ $t('Create observation') }}">
         <template #header>
-            {{ "Add observation" }}
+            {{ $t("Create observation") }}
         </template>
 
 

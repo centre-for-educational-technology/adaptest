@@ -101,8 +101,8 @@
                                         <!-- head -->
                                         <thead>
                                         <tr>
-                                            <th>Measuring time</th>
-                                            <th>Author</th>
+                                            <th>{{ $t('Measuring time') }}</th>
+                                            <th>{{ $t('Author') }}</th>
 
                                         </tr>
                                         </thead>
@@ -138,8 +138,8 @@
                                         <!-- foot -->
                                         <tfoot>
                                         <tr>
-                                            <th>Measuring time</th>
-                                            <th>Author</th>
+                                            <th>{{ $t('Measuring time') }}</th>
+                                            <th>{{ $t('Author') }}</th>
                                         </tr>
                                         </tfoot>
 
@@ -164,13 +164,10 @@
 import {LGeoJson, LMap, LMarker, LPopup, LTileLayer} from "@vue-leaflet/vue-leaflet";
 import AppLayout from "@/Layouts/AppLayout.vue";
 import "leaflet/dist/leaflet.css";
-import {nextTick, onMounted, ref, watch} from 'vue';
+import {onMounted, ref, watch} from 'vue';
 import {latLng, latLngBounds} from "leaflet/dist/leaflet-src.esm.js";
 import * as L from 'leaflet';
 import 'proj4leaflet';
-import Modal from "@/CustomComponents/LakeModal.vue";
-import {router} from '@inertiajs/vue3'
-import ApplicationMark from "@/Components/ApplicationMark.vue";
 import markerIconUrl from '@/assets/pin.svg';
 import {Icon} from '@iconify/vue';
 
@@ -180,7 +177,6 @@ const zoom = ref(4);
 const center = ref([51.505, -0.09]);
 const dragging = ref(true);
 const touchZoom = ref(true);
-const scrollWheelZoom = ref(true);
 const keyboard = ref(false);
 const url = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 

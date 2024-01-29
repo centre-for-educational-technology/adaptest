@@ -56,13 +56,12 @@ function submit() {
                         <Link v-on:click="submit" class="btn btn-primary" dusk="save"
                               href="#"
                               :class="{ 'btn-disabled': form.processing }">
-                            Submit
+                            {{ $t('Save') }}
                         </Link>
                     </div>
                 </div>
             </div>
         </div>
-
 
 
     </form>

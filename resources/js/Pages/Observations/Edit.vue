@@ -5,10 +5,10 @@ import AppLayout from "@/Layouts/AppLayout.vue";
 </script>
 
 <template>
-    <app-layout title="Edit observation">
+    <app-layout title="{{ $t('Edit observation') }}">
 
         <template #header>
-            {{ "Edit observation" }}
+            {{ $t("Edit observation") }}
         </template>
 
         <div class="md:grid md:gap-6">

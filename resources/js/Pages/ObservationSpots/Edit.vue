@@ -13,10 +13,10 @@ let props = defineProps({
 </script>
 
 <template>
-    <app-layout title="Edit observation spot">
+    <app-layout title="{{ $t('Edit observation spot') }}">
 
         <template #header>
-            {{ "Edit observation spot" }}
+            {{ $t("Edit observation spot") }}
         </template>
 
         <div class="md:grid md:gap-6">

@@ -25,10 +25,10 @@ const deleteSpot = (id) => {
 </script>
 
 <template>
-    <app-layout title="All observation spots">
+    <app-layout title="{{ $t('All observation spots') }}">
 
         <template #header>
-            {{ "All observation spots" }}
+            {{ $t("All observation spots") }}
         </template>
 
 
@@ -40,11 +40,11 @@ const deleteSpot = (id) => {
                     <table class="table mb-5 table-zebra">
                         <thead>
                         <tr>
-                            <th>Name</th>
-                            <th>Water Body</th>
-                            <th>Creation Date</th>
-                            <th>Author</th>
-                            <th>Actions</th>
+                            <th>{{ $t("Name")}}</th>
+                            <th>{{ $t("Water body")}}</th>
+                            <th>{{ $t("Created at")}}</th>
+                            <th>{{ $t("Author")}}</th>
+                            <th>{{ $t("Actions")}}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -60,12 +60,13 @@ const deleteSpot = (id) => {
                             <td>
                                 <div class="join">
                                     <Link class="btn join-item btn-primary"
-                                          :href="route('observation-spots.show', spot.id)">View
+                                          :href="route('observation-spots.show', spot.id)">{{ $t('Show') }}
                                     </Link>
                                     <Link class="btn join-item btn-accent"
-                                          :href="route('observation-spots.edit', spot.id)">Edit
+                                          :href="route('observation-spots.edit', spot.id)">{{ $t('Edit') }}
                                     </Link>
-                                    <button class="btn join-item btn-error" @click="deleteSpot(spot.id)">Delete</button>
+                                    <button class="btn join-item btn-error" @click="deleteSpot(spot.id)">{{ $t('Delete') }}
+                                    </button>
                                 </div>
                             </td>
                         </tr>

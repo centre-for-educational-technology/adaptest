@@ -194,5 +194,25 @@
     "Dissolved oxygen (mg/l)": "Lahustunud hapnik (mg/l)",
     "Discharge": "Vooluveekogu vooluhulk",
     "Flow velocity": "Vooluveekogu voolukiirus",
-    "Flow direction/water level": "Vooluveekogu voolusuund/ järve veetase"
+    "Flow direction/water level": "Vooluveekogu voolusuund/ järve veetase",
+    "All observation spots": "Kõik vaatluskohad",
+
+    "Description": "Kirjeldus",
+    "Water body": "Veekogu",
+    "Created at": "Loodud",
+    "Author": "Autor",
+    "Actions": "Tegevused",
+    "Type": "Tüüp",
+    "Area": "Pindala",
+    "Watershed": "Valgala",
+    "Measuring time": "Mõõtmise aeg",
+    "Edit observation spot": "Muuda vaatluskohta",
+    "Create observation": "Loo vaatlus",
+    "Edit observation": "Muuda vaatlust",
+    "Log Out": "Logi välja",
+    "Log in": "Logi sisse",
+    "Show": "Näita",
+    "Edit": "Muuda",
+    "Main map": "Põhikaart"
+
 }

@@ -49,7 +49,7 @@ const logout = () => {
                             <!-- Navigation Links -->
                             <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
                                 <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
-                                    Dashboard
+                                    {{ $t('Main map') }}
                                 </NavLink>
                             </div>
                         </div>
@@ -159,17 +159,17 @@ const logout = () => {
                                         </div>
 
                                         <DropdownLink :href="route('observation-spots.index')">
-                                            All observation spots
+                                            {{ $t('All observation spots') }}
                                         </DropdownLink>
 
 
                                         <!-- Account Management -->
                                         <div class="block px-4 py-2 text-xs text-gray-400">
-                                            Manage Account
+                                            {{ $t('Manage Account') }}
                                         </div>
 
                                         <DropdownLink :href="route('profile.show')">
-                                            Profile
+                                            {{ $t('Profile') }}
                                         </DropdownLink>
 
                                         <DropdownLink v-if="$page.props.jetstream.hasApiFeatures"
@@ -182,7 +182,7 @@ const logout = () => {
                                         <!-- Authentication -->
                                         <form @submit.prevent="logout">
                                             <DropdownLink as="button">
-                                                Log Out
+                                                {{ $t('Log Out') }}
                                             </DropdownLink>
                                         </form>
                                     </template>
@@ -226,7 +226,7 @@ const logout = () => {
                      class="sm:hidden">
                     <div class="pt-2 pb-3 space-y-1">
                         <ResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')">
-                            Dashboard
+                            {{ $t('Main map') }}
                         </ResponsiveNavLink>
                     </div>
 
@@ -250,7 +250,7 @@ const logout = () => {
 
                         <div class="mt-3 space-y-1">
                             <ResponsiveNavLink :href="route('profile.show')" :active="route().current('profile.show')">
-                                Profile
+                                {{ $t('Profile') }}
                             </ResponsiveNavLink>
 
                             <ResponsiveNavLink v-if="$page.props.jetstream.hasApiFeatures"
@@ -262,7 +262,7 @@ const logout = () => {
                             <!-- Authentication -->
                             <form method="POST" @submit.prevent="logout">
                                 <ResponsiveNavLink as="button">
-                                    Log Out
+                                    {{ $t('Log Out') }}
                                 </ResponsiveNavLink>
                             </form>
 
@@ -331,7 +331,6 @@ const logout = () => {
             <!-- Page Content -->
 
             <slot/>
-
 
 
         </div>
