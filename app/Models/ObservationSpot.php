@@ -32,4 +32,10 @@ class ObservationSpot extends Model
     {
         return $this->hasMany(Observation::class);
     }
+
+    //format created_at
+    public function getCreatedAtAttribute($value)
+    {
+        return date('d-m-Y', strtotime($value));
+    }
 }

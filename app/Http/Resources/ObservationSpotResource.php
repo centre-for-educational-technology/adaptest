@@ -18,6 +18,8 @@ class ObservationSpotResource extends JsonResource
             'description' => $this->description,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
+            'water_body' => $this->waterBody->title,
+            'author' => $this->user->name,
         ];
     }
 }

@@ -14,6 +14,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $this->call(RolesSeeder::class);
+
         $this->call(UsersSeeder::class);
         // \App\Models\User::factory(10)->create();
 
@@ -27,8 +29,8 @@ class DatabaseSeeder extends Seeder
             $this->call(WaterBodiesSeeder::class);
         }
 
-        ObservationSpot::factory(1)->create();
-        Observation::factory(5)->create();
+        ObservationSpot::factory(3)->create();
+        Observation::factory(15)->create();
 
     }
 

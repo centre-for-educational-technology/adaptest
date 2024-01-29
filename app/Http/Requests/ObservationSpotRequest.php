@@ -9,9 +9,9 @@ class ObservationSpotRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required'],
-            'latitude' => ['required', 'numeric'],
-            'longitude' => ['required', 'numeric'],
+            'name' => 'sometimes|required|string|max:255',
+            'latitude' => 'sometimes|required|numeric',
+            'longitude' => 'sometimes|required|numeric',
             'description' => ['nullable'],
         ];
     }

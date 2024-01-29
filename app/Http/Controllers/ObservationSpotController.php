@@ -14,7 +14,10 @@ class ObservationSpotController extends Controller
     {
         $this->authorize('viewAny', ObservationSpot::class);
 
-        return ObservationSpotResource::collection(ObservationSpot::all());
+        return Inertia::render('ObservationSpots/Index', [
+            'observation_spots' => ObservationSpotResource::collection(ObservationSpot::all()),
+        ]);
+
     }
 
     public function store(ObservationSpotRequest $request)
@@ -41,21 +44,46 @@ class ObservationSpotController extends Controller
 
     }
 
-    public function update(ObservationSpotRequest $request, ObservationSpot $observationSpot)
+    public function edit(ObservationSpot $observationSpot): InertiaResponse
     {
         $this->authorize('update', $observationSpot);
 
-        $observationSpot->update($request->validated());
-
-        return new ObservationSpotResource($observationSpot);
+        return Inertia::render('ObservationSpots/Edit', [
+            'observation_spot' => $observationSpot,
+            'water_bodies' => $observationSpot->waterBody->get(),
+        ]);
     }
 
-    public function destroy(ObservationSpot $observationSpot)
+    public function update(ObservationSpotRequest $request, ObservationSpot $observationSpot): InertiaResponse
+    {
+        $this->authorize('update', $observationSpot);
+
+
+        $observationSpot->update($request->validated());
+
+        return Inertia::render('ObservationSpots/Show', [
+            'observation_spot' => $observationSpot,
+            'water_body' => $observationSpot->waterBody,
+            'coordinates' => [
+                'lat' => $observationSpot->latitude,
+                'lng' => $observationSpot->longitude,
+            ],
+            'observations' => $observationSpot->observations->load('user'),
+        ]);
+
+    }
+
+    public function destroy(ObservationSpot $observationSpot) : InertiaResponse
     {
         $this->authorize('delete', $observationSpot);
 
-        $observationSpot->delete();
+        $result = $observationSpot->delete();
 
-        return response()->json();
+        \Log::info('Delete result: ' . $result);
+
+        //index page
+        return Inertia::render('ObservationSpots/Index', [
+            'observation_spots' => ObservationSpotResource::collection(ObservationSpot::all()),
+        ]);
     }
 }

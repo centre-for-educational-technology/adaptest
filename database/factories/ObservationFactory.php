@@ -46,7 +46,7 @@ class ObservationFactory extends Factory
             'littering' => $this->faker->boolean,
             'water_pollution' => $this->faker->boolean,
             'user_id' => 1,
-            'observation_spot_id' => 1,
+            'observation_spot_id' => $this->faker->randomElement([1, 2, 3]),
 
         ];
     }

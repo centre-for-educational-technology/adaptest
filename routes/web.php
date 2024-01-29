@@ -48,10 +48,9 @@ Route::middleware([
     //store a new observation route
     Route::post('/observations/store', [ObservationController::class, 'store'])->name('observations.store');
 
-    //show an observation spot route
-    Route::get('/observation-spots/{observationSpot}', [ObservationSpotController::class, 'show'])->name('observation-spots.show');
 
 
+    Route::resource('observation-spots', ObservationSpotController::class);
 });
 
 

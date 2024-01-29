@@ -306,10 +306,15 @@ function askForObservation(spot) {
     console.log('mapInstance:', mapInstance); // Add this line
 
     const popupContent = `
-      <p class="mb-2 text-lg font-semibold text-gray-900">Add a new observation to the spot ${spot.name}?</p>
+      <h2 class="mb-2 text-lg font-semibold text-gray-900">${spot.name}</h2>
+      <p class="mb-2 text-md text-gray-900">Add a new observation?</p>
       <div class="flex space-x-2">
-        <button id="yesButton" class="px-4 py-2 btn btn-primary">Yes</button>
-        <button id="noButton" class="px-4 py-2 btn">No</button>
+          <div class="join">
+            <button id="yesButton" class="px-4 py-2 btn join-item btn-primary">Yes</button>
+            <button id="noButton" class="px-4 py-2 btn join-item btn-error">No</button>
+           </div>
+           <button id="viewButton" class="px-4 py-2 btn btn-secondary">View</button>
+
       </div>
     `;
 
@@ -330,6 +335,14 @@ function askForObservation(spot) {
     noButton.addEventListener('click', () => {
         mapInstance.closePopup();
     });
+
+    // Add click event listener to the "View" button
+    const viewButton = document.getElementById('viewButton');
+    viewButton.addEventListener('click', () => {
+        router.get(`/observation-spots/${spot.id}`)
+    });
+
+
 }
 
 // Add a new spot and observation

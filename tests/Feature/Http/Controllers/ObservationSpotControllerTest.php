@@ -18,6 +18,9 @@ class ObservationSpotControllerTest extends TestCase
     {
         parent::setUp();
 
+        $this->seed(\Database\Seeders\RolesSeeder::class);
+
+
     }
 
     /**
@@ -36,5 +39,45 @@ class ObservationSpotControllerTest extends TestCase
 
 
         $response->assertInertia(fn(AssertableInertia $page) => $page->component('ObservationSpots/Show'));
+    }
+
+    /**
+     * @test
+     */
+    public function shows_observation_spot_edit_page()
+    {
+        // Create a user
+        $user = User::factory()->create();
+
+        //Make user admin
+        $user->attachRole('admin');
+
+        // Create an observation spot
+        $observationSpot = ObservationSpot::factory()->create();
+
+        // Use the created user's id for the request
+        $response = $this->actingAs($user)->get(route('observation-spots.edit', $observationSpot));
+
+        $response->assertInertia(fn(AssertableInertia $page) => $page->component('ObservationSpots/Edit'));
+    }
+
+    /**
+     * @test
+     */
+    public function shows_observation_spot_index_page()
+    {
+        // Create a user
+        $user = User::factory()->create();
+
+        //Make user admin
+        $user->attachRole('admin');
+
+        // Create an observation spot
+        $observationSpot = ObservationSpot::factory()->create();
+
+        // Use the created user's id for the request
+        $response = $this->actingAs($user)->get(route('observation-spots.index'));
+
+        $response->assertInertia(fn(AssertableInertia $page) => $page->component('ObservationSpots/Index'));
     }
 }

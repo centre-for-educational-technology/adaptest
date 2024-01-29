@@ -54,7 +54,10 @@
                                 </div>
 
                                 <div v-if="props.water_body.area">
-                                    <h3 class="text-xl">{{ $t('Area') }}</h3>
+                                    <h3 class="text-xl">
+                                        <Icon icon="carbon:area" class="w-6 h-6 inline-block"/>
+                                        {{ $t('Area') }}
+                                    </h3>
                                     <p>{{ props.water_body.area }}</p>
                                 </div>
 
@@ -89,6 +92,9 @@
                             <div class="card-body gap-4">
                                 <h2 class="card-title">{{ props.observation_spot.name }}</h2>
 
+                                <p class="text-lg leading-relaxed">
+                                    {{ props.observation_spot.description }}
+                                </p>
 
                                 <div class="overflow-x-auto">
                                     <table class="table">
@@ -105,6 +111,15 @@
                                         <tr v-for="observation in props.observations" :key="observation.id">
                                             <td>
                                                 <div class="flex items-center gap-3">
+
+                                                    <div class="font-bold">{{ observation.measuring_time }}</div>
+
+                                                </div>
+                                            </td>
+
+
+                                            <td>
+                                                <div class="flex items-center gap-3">
                                                     <div class="avatar">
                                                         <div class="mask mask-squircle w-12 h-12">
                                                             <img :src="observation.user.profile_photo_url"
@@ -112,13 +127,10 @@
                                                         </div>
                                                     </div>
                                                     <div>
-                                                        <div class="font-bold">{{ observation.measuring_time }}</div>
+                                                        <div class="font-bold"> {{ observation.user.name }}</div>
                                                     </div>
                                                 </div>
                                             </td>
-
-
-                                            <td>{{ observation.user.name }}</td>
                                         </tr>
 
 
