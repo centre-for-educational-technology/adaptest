@@ -10,6 +10,7 @@ class WaterBodiesSeeder extends Seeder
 {
     public function run()
     {
+        ini_set('memory_limit', '-1');
 
         Log::info('WaterBodiesSeeder started');
 
