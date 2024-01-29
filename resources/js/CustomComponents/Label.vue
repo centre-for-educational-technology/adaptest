@@ -1,6 +1,6 @@
 <template>
     <label class="label">
-        <span class="label-text dark:text-white" v-if="value">{{ value }}</span>
+        <span class="label-text" v-if="value">{{ value }}</span>
         <span v-else><slot></slot></span>
     </label>
 </template>

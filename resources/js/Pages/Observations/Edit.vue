@@ -5,7 +5,7 @@ import AppLayout from "@/Layouts/AppLayout.vue";
 </script>
 
 <template>
-    <app-layout title="{{ $t('Edit observation') }}">
+    <app-layout :title="$t('Edit observation')">
 
         <template #header>
             {{ $t("Edit observation") }}

@@ -13,7 +13,7 @@ let props = defineProps({
 </script>
 
 <template>
-    <app-layout title="{{ $t('Edit observation spot') }}">
+    <app-layout :title="$t('Edit observation spot')">
 
         <template #header>
             {{ $t("Edit observation spot") }}

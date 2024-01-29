@@ -25,7 +25,7 @@ const deleteSpot = (id) => {
 </script>
 
 <template>
-    <app-layout title="{{ $t('All observation spots') }}">
+    <app-layout :title="$t('All observation spots')">
 
         <template #header>
             {{ $t("All observation spots") }}

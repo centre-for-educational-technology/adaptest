@@ -1,5 +1,5 @@
 <template>
-    <AppLayout title="{{ $t('Main map') }}">
+    <AppLayout :title="$t('Main map')">
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                 {{ $t('Main map') }}
