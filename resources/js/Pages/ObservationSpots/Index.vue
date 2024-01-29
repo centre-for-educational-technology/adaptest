@@ -25,10 +25,10 @@ const deleteSpot = (id) => {
 </script>
 
 <template>
-    <app-layout title="All observations">
+    <app-layout title="All observation spots">
 
         <template #header>
-            {{ "All observations" }}
+            {{ "All observation spots" }}
         </template>
 
 
