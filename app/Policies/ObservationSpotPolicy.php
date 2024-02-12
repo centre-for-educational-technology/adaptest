@@ -13,8 +13,8 @@ class ObservationSpotPolicy
 
     public function viewAny(User $user): bool
     {
-        //allow if logged in user
-        return Auth::check();
+        //allow if logged in user and role is admin
+        return Auth::check() && $user->roles->contains('name', 'admin');
     }
 
     public function view(User $user, ObservationSpot $observationSpot): bool

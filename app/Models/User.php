@@ -57,6 +57,7 @@ class User extends Authenticatable
      */
     protected $appends = [
         'profile_photo_url',
+        'role'
     ];
 
     public function roles()
@@ -71,5 +72,18 @@ class User extends Authenticatable
         }
 
         $this->roles()->attach($role);
+    }
+
+    //Get the user role
+    public function getRoleAttribute()
+    {
+        return $this->roles->first() ? $this->roles->first()->name : 'user';
+
+    }
+
+    //format created_at
+    public function getCreatedAtAttribute($value)
+    {
+        return date('d.m.Y H:i', strtotime($value));
     }
 }

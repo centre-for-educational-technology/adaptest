@@ -2,7 +2,7 @@
     <AppLayout :title="$t('Main map')">
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                {{ $t('Main map') }}
+                {{ $t(title) }}
             </h2>
         </template>
 
@@ -134,7 +134,7 @@ import markerIconUrl from '@/assets/pin.svg';
 
 const map = ref(null);
 const zoom = ref(4);
-const center = ref([51.505, -0.09]);
+const center = ref([55.615, -50.09]);
 const dragging = ref(true);
 const touchZoom = ref(true);
 const scrollWheelZoom = ref(true);
@@ -143,6 +143,8 @@ const url = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 
 let props = defineProps({
     observation_spots: Array,
+    title: String,
+    main_map: Boolean,
 });
 
 
@@ -210,10 +212,10 @@ const onEachFeature = (feature, layer) => {
 
 };
 
-// let zoom = ref(6);
+
 let tms = ref(true);
-let maaametCenter = latLng(58.379, 24.554)
-//
+let maaametCenter = latLng(58.789, 24.554);
+
 let bounds = latLngBounds(
     [60.4349, 29.4338],
     [56.7458, 20.373]
@@ -378,6 +380,10 @@ var crs = new L.Proj.CRS('EPSG:3301', '+proj=lcc +lat_1=59.33333333333334 +lat_2
     bounds: L.bounds([40500, 5993000], [1064500, 7017000])
 })
 
+let estoniaBounds = latLngBounds(
+    [57.522, 21.77], // Southwest coordinates
+    [59.674, 28.209]  // Northeast coordinates
+);
 
 onMounted(async () => {
     const cache = await caches.open('geojson-cache');
@@ -404,13 +410,17 @@ onMounted(async () => {
     geojsonFetched.value = true;
     mapLoaded.value = true;
 });
-if (navigator.geolocation) {
+if (navigator.geolocation && props.main_map) {
     navigator.geolocation.getCurrentPosition(position => {
-        // Set the map center to the user's current location
-        center.value = [position.coords.latitude, position.coords.longitude];
-        zoom.value = 9; // Adjust this value as needed
+        let userLocation = latLng(position.coords.latitude, position.coords.longitude);
+        // Check if user's location is within the bounds of Estonia
+        if (estoniaBounds.contains(userLocation)) {
+            // Set maaametCenter to the user's current location
+            maaametCenter = userLocation;
+            console.log('maaametCenter:', maaametCenter);
+            zoom.value = 9; // Adjust this value as needed
+        }
     }, error => {
-        zoom.value = 9;
         console.error("Error obtaining geolocation: ", error);
     });
 }

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ObservationController;
 use App\Http\Controllers\ObservationSpotController;
+use App\Http\Controllers\UserController;
 use App\Http\Middleware\GzipMiddleware;
 use App\Http\Resources\ObservationResource;
 use App\Http\Resources\ObservationSpotResource;
@@ -39,8 +40,18 @@ Route::middleware([
 ])->group(function () {
     Route::get('/dashboard', function () {
         $obervationSpots = ObservationSpotResource::collection(ObservationSpot::all());
-        return Inertia::render('Dashboard')->with('observation_spots', $obervationSpots);
+        return Inertia::render('Dashboard')->with('observation_spots', $obervationSpots)
+            ->with('title', __('Main map'))
+            ->with('main_map', true);
     })->name('dashboard');
+
+    Route::get('/my-observations', function () {
+        $obervationSpots = ObservationSpotResource::collection(ObservationSpot::where('user_id', auth()->id())->get());
+        return Inertia::render('Dashboard')
+            ->with('observation_spots', $obervationSpots)
+            ->with('title', __('My observations'))
+            ->with('main_map', false);
+    })->name('my-observations');
 
     //create a new observation route
     Route::get('/observations/create', [ObservationController::class, 'create'])->name('observations.create');
@@ -49,9 +60,13 @@ Route::middleware([
     Route::post('/observations/store', [ObservationController::class, 'store'])->name('observations.store');
 
 
-
     Route::resource('observation-spots', ObservationSpotController::class);
+
+    //Users index route
+    Route::get('/users', [UserController::class, 'index'])->name('users.index');
+
 });
+
 
 
 Route::get('geojson/jarved', function () {

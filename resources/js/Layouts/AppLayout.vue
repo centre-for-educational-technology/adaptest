@@ -52,6 +52,12 @@ const logout = () => {
                                     {{ $t('Main map') }}
                                 </NavLink>
                             </div>
+
+                            <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+                                <NavLink :href="route('my-observations')" :active="route().current('my-observations')">
+                                    {{ $t('My observations') }}
+                                </NavLink>
+                            </div>
                         </div>
 
                         <div class="hidden sm:flex sm:items-center sm:ml-6">
@@ -154,14 +160,20 @@ const logout = () => {
 
                                     <template #content>
                                         <!-- Account Management -->
-                                        <div class="block px-4 py-2 text-xs text-gray-400">
-                                            Admin
+
+                                        <div v-if="$page.props.auth.user.role === 'admin'">
+                                            <div class="block px-4 py-2 text-xs text-gray-400">
+                                                Admin
+                                            </div>
+
+                                            <DropdownLink :href="route('observation-spots.index')">
+                                                {{ $t('All observation spots') }}
+                                            </DropdownLink>
+
+                                            <DropdownLink :href="route('users.index')">
+                                                {{ $t('All Users') }}
+                                            </DropdownLink>
                                         </div>
-
-                                        <DropdownLink :href="route('observation-spots.index')">
-                                            {{ $t('All observation spots') }}
-                                        </DropdownLink>
-
 
                                         <!-- Account Management -->
                                         <div class="block px-4 py-2 text-xs text-gray-400">

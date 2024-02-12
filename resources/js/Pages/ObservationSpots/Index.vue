@@ -2,7 +2,7 @@
 import AppLayout from '@/Layouts/AppLayout.vue';
 import {defineProps} from 'vue';
 import {Link, router} from '@inertiajs/vue3';
-import { useForm } from '@inertiajs/vue3';
+import {useForm} from '@inertiajs/vue3';
 
 const props = defineProps({
     observation_spots: {
@@ -40,11 +40,11 @@ const deleteSpot = (id) => {
                     <table class="table mb-5 table-zebra">
                         <thead>
                         <tr>
-                            <th>{{ $t("Name")}}</th>
-                            <th>{{ $t("Water body")}}</th>
-                            <th>{{ $t("Created at")}}</th>
-                            <th>{{ $t("Author")}}</th>
-                            <th>{{ $t("Actions")}}</th>
+                            <th>{{ $t("Name") }}</th>
+                            <th>{{ $t("Water body") }}</th>
+                            <th>{{ $t("Created at") }}</th>
+                            <th>{{ $t("Author") }}</th>
+                            <th>{{ $t("Actions") }}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -65,7 +65,9 @@ const deleteSpot = (id) => {
                                     <Link class="btn join-item btn-accent"
                                           :href="route('observation-spots.edit', spot.id)">{{ $t('Edit') }}
                                     </Link>
-                                    <button class="btn join-item btn-error" @click="deleteSpot(spot.id)">{{ $t('Delete') }}
+                                    <button class="btn join-item btn-error" @click="deleteSpot(spot.id)">{{
+                                            $t('Delete')
+                                        }}
                                     </button>
                                 </div>
                             </td>
