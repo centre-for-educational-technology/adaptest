@@ -54,8 +54,8 @@ const logout = () => {
                             </div>
 
                             <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                                <NavLink :href="route('my-observations')" :active="route().current('my-observations')">
-                                    {{ $t('My observations') }}
+                                <NavLink :href="route('my-observation-spots')" :active="route().current('my-observations')">
+                                    {{ $t('My observation spots') }}
                                 </NavLink>
                             </div>
                         </div>
@@ -168,6 +168,10 @@ const logout = () => {
 
                                             <DropdownLink :href="route('observation-spots.index')">
                                                 {{ $t('All observation spots') }}
+                                            </DropdownLink>
+
+                                            <DropdownLink :href="route('observations.index')">
+                                                {{ $t('All observations') }}
                                             </DropdownLink>
 
                                             <DropdownLink :href="route('users.index')">

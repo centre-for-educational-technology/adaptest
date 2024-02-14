@@ -2,6 +2,57 @@
 
 import ObservationForm from "@/Pages/Observations/Form.vue";
 import AppLayout from "@/Layouts/AppLayout.vue";
+
+let props = defineProps({
+    water_flows: {
+        type: Object,
+        required: true,
+    },
+    natures: {
+        type: Object,
+        required: true,
+    },
+    riparian_vegetations: {
+        type: Object,
+        required: true,
+    },
+    vegetation_coverages: {
+        type: Object,
+        required: true,
+    },
+    bottoms: {
+        type: Object,
+        required: true,
+    },
+    aquatic_vegetations: {
+        type: Object,
+        required: true,
+    },
+    observation: {
+        type: Object,
+        required: false,
+        default: null,
+    },
+    name: {
+        type: String,
+        required: true,
+    },
+    coordinates: {
+        type: Object,
+        required: false,
+        default: null,
+    },
+    water_body_kr_code: {
+        type: String,
+        required: true,
+    },
+    observation_spot_id: {
+        type: String,
+        required: true,
+        default: null,
+    },
+});
+
 </script>
 
 <template>
@@ -13,17 +64,18 @@ import AppLayout from "@/Layouts/AppLayout.vue";
 
         <div class="md:grid md:gap-6">
             <div class="mt-5 md:mt-0 md:col-span-2">
-                <observation-form :observation="props.observation"
-                                  :natures="props.natures"
-                                  :riparian_vegetations="props.riparian_vegetations"
-                                  :vegetation_coverages="props.vegetation_coverages"
-                                  :bottoms="props.bottoms"
-                                  :aquatic_vegetations="props.aquatic_vegetations"
-                                  :name="props.observation.name"
-                                  :coordinates="props.observation.coordinates"
-                                  :water_body_kr_code="props.observation.water_body_kr_code"
-                                  :observation_spot_id="props.observation.id"
-                                  :water_flows="props.water_flows"
+                <observation-form :observation="observation"
+                                  :water_flows="water_flows"
+                                  :natures="natures"
+                                  :riparian_vegetations="riparian_vegetations"
+                                  :vegetation_coverages="vegetation_coverages"
+                                  :bottoms="bottoms"
+                                  :aquatic_vegetations="aquatic_vegetations"
+                                  :name="observation.observation_spot.name"
+                                  :coordinates="coordinates"
+                                  :water_body_kr_code="water_body_kr_code"
+                                  :observation_spot_id="observation_spot_id"
+
                 ></observation-form>
             </div>
         </div>

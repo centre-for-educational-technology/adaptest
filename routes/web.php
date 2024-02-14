@@ -49,9 +49,9 @@ Route::middleware([
         $obervationSpots = ObservationSpotResource::collection(ObservationSpot::where('user_id', auth()->id())->get());
         return Inertia::render('Dashboard')
             ->with('observation_spots', $obervationSpots)
-            ->with('title', __('My observations'))
+            ->with('title', __('My observation spots'))
             ->with('main_map', false);
-    })->name('my-observations');
+    })->name('my-observation-spots');
 
     //create a new observation route
     Route::get('/observations/create', [ObservationController::class, 'create'])->name('observations.create');
@@ -59,11 +59,20 @@ Route::middleware([
     //store a new observation route
     Route::post('/observations/store', [ObservationController::class, 'store'])->name('observations.store');
 
+    //Observations index route
+    Route::get('/observations', [ObservationController::class, 'index'])->name('observations.index');
+
+    //Observation index route
+    Route::get('/observations/{observation}', [ObservationController::class, 'show'])->name('observations.show');
+    //Observation edit route
+    Route::get('/observations/{observation}/edit', [ObservationController::class, 'edit'])->name('observations.edit');
 
     Route::resource('observation-spots', ObservationSpotController::class);
 
     //Users index route
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
+
+
 
 });
 

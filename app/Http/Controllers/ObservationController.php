@@ -16,16 +16,17 @@ use App\Models\WaterBody;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
-use Inertia\Response;
 use Inertia\Response as InertiaResponse;
 
 class ObservationController extends Controller
 {
-    public function index()
+    public function index(): InertiaResponse
     {
         $this->authorize('viewAny', Observation::class);
 
-        return ObservationResource::collection(Observation::all());
+        return Inertia::render('Observations/Index', [
+            'observations' => ObservationResource::collection(Observation::all()),
+        ]);
     }
 
     public function create(): InertiaResponse
@@ -36,7 +37,7 @@ class ObservationController extends Controller
         $data = request()->all();
 
         //if we have observation_spot_id, we need to get the data from observation_spot
-        if($data['observation_spot_id'] != null && $data['observation_spot_id'] != 'null'){
+        if ($data['observation_spot_id'] != null && $data['observation_spot_id'] != 'null') {
             $observationSpot = ObservationSpot::find($data['observation_spot_id']);
             $data['name'] = $observationSpot->waterBody->title;
             $data['water_body_kr_code'] = $observationSpot->waterBody->code;
@@ -45,7 +46,7 @@ class ObservationController extends Controller
                 'lat' => $observationSpot->latitude,
                 'lng' => $observationSpot->longitude,
             ];
-        }else{
+        } else {
             $data['coordinates'] = json_decode($data['coordinates']);
         }
 
@@ -64,7 +65,6 @@ class ObservationController extends Controller
             'observation_spot_id' => $data['observation_spot_id'],
 
         ]);
-
 
 
     }
@@ -87,7 +87,7 @@ class ObservationController extends Controller
                 'water_body_id' => $waterBody->id,
             ]);
 
-        }else{
+        } else {
             $observationSpot = ObservationSpot::find($request->input('observation_spot_id'));
         }
 
@@ -99,12 +99,36 @@ class ObservationController extends Controller
         return Redirect::route('dashboard');
     }
 
-    public function show(Observation $observation)
+    public function show(Observation $observation): InertiaResponse
     {
         $this->authorize('view', $observation);
 
-        return new ObservationResource($observation);
+        return Inertia::render('Observations/Show', [
+            'observation' => new ObservationResource($observation),
+        ]);
     }
+
+    public function edit(Observation $observation): InertiaResponse
+    {
+        $this->authorize('update', $observation);
+
+        return Inertia::render('Observations/Edit', [
+            'observation' => new ObservationResource($observation),
+            'water_flows' => WaterFlows::getWaterFlowLabels(),
+            'natures' => Natures::getNatureLabels(),
+            'riparian_vegetations' => RiparianVegetations::getRiparianVegetationLabels(),
+            'vegetation_coverages' => VegetationCoverages::getVegetationCoverageLabels(),
+            'bottoms' => Bottoms::getBottomLabels(),
+            'aquatic_vegetations' => AquaticVegetations::getAquaticVegetationLabels(),
+            'coordinates' => [
+                'lat' => $observation->observationSpot->latitude,
+                'lng' => $observation->observationSpot->longitude,
+            ],
+            'observation_spot_id' => $observation->observationSpot->id,
+            'water_body_kr_code' => $observation->observationSpot->waterBody->code,
+        ]);
+    }
+
 
     public function update(ObservationRequest $request, Observation $observation)
     {

@@ -9,11 +9,16 @@ import Label from "@/CustomComponents/Label.vue";
 import Checkbox from "@/CustomComponents/Checkbox.vue";
 import SelectOption from "@/CustomComponents/Select.vue";
 import {usePage} from '@inertiajs/vue3'
-import {LMap, LMarker, LTileLayer} from "@vue-leaflet/vue-leaflet";
-import {latLng, latLngBounds} from "leaflet";
-import * as L from "leaflet";
-import markerIconUrl from '@/assets/pin.svg';
+
 import {Link} from '@inertiajs/vue3'
+
+import {LGeoJson, LMap, LMarker, LPopup, LTileLayer} from "@vue-leaflet/vue-leaflet";
+import "leaflet/dist/leaflet.css";
+import {nextTick, onMounted } from 'vue';
+import {latLng, latLngBounds} from "leaflet/dist/leaflet-src.esm.js";
+import * as L from 'leaflet';
+import 'proj4leaflet';
+import markerIconUrl from '@/assets/pin.svg';
 
 const page = usePage()
 
@@ -68,6 +73,7 @@ let props = defineProps({
 });
 
 let hasObservation = props.observation !== null;
+let observation = props.observation;
 
 let form = useForm({
     measuring_time: hasObservation ? observation.measuring_time : '',
@@ -85,31 +91,31 @@ let form = useForm({
     dissolved_oxygen_percent: hasObservation ? observation.dissolved_oxygen_percent : '',
     dissolved_oxygen_mgl: hasObservation ? observation.dissolved_oxygen_mgl : '',
     discharge: hasObservation ? observation.discharge : '',
-    water_flow: hasObservation ? observation.water_flow : '',
+    water_flow: hasObservation ? observation.water_flow['number'] : '',
     flow_direction: hasObservation ? observation.flow_direction : '',
-    erosion: hasObservation ? observation.erosion : false,
-    nature: hasObservation ? observation.nature : '',
-    riparian_vegetation: hasObservation ? observation.riparian_vegetation : '',
-    vegetation_coverage: hasObservation ? observation.vegetation_coverage : '',
-    tree_roots: hasObservation ? observation.tree_roots : false,
-    bottom: hasObservation ? observation.bottom : '',
-    aquatic_vegetation: hasObservation ? observation.aquatic_vegetation : '',
-    buildings: hasObservation ? observation.buildings : false,
-    agricultural_activity: hasObservation ? observation.agricultural_activity : false,
-    roads: hasObservation ? observation.roads : false,
-    park: hasObservation ? observation.park : false,
-    beach: hasObservation ? observation.beach : false,
-    boat_bridge: hasObservation ? observation.boat_bridge : false,
-    shore_facility: hasObservation ? observation.shore_facility : false,
-    dams: hasObservation ? observation.dams : false,
-    littering: hasObservation ? observation.littering : false,
-    water_pollution: hasObservation ? observation.water_pollution : false,
+    erosion: hasObservation ? Boolean(observation.erosion) : false,
+    nature: hasObservation ? observation.nature['number'] : '',
+    riparian_vegetation: hasObservation ? observation.riparian_vegetation['number'] : '',
+    vegetation_coverage: hasObservation ? observation.vegetation_coverage['number'] : '',
+    tree_roots: hasObservation ? Boolean(observation.tree_roots) : false,
+    bottom: hasObservation ? observation.bottom['number'] : '',
+    aquatic_vegetation: hasObservation ? observation.aquatic_vegetation['number'] : '',
+    buildings: hasObservation ? Boolean(observation.buildings) : false,
+    agricultural_activity: hasObservation ? Boolean(observation.agricultural_activity) : false,
+    roads: hasObservation ? Boolean(observation.roads) : false,
+    park: hasObservation ? Boolean(observation.park) : false,
+    beach: hasObservation ? Boolean(observation.beach) : false,
+    boat_bridge: hasObservation ? Boolean(observation.boat_bridge) : false,
+    shore_facility: hasObservation ? Boolean(observation.shore_facility) : false,
+    dams: hasObservation ? Boolean(observation.dams) : false,
+    littering: hasObservation ? Boolean(observation.littering) : false,
+    water_pollution: hasObservation ? Boolean(observation.water_pollution) : false,
     water_body_kr_code: props.water_body_kr_code,
     observation_spot_id: props.observation_spot_id,
     latitude: props.coordinates.lat,
     longitude: props.coordinates.lng,
-    observation_spot_name: hasObservation? observation.observation_spot_name : '',
-    observation_spot_description: hasObservation? observation.observation_spot_description : '',
+    observation_spot_name: hasObservation? observation.observation_spot.name : '',
+    observation_spot_description: hasObservation? observation.observation_spot.description : '',
 });
 
 const map = ref(null);

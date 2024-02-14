@@ -56,11 +56,11 @@ class Observation extends Model
 
     protected $casts = [
         'measuring_time' => 'datetime',
-        'nature' => Natures::class,
-        'riparian_vegetation' => RiparianVegetations::class,
-        'vegetation_coverage' => VegetationCoverages::class,
-        'bottom' => Bottoms::class,
-        'aquatic_vegetation' => AquaticVegetations::class
+//        'nature' => Natures::class,
+//        'riparian_vegetation' => RiparianVegetations::class,
+//        'vegetation_coverage' => VegetationCoverages::class,
+//        'bottom' => Bottoms::class,
+//        'aquatic_vegetation' => AquaticVegetations::class
     ];
 
     public function user()
@@ -74,6 +74,11 @@ class Observation extends Model
     }
 
     public function getMeasuringTimeAttribute($value)
+    {
+        return Carbon::parse($value)->format('d M Y, H:i');
+    }
+
+    public function getCreatedAtAttribute($value)
     {
         return Carbon::parse($value)->format('d M Y, H:i');
     }
