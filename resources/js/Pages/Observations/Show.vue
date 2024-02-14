@@ -18,7 +18,7 @@
                                     <table class="table">
 
                                         <tr>
-                                            <th>{{ $t('Time of measurement') }}:</th>
+                                            <th>{{ $t('Measuring time') }}:</th>
                                             <td>{{ props.observation.measuring_time }}</td>
                                         </tr>
                                         <tr>
