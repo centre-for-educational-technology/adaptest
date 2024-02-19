@@ -33,7 +33,7 @@ const deleteSpot = (id) => {
 
 
         <div class="md:grid md:gap-6">
-            <div class="mt-5">
+            <div class="m-5">
 
                 <div class="container mt-1 grid grid-cols-1 gap-6 mx-auto bg-base-100 rounded">
 
