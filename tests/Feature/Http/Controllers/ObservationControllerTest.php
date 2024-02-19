@@ -2,6 +2,10 @@
 
 namespace Tests\Feature\Http\Controllers;
 
+use App\Models\Observation;
+use App\Models\ObservationSpot;
+use App\Models\User;
+use Database\Seeders\RolesSeeder;
 use Database\Seeders\WaterBodiesSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -18,6 +22,9 @@ class ObservationControllerTest extends TestCase
         parent::setUp();
 
         $this->seed(WaterBodiesSeeder::class);
+        $this->seed(RolesSeeder::class);
+
+
     }
 
     /**
@@ -32,7 +39,7 @@ class ObservationControllerTest extends TestCase
     {
         $this->withoutExceptionHandling();
 
-        $user = \App\Models\User::factory()->create();
+        $user = User::factory()->create();
         $this->actingAs($user);
 
         $data = [
@@ -54,7 +61,7 @@ class ObservationControllerTest extends TestCase
     {
         $this->withoutExceptionHandling();
 
-        $user = \App\Models\User::factory()->create();
+        $user = User::factory()->create();
         $this->actingAs($user);
 
         // observation_spot_id is null case
@@ -145,7 +152,7 @@ class ObservationControllerTest extends TestCase
 
         // observation_spot_id is not null case
         //Create observation spot first using factory
-        $observationSpot = \App\Models\ObservationSpot::factory()->create();
+        $observationSpot = ObservationSpot::factory()->create();
 
         $data = [
             'measuring_time' => now()->format('Y-m-d H:i:s'),
@@ -230,6 +237,59 @@ class ObservationControllerTest extends TestCase
             'littering' => $data['littering'],
             'water_pollution' => $data['water_pollution'],
             'observation_spot_id' => $observationSpot->id,
+        ]);
+
+    }
+
+    /**
+     * @test
+     */
+    public function it_shows_observation()
+    {
+        $this->withoutExceptionHandling();
+
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+
+        $observation = Observation::factory()->create();
+
+        $response = $this->get(route('observations.show', $observation));
+
+        $response->assertInertia(fn(AssertableInertia $page) => $page->component('Observations/Show'));
+    }
+
+    /**
+     * @test
+     */
+    public function it_updates_observation()
+    {
+        $this->withoutExceptionHandling();
+        // Create a user
+        $user = User::factory()->create();
+
+        //Make user admin
+        $user->attachRole('admin');
+
+        $observation = Observation::factory()->create();
+
+        $data = [
+            'measuring_time' => now()->format('Y-m-d H:i:s'),
+            'odor' => 'test',
+            'color_turbidity' => 'test',
+            'conditions' => 'test',
+            'water_body_kr_code' => 'VEE1023621',
+        ];
+
+        $response = $this->actingAs($user)->put(route('observations.update', $observation), $data);
+
+        $response->assertStatus(200);
+
+        $this->assertDatabaseHas('observations', [
+            'measuring_time' => $data['measuring_time'],
+            'odor' => $data['odor'],
+            'color_turbidity' => $data['color_turbidity'],
+            'conditions' => $data['conditions'],
         ]);
 
     }

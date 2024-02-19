@@ -142,7 +142,7 @@ const keyboard = ref(false);
 const url = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 
 let props = defineProps({
-    observation_spots: Array,
+    observation_spots: Object,
     title: String,
     main_map: Boolean,
 });

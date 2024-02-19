@@ -14,7 +14,7 @@ import {Link} from '@inertiajs/vue3'
 
 import {LGeoJson, LMap, LMarker, LPopup, LTileLayer} from "@vue-leaflet/vue-leaflet";
 import "leaflet/dist/leaflet.css";
-import {nextTick, onMounted } from 'vue';
+import {nextTick, onMounted} from 'vue';
 import {latLng, latLngBounds} from "leaflet/dist/leaflet-src.esm.js";
 import * as L from 'leaflet';
 import 'proj4leaflet';
@@ -65,7 +65,7 @@ let props = defineProps({
         required: true,
     },
     observation_spot_id: {
-        type: String,
+        type: Number,
         required: true,
         default: null,
     },
@@ -76,7 +76,7 @@ let hasObservation = props.observation !== null;
 let observation = props.observation;
 
 let form = useForm({
-    measuring_time: hasObservation ? observation.measuring_time : '',
+    measuring_time: hasObservation ? observation.measuring_time : new Date().toISOString().slice(0, 16),
     odor: hasObservation ? observation.odor : '',
     color_turbidity: hasObservation ? observation.color_turbidity : '',
     conditions: hasObservation ? observation.conditions : '',
@@ -114,8 +114,8 @@ let form = useForm({
     observation_spot_id: props.observation_spot_id,
     latitude: props.coordinates.lat,
     longitude: props.coordinates.lng,
-    observation_spot_name: hasObservation? observation.observation_spot.name : '',
-    observation_spot_description: hasObservation? observation.observation_spot.description : '',
+    observation_spot_name: hasObservation ? observation.observation_spot.name : '',
+    observation_spot_description: hasObservation ? observation.observation_spot.description : '',
 });
 
 const map = ref(null);
@@ -171,8 +171,20 @@ let submit = () => {
         water_body_kr_code: props.water_body_kr_code,
         observation_spot_id: props.observation_spot_id,
     }));
-    console.log(form);
-    form.post(route('observations.store'), options)
+
+
+    if (hasObservation) {
+        form
+            .transform((data) => ({
+                ...data,
+                _method: 'PUT',// Read the issue for more details: https://bugs.php.net/bug.php?id=55815
+            }))
+            .post(route('observations.update', observation.id), options)
+    } else {
+        form.post(route('observations.store'), options)
+
+    }
+
 
 }
 
@@ -234,12 +246,14 @@ let submit = () => {
                            ref="observation_spot_name" autocomplete="observation_spot_name"
                            v-model.trim="form.observation_spot_name"
                     />
+                    <InputError :message="form.errors.observation_spot_name" class="mt-2"/>
 
                     <Label for="observation_spot_description" :value="$t('New observation spot description *')"/>
                     <Input id="observation_spot_description" class="mt-1 block w-full" type="text"
                            ref="observation_spot_description" autocomplete="observation_spot_description"
                            v-model.trim="form.observation_spot_description"
                     />
+                    <InputError :message="form.errors.observation_spot_name" class="mt-2"/>
 
                     <div class="divider"></div>
 
@@ -270,12 +284,26 @@ let submit = () => {
                 </div>
 
                 <div class="col-span-12">
-                    <Label for="conditions" :value="$t('Description of natural conditions')"/>
+                    <Label for="conditions" :value="$t('Description of natural conditions *')"/>
                     <Input id="conditions" class="mt-1 block w-full" v-model.trim="form.conditions"
                            type="text"
                            ref="conditions" autocomplete="conditions" dusk="conditions"/>
                     <InputError :message="form.errors.conditions" class="mt-2"/>
                 </div>
+
+                <div class="col-span-12">
+                    <Label for="flow_direction" :value="$t('Flow direction/water level')"/>
+                    <Input id="flow_direction" class="mt-1 block w-full" v-model.trim="form.flow_direction"
+                           type="text"
+                           ref="flow_direction" autocomplete="flow_direction" dusk="flow_direction"/>
+                    <InputError :message="form.errors.flow_direction" class="mt-2"/>
+                </div>
+
+                <div class="col-span-12">
+                    <div class="divider"></div>
+                </div>
+
+                <h3 class="col-span-12 text-center text-2xl font-bold">Füüsikalised-keemilised näitajad</h3>
 
                 <div class="col-span-6">
                     <Label for="ph" :value="$t('pH')"/>
@@ -383,14 +411,6 @@ let submit = () => {
                                   class="mt-2 block w-full" ref="water_flow" autocomplete="water_flow"/>
                     <InputError :message="form.errors.water_flow" class="mt-2"/>
 
-                </div>
-
-                <div class="col-span-12">
-                    <Label for="flow_direction" :value="$t('Flow direction/water level')"/>
-                    <Input id="flow_direction" class="mt-1 block w-full" v-model.trim="form.flow_direction"
-                           type="text"
-                           ref="flow_direction" autocomplete="flow_direction" dusk="flow_direction"/>
-                    <InputError :message="form.errors.flow_direction" class="mt-2"/>
                 </div>
 
 

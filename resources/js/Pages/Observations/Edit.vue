@@ -33,10 +33,6 @@ let props = defineProps({
         required: false,
         default: null,
     },
-    name: {
-        type: String,
-        required: true,
-    },
     coordinates: {
         type: Object,
         required: false,
@@ -47,7 +43,7 @@ let props = defineProps({
         required: true,
     },
     observation_spot_id: {
-        type: String,
+        type: Number,
         required: true,
         default: null,
     },

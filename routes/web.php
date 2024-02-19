@@ -67,6 +67,9 @@ Route::middleware([
     //Observation edit route
     Route::get('/observations/{observation}/edit', [ObservationController::class, 'edit'])->name('observations.edit');
 
+    //Observation update route
+    Route::put('/observations/{observation}', [ObservationController::class, 'update'])->name('observations.update');
+
     Route::resource('observation-spots', ObservationSpotController::class);
 
     //Users index route

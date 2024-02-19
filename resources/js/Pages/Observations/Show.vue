@@ -15,6 +15,12 @@
                         <div class="card bg-base-100 shadow-xl">
                             <div class="card-body gap-4">
                                 <div class="overflow-x-auto">
+
+                                    <Link
+                                        :href="`/observation-spots/${props.observation.observation_spot.id}`" class="btn my-4 btn-primary">
+                                        {{ $t('Back to observation spot') }}
+                                    </Link>
+
                                     <table class="table">
 
                                         <tr>
@@ -168,6 +174,8 @@
 
 <script setup>
 import AppLayout from "@/Layouts/AppLayout.vue";
+import { defineProps } from 'vue';
+import { Link } from '@inertiajs/vue3';
 
 // Define your props here
 let props = defineProps({

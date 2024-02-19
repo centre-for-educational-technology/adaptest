@@ -3,6 +3,8 @@
 namespace Database\Factories;
 
 use App\Models\Observation;
+use App\Models\ObservationSpot;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class ObservationFactory extends Factory
@@ -45,8 +47,8 @@ class ObservationFactory extends Factory
             'dams' => $this->faker->boolean,
             'littering' => $this->faker->boolean,
             'water_pollution' => $this->faker->boolean,
-            'user_id' => 1,
-            'observation_spot_id' => $this->faker->randomElement([1, 2, 3]),
+            'user_id' => app()->environment('testing') ? User::factory() : 1,
+            'observation_spot_id' => app()->environment('testing') ? ObservationSpot::factory() : $this->faker->randomElement([1, 2, 3]),
 
         ];
     }

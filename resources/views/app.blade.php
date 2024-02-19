@@ -14,6 +14,9 @@
         @routes
         @vite(['resources/js/app.js', "resources/js/Pages/{$page['component']}.vue"])
         @inertiaHead
+
+        <!-- UserReport Script -->
+        <script src="https://sak.userreport.com/tallinnuniversity/launcher.js" async id="userreport-launcher-script"></script>
     </head>
     <body class="font-sans antialiased">
         @inertia

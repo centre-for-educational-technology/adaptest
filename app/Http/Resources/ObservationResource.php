@@ -38,30 +38,30 @@ class ObservationResource extends JsonResource
             'dissolved_oxygen_mgl' => $this->dissolved_oxygen_mgl,
             'discharge' => $this->discharge,
             'water_flow' => [
-                'label' => WaterFlows::getWaterFlowLabels()[$this->water_flow],
+                'label' => WaterFlows::getWaterFlowLabels()[$this->water_flow] ?? null,
                 'number' => $this->water_flow
             ],
             'flow_direction' => $this->flow_direction,
             'erosion' => $this->erosion,
             'nature' => [
-                'label' => Natures::getNatureLabels()[$this->nature],
+                'label' => Natures::getNatureLabels()[$this->nature] ?? null,
                 'number' => $this->nature
             ],
             'riparian_vegetation' => [
-                'label' => RiparianVegetations::getRiparianVegetationLabels()[$this->riparian_vegetation],
+                'label' => RiparianVegetations::getRiparianVegetationLabels()[$this->riparian_vegetation] ?? null,
                 'number' => $this->riparian_vegetation
             ],
             'vegetation_coverage' => [
-                'label' => VegetationCoverages::getVegetationCoverageLabels()[$this->vegetation_coverage],
+                'label' => VegetationCoverages::getVegetationCoverageLabels()[$this->vegetation_coverage] ?? null,
                 'number' => $this->vegetation_coverage
             ],
             'tree_roots' => $this->tree_roots,
             'bottom' => [
-                'label' => Bottoms::getBottomLabels()[$this->bottom],
+                'label' => Bottoms::getBottomLabels()[$this->bottom] ?? null,
                 'number' => $this->bottom
             ],
             'aquatic_vegetation' => [
-                'label' => AquaticVegetations::getAquaticVegetationLabels()[$this->aquatic_vegetation],
+                'label' => AquaticVegetations::getAquaticVegetationLabels()[$this->aquatic_vegetation] ?? null,
                 'number' => $this->aquatic_vegetation
             ],
 

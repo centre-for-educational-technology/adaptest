@@ -110,11 +110,16 @@
 
                                         <tr v-for="observation in props.observations" :key="observation.id">
                                             <td>
+
+
                                                 <div class="flex items-center gap-3">
-
-                                                    <div class="font-bold">{{ observation.measuring_time }}</div>
-
+                                                    <Link
+                                                        class="font-bold text-blue-500 hover:underline"
+                                                        :href="route('observations.show', observation.id)">
+                                                        {{ observation.measuring_time }}
+                                                    </Link>
                                                 </div>
+
                                             </td>
 
 
@@ -170,6 +175,7 @@ import * as L from 'leaflet';
 import 'proj4leaflet';
 import markerIconUrl from '@/assets/pin.svg';
 import {Icon} from '@iconify/vue';
+import {Link} from '@inertiajs/vue3';
 
 
 const map = ref(null);

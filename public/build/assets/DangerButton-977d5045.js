@@ -1,0 +1,1 @@
+import{o,e as r,r as n}from"./app-b01ed333.js";const s=["type"],c={__name:"DangerButton",props:{type:{type:String,default:"button"}},setup(t){return(e,a)=>(o(),r("button",{type:t.type,class:"btn btn-error"},[n(e.$slots,"default")],8,s))}};export{c as _};

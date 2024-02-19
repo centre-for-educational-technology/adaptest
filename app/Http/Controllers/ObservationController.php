@@ -17,6 +17,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
+use Inertia\Testing\Concerns\Interaction;
 
 class ObservationController extends Controller
 {
@@ -130,13 +131,15 @@ class ObservationController extends Controller
     }
 
 
-    public function update(ObservationRequest $request, Observation $observation)
+    public function update(ObservationRequest $request, Observation $observation) : InertiaResponse
     {
         $this->authorize('update', $observation);
 
         $observation->update($request->validated());
 
-        return new ObservationResource($observation);
+        return Inertia::render('Observations/Show', [
+            'observation' => new ObservationResource($observation),
+        ]);
     }
 
     public function destroy(Observation $observation)
