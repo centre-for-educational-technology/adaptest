@@ -50,6 +50,24 @@ class WaterBodiesSeeder extends Seeder
             }
         }
 
+
+        $geojson = file_get_contents(public_path('geojson/karst.json'));
+        $data = json_decode($geojson, true);
+
+        // Loop through the array, and for each item, create a new row in the Water bodies table
+        foreach ($data['features'] as $index => $feature) {
+            try {
+                DB::table('water_bodies')->insert([
+                    'title' => $feature['properties']['nimi'],
+                    'code' => $feature['properties']['kr_kood'],
+                    'type' => $feature['properties']['tyyp'],
+                    'sys_id' => $feature['properties']['sys_id'],
+                ]);
+            } catch (\Exception $e) {
+                Log::error("Error inserting feature at index {$index}: {$e->getMessage()}");
+            }
+        }
+
         Log::info('WaterBodiesSeeder completed');
     }
 }

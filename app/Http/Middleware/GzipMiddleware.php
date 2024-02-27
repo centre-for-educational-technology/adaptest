@@ -19,7 +19,7 @@ class GzipMiddleware
         $response = $next($request);
 
         // Check if the request URL is for the geojson file
-        if ($request->is('geojson/jarved') || $request->is('geojson/vooluvesi')) {
+        if ($request->is('geojson/jarved') || $request->is('geojson/vooluvesi') || $request->is('geojson/karst')) {
             // Apply gzip compression
             $response->header('Content-Encoding', 'gzip');
             $response->header('Content-Length', strlen(gzencode($response->getContent())));

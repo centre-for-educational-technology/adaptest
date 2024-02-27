@@ -249,10 +249,10 @@ let submit = () => {
                     <InputError :message="form.errors.observation_spot_name" class="mt-2"/>
 
                     <Label for="observation_spot_description" :value="$t('New observation spot description *')"/>
-                    <Input id="observation_spot_description" class="mt-1 block w-full" type="text"
-                           ref="observation_spot_description" autocomplete="observation_spot_description"
-                           v-model.trim="form.observation_spot_description"
-                    />
+                    <textarea id="observation_spot_description" class="mt-1 textarea-bordered textarea block w-full"
+                              ref="observation_spot_description" autocomplete="observation_spot_description"
+                              v-model.trim="form.observation_spot_description">
+                    </textarea>
                     <InputError :message="form.errors.observation_spot_name" class="mt-2"/>
 
                     <div class="divider"></div>
@@ -277,9 +277,9 @@ let submit = () => {
 
                 <div class="col-span-12">
                     <Label for="color_turbidity" :value="$t('Color and turbidity')"/>
-                    <Input id="color_turbidity" class="mt-1 block w-full" v-model.trim="form.color_turbidity"
-                           type="text"
-                           ref="color_turbidity" autocomplete="color_turbidity" dusk="color_turbidity"/>
+                    <textarea id="color_turbidity" class="mt-1 textarea textarea-bordered block w-full" v-model.trim="form.color_turbidity"
+                              ref="color_turbidity" autocomplete="color_turbidity" dusk="color_turbidity">
+                    </textarea>
                     <InputError :message="form.errors.color_turbidity" class="mt-2"/>
                 </div>
 

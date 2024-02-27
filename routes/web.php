@@ -94,3 +94,10 @@ Route::get('geojson/vooluvesi', function () {
         'Content-Type' => 'application/json',
     ]);
 })->middleware(GzipMiddleware::class);
+
+Route::get('geojson/karst', function () {
+    $path = public_path('geojson/karst.json');
+    return Response::make(file_get_contents($path), 200, [
+        'Content-Type' => 'application/json',
+    ]);
+})->middleware(GzipMiddleware::class);

@@ -6,7 +6,7 @@
             </h2>
         </template>
 
-        <main class="relative" style="height: calc(100vh - 138px); width: 100%;">
+        <main class="relative" style="height: calc(100vh - 188px); width: 100%;">
             <!--                        <l-map ref="map" v-model:zoom="zoom" :center=center :useGlobalLeaflet="false"-->
             <!--                               :crs="projection"-->
             <!--                               :tilelayers="relief_layers"-->
@@ -56,7 +56,7 @@
 
             <l-map ref="map" :crs="crs" v-model:zoom="zoom"
                    :useGlobalLeaflet="true" :center="maaametCenter" :bounds="bounds" :maxZoom="14" :minZoom="3"
-                   :scrollWheelZoom="false" @click="addMarker" @ready="mapReady">
+                   :scrollWheelZoom="true" @click="addMarker" @ready="mapReady">
 
 
                 <l-tile-layer
@@ -76,11 +76,14 @@
 
                 <!--                ></l-wms-tile-layer>-->
 
-                <l-geo-json :visible="geojsonFetched" :options="{ style: featureStyle, onEachFeature: onEachFeature }"
+                <l-geo-json :visible="geojsonFetched" :options="{ style: featureStyle1, onEachFeature: onEachFeature }"
                             :geojson="jarvedData"></l-geo-json>
 
-                <l-geo-json :visible="geojsonFetched" :options="{ style: featureStyle, onEachFeature: onEachFeature }"
+                <l-geo-json :visible="geojsonFetched" :options="{ style: featureStyle2, onEachFeature: onEachFeature }"
                             :geojson="vooluvesiData"></l-geo-json>
+
+                <l-geo-json :visible="geojsonFetched" :options="{ style: featureStyle3, onEachFeature: onEachFeature }"
+                            :geojson="karstData"></l-geo-json>
 
                 <!--                <l-marker v-for="marker, index in markers" :lat-lng="marker" @click="removeMarker(index)"></l-marker>-->
 
@@ -157,11 +160,9 @@ function toggleGeoJsonModal() {
 }
 
 
-function featureStyle(feature) {
-    const color = feature.properties && feature.properties.color ? feature.properties.color : 'blue';
-
+function featureStyle1(feature) {
     return {
-        fillColor: color,
+        fillColor: 'blue',
         color: 'white',
         weight: 2,
         opacity: 1,
@@ -169,6 +170,25 @@ function featureStyle(feature) {
     };
 }
 
+function featureStyle2(feature) {
+    return {
+        fillColor: 'red',
+        color: 'white',
+        weight: 2,
+        opacity: 1,
+        fillOpacity: 0.7,
+    };
+}
+
+function featureStyle3(feature) {
+    return {
+        fillColor: 'green',
+        color: 'white',
+        weight: 2,
+        opacity: 1,
+        fillOpacity: 0.7,
+    };
+}
 
 let geojsonFetched = ref(false);
 let selectedLayer = null;
@@ -231,7 +251,7 @@ function mapReady() {
     mapInstance = map.value.leafletObject;
 
     if (mapInstance) {
-        mapInstance.scrollWheelZoom.disable();
+        //mapInstance.scrollWheelZoom.disable();
     }
 }
 
@@ -371,6 +391,8 @@ function addNewObservation(spotId) {
 //init geojson
 var jarvedData = null;
 var vooluvesiData = null;
+var karstData = null;
+
 let loaderText = ref('Laen järved...');
 
 
@@ -405,7 +427,17 @@ onMounted(async () => {
         cache.put('/geojson/vooluvesi', response.clone());
     }
     data = await response.json();
+    loaderText.value = 'Laen karstijärvikud...';
     vooluvesiData = data;
+
+    // Fetch karst.json
+    response = await cache.match('/geojson/karst');
+    if (!response) {
+        response = await fetch('/geojson/karst');
+        cache.put('/geojson/karst', response.clone());
+    }
+    data = await response.json();
+    karstData = data;
 
     geojsonFetched.value = true;
     mapLoaded.value = true;

@@ -44,10 +44,10 @@ function submit() {
 
 
                     <Label for="observation_spot_description" :value="$t('Observation spot description')"/>
-                    <Input id="observation_spot_description" class="mt-1 block w-full" type="textarea"
-                           ref="observation_spot_description" autocomplete="observation_spot_description"
-                           v-model.trim="form.description"
-                    />
+                    <textarea id="observation_spot_description" class="mt-1 textarea-bordered textarea block w-full"
+                              ref="observation_spot_description" autocomplete="observation_spot_description"
+                              v-model.trim="form.description">
+                    </textarea>
 
                 </div>
 
