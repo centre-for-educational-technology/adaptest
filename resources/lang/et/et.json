@@ -217,6 +217,12 @@
     "My observations": "Minu vaatlused",
     "All Users": "Kõik kasutajad",
     "All observations": "Kõik vaatlused",
-    "My observation spots": "Minu vaatluskohad"
-
+    "My observation spots": "Minu vaatluskohad",
+    "Observation details": "Vaatluse info",
+    "Cancel": "Tühista",
+    "Add new observation spot?": "Lisa uus vaatluskoht?",
+    "Yes": "Jah",
+    "No": "Ei",
+    "Add a new observation?": "Lisa uus vaatlus?",
+    "View": "Vaata"
 }

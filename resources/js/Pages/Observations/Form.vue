@@ -569,11 +569,15 @@ let submit = () => {
 
 
                 <div class="col-span-12">
-                    <div class="flex justify-end">
+                    <div class="flex space-x-2 justify-end">
+<!--                        Cancel-->
+                        <Link :href="route('dashboard')" class="btn btn-secondary" dusk="cancel">
+                            {{ $t('Cancel') }}
+                        </Link>
                         <Link v-on:click="submit" class="btn btn-primary" dusk="save"
                               href="#"
                               :class="{ 'btn-disabled': form.processing }">
-                            Submit
+                            {{ $t('Save') }}
                         </Link>
                     </div>
                 </div>

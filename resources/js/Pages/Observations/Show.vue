@@ -176,6 +176,7 @@
 import AppLayout from "@/Layouts/AppLayout.vue";
 import { defineProps } from 'vue';
 import { Link } from '@inertiajs/vue3';
+import {trans} from "laravel-vue-i18n";
 
 // Define your props here
 let props = defineProps({
@@ -186,7 +187,7 @@ let props = defineProps({
 });
 
 function yesNo(value) {
-    return value ? 'Yes' : 'No';
+    return value ? trans('Yes') : trans('No');
 }
 
 </script>

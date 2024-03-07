@@ -54,6 +54,29 @@
             </div>
 
 
+            <div class="checkbox-container">
+                <div class="join space-x-1">
+
+                    <label class="label cursor-pointer">
+                        <span class="label-text mr-1">Järved</span>
+                        <input class="checkbox checkbox-lg" type="checkbox" v-model="isJarvedVisible">
+                    </label>
+
+                    <label class="label cursor-pointer">
+                        <span class="label-text mr-1">Vooluveekogud</span>
+                        <input class="checkbox checkbox-lg" type="checkbox" v-model="isVooluvesiVisible">
+                    </label>
+
+                    <label class="label cursor-pointer">
+                        <span class="label-text mr-1">Karstijärvikud</span>
+                        <input class="checkbox checkbox-lg" type="checkbox" v-model="isKarstVisible">
+                    </label>
+
+
+                </div>
+            </div>
+
+
             <l-map ref="map" :crs="crs" v-model:zoom="zoom"
                    :useGlobalLeaflet="true" :center="maaametCenter" :bounds="bounds" :maxZoom="14" :minZoom="3"
                    :scrollWheelZoom="true" @click="addMarker" @ready="mapReady">
@@ -76,13 +99,14 @@
 
                 <!--                ></l-wms-tile-layer>-->
 
-                <l-geo-json :visible="geojsonFetched" :options="{ style: featureStyle1, onEachFeature: onEachFeature }"
+                <l-geo-json :visible="isJarvedVisible" :options="{ style: featureStyle1, onEachFeature: onEachFeature }"
                             :geojson="jarvedData"></l-geo-json>
 
-                <l-geo-json :visible="geojsonFetched" :options="{ style: featureStyle2, onEachFeature: onEachFeature }"
+                <l-geo-json :visible="isVooluvesiVisible"
+                            :options="{ style: featureStyle2, onEachFeature: onEachFeature }"
                             :geojson="vooluvesiData"></l-geo-json>
 
-                <l-geo-json :visible="geojsonFetched" :options="{ style: featureStyle3, onEachFeature: onEachFeature }"
+                <l-geo-json :visible="isKarstVisible" :options="{ style: featureStyle3, onEachFeature: onEachFeature }"
                             :geojson="karstData"></l-geo-json>
 
                 <!--                <l-marker v-for="marker, index in markers" :lat-lng="marker" @click="removeMarker(index)"></l-marker>-->
@@ -134,6 +158,8 @@ import Modal from "@/CustomComponents/LakeModal.vue";
 import {router} from '@inertiajs/vue3'
 import ApplicationMark from "@/Components/ApplicationMark.vue";
 import markerIconUrl from '@/assets/pin.svg';
+import {trans} from 'laravel-vue-i18n';
+
 
 const map = ref(null);
 const zoom = ref(4);
@@ -154,6 +180,11 @@ let props = defineProps({
 let selectedAreaName = ref('');
 let showGeoJsonModal = ref(false);
 let showModal = ref(false);
+
+let isJarvedVisible = ref(false);
+let isVooluvesiVisible = ref(false);
+let isKarstVisible = ref(false);
+
 
 function toggleGeoJsonModal() {
     showGeoJsonModal.value = !showGeoJsonModal.value;
@@ -280,10 +311,10 @@ function addMarker(event) {
     const latlng = event.latlng;
     const marker = L.marker(latlng, {icon: markerIcon});
     const popup = L.popup().setContent(`
-      <p class="mb-2 text-lg font-semibold text-gray-900">Add a new observation spot?</p>
+      <p class="mb-2 text-lg font-semibold text-gray-900">${trans('Add new observation spot?')}</p>
       <div class="flex space-x-2">
-        <button id="yesButton" class="px-4 py-2 btn btn-primary">Yes</button>
-        <button id="noButton" class="px-4 py-2 btn">No</button>
+        <button id="yesButton" class="px-4 py-2 btn btn-primary">${trans('Yes')}</button>
+        <button id="noButton" class="px-4 py-2 btn">${trans('No')}</button>
       </div>
     `);
     marker.bindPopup(popup);
@@ -310,6 +341,13 @@ function addMarker(event) {
         const noButton = document.getElementById('noButton');
         noButton.addEventListener('click', () => {
             mapInstance.removeLayer(marker);
+            if (selectedLayer) {
+                selectedLayer.setStyle({
+                    weight: 2, // Set the border weight back to normal
+                    color: '#3388ff' // Set the border color back to normal
+                });
+                selectedLayer = null; // Clear the selected layer
+            }
 
         });
 
@@ -325,17 +363,17 @@ function addMarker(event) {
 
 
 function askForObservation(spot) {
-    console.log('mapInstance:', mapInstance); // Add this line
+
 
     const popupContent = `
       <h2 class="mb-2 text-lg font-semibold text-gray-900">${spot.name}</h2>
-      <p class="mb-2 text-md text-gray-900">Add a new observation?</p>
+      <p class="mb-2 text-md text-gray-900">${trans('Add a new observation?')}</p>
       <div class="flex space-x-2">
           <div class="join">
-            <button id="yesButton" class="px-4 py-2 btn join-item btn-primary">Yes</button>
-            <button id="noButton" class="px-4 py-2 btn join-item btn-error">No</button>
+            <button id="yesButton" class="px-4 py-2 btn join-item btn-primary">${trans('Yes')}</button>
+            <button id="noButton" class="px-4 py-2 btn join-item btn-error">${trans('No')}</button>
            </div>
-           <button id="viewButton" class="px-4 py-2 btn btn-secondary">View</button>
+           <button id="viewButton" class="px-4 py-2 btn btn-secondary">${trans('View')}</button>
 
       </div>
     `;
@@ -441,6 +479,12 @@ onMounted(async () => {
 
     geojsonFetched.value = true;
     mapLoaded.value = true;
+
+    // Once the GeoJSON data is available, set the visibility reactive variables to true
+    isJarvedVisible.value = true;
+    isVooluvesiVisible.value = true;
+    isKarstVisible.value = true;
+
 });
 if (navigator.geolocation && props.main_map) {
     navigator.geolocation.getCurrentPosition(position => {
@@ -449,7 +493,6 @@ if (navigator.geolocation && props.main_map) {
         if (estoniaBounds.contains(userLocation)) {
             // Set maaametCenter to the user's current location
             maaametCenter = userLocation;
-            console.log('maaametCenter:', maaametCenter);
             zoom.value = 9; // Adjust this value as needed
         }
     }, error => {

@@ -110,16 +110,13 @@
 
                                         <tr v-for="observation in props.observations" :key="observation.id">
                                             <td>
-
-
                                                 <div class="flex items-center gap-3">
-                                                    <Link
-                                                        class="font-bold text-blue-500 hover:underline"
-                                                        :href="route('observations.show', observation.id)">
+                                                    <a href="#"
+                                                       class="font-bold text-blue-500 hover:underline"
+                                                       @click.prevent="handleClick(observation)">
                                                         {{ observation.measuring_time }}
-                                                    </Link>
+                                                    </a>
                                                 </div>
-
                                             </td>
 
 
@@ -159,6 +156,164 @@
                     </div>
                 </div>
             </div>
+
+            <div v-if="isModalVisible && currentObservation" class="modal" :class="{ 'modal-open': isModalVisible }" @click.self="isModalVisible = false">
+                <div class="modal-box" style="overflow: hidden; border-radius: 10px;">
+                    <div style="overflow: auto; height: 500px;">
+                        <h3 class="font-bold text-lg">{{ $t('Observation details') }}</h3>
+                        <table class="table">
+
+                            <tr>
+                                <th>{{ $t('Measuring time') }}:</th>
+                                <td>{{ currentObservation.measuring_time }}</td>
+                            </tr>
+                            <tr>
+                                <th>{{ $t('Odor') }}:</th>
+                                <td>{{ currentObservation.odor }}</td>
+                            </tr>
+                            <tr>
+                                <th>{{ $t('Color and turbidity') }}:</th>
+                                <td>{{ currentObservation.color_turbidity }}</td>
+                            </tr>
+                            <tr>
+                                <th>{{ $t('Description of natural conditions') }}:</th>
+                                <td>{{ currentObservation.conditions }}</td>
+                            </tr>
+                            <h3 class="text-lg mt-3 font-bold">Füüsikalised-keemilised näitajad</h3>
+                            <tr>
+                                <th>{{ $t('pH') }}:</th>
+                                <td>{{ currentObservation.ph }}</td>
+                            </tr>
+                            <tr>
+                                <th>{{ $t('Water temperature') }}:</th>
+                                <td>{{ currentObservation.water_temperature }}</td>
+                            </tr>
+                            <tr>
+                                <th>{{ $t('Air temperature') }}:</th>
+                                <td>{{ currentObservation.air_temperature }}</td>
+                            </tr>
+                            <tr>
+                                <th>{{ $t('Specific conductance') }}:</th>
+                                <td>{{ currentObservation.specific_conductance }}</td>
+                            </tr>
+                            <tr>
+                                <th>{{ $t('Total dissolved solids') }}:</th>
+                                <td>{{ currentObservation.total_dissolved_solids }}</td>
+                            </tr>
+                            <tr>
+                                <th>{{ $t('Nitrate (NO3)') }}:</th>
+                                <td>{{ currentObservation.nitrate }}</td>
+                            </tr>
+                            <tr>
+                                <th>{{ $t('Bicarbonate (HCO3)') }}:</th>
+                                <td>{{ currentObservation.bicarbonate }}</td>
+                            </tr>
+                            <tr>
+                                <th>{{ $t('Redox potential') }}:</th>
+                                <td>{{ currentObservation.redox_potential }}</td>
+                            </tr>
+                            <tr>
+                                <th>{{ $t('Dissolved oxygen (%)') }}:</th>
+                                <td>{{ currentObservation.dissolved_oxygen_percent }}</td>
+                            </tr>
+                            <tr>
+                                <th>{{ $t('Dissolved oxygen (mg/l)') }}:</th>
+                                <td>{{ currentObservation.dissolved_oxygen_mgl }}</td>
+                            </tr>
+                            <tr>
+                                <th>{{ $t('Discharge') }}:</th>
+                                <td>{{ currentObservation.discharge }}</td>
+                            </tr>
+                            <tr>
+                                <th>{{ $t('Flow velocity') }}:</th>
+                                <td>{{ currentObservation.water_flow['label'] }}</td>
+                            </tr>
+                            <tr>
+                                <th>{{ $t('Flow direction/water level') }}:</th>
+                                <td>{{ currentObservation.flow_direction }}</td>
+                            </tr>
+
+                            <h3 class="text-lg mt-3 font-bold">Hüdromorfoloogia</h3>
+                            <tr>
+                                <th>{{ $t('Erosion') }}:</th>
+                                <td>{{ yesNo(currentObservation.erosion) }}</td>
+                            </tr>
+                            <tr>
+                                <th>{{ $t('Nature') }}:</th>
+                                <td>{{ currentObservation.nature['label'] }}</td>
+                            </tr>
+                            <tr>
+                                <th>{{ $t('Riparian vegetation') }}:</th>
+                                <td>{{ currentObservation.riparian_vegetation['label'] }}</td>
+                            </tr>
+                            <tr>
+                                <th>{{ $t('Vegetation coverage') }}:</th>
+                                <td>{{ currentObservation.vegetation_coverage['label'] }}</td>
+                            </tr>
+                            <tr>
+                                <th>{{ $t('Puujuures, oksad vms ulatuvad vett') }}:</th>
+                                <td>{{ yesNo(currentObservation.tree_roots) }}</td>
+                            </tr>
+                            <tr>
+                                <th>{{ $t('Veekogu põhi') }}:</th>
+                                <td>{{ currentObservation.bottom['label'] }}</td>
+                            </tr>
+                            <tr>
+                                <th>{{ $t('Veetaimestik') }}:</th>
+                                <td>{{ currentObservation.aquatic_vegetation['label'] }}</td>
+                            </tr>
+
+                            <h3 class="text-lg mt-3 font-bold">Inimmõju</h3>
+                            <tr>
+                                <th>{{ $t('Ehitisi') }}:</th>
+                                <td>{{ yesNo(currentObservation.buildings) }}</td>
+                            </tr>
+                            <tr>
+                                <th>{{ $t('Põllumajanduslik tegevus') }}:</th>
+                                <td>{{ yesNo(currentObservation.agricultural_activity) }}</td>
+                            </tr>
+                            <tr>
+                                <th>{{ $t('Teed, parkimisplatsid') }}:</th>
+                                <td>{{ yesNo(currentObservation.roads) }}</td>
+                            </tr>
+                            <tr>
+                                <th>{{ $t('Park') }}:</th>
+                                <td>{{ yesNo(currentObservation.park) }}</td>
+                            </tr>
+                            <tr>
+                                <th>{{ $t('Supelrand') }}:</th>
+                                <td>{{ yesNo(currentObservation.beach) }}</td>
+                            </tr>
+                            <tr>
+                                <th>{{ $t('Paadisild, slip') }}:</th>
+                                <td>{{ yesNo(currentObservation.boat_bridge) }}</td>
+                            </tr>
+                            <tr>
+                                <th>{{ $t('Kaldakindlustusrajatised') }}:</th>
+                                <td>{{ yesNo(currentObservation.shore_facility) }}</td>
+                            </tr>
+                            <tr>
+                                <th>{{ $t('Paisud, sillad') }}:</th>
+                                <td>{{ yesNo(currentObservation.dams) }}</td>
+                            </tr>
+                            <tr>
+                                <th>{{ $t('Kaldavööndi prügistamist') }}:</th>
+                                <td>{{ yesNo(currentObservation.littering) }}</td>
+                            </tr>
+                            <tr>
+                                <th>{{ $t('Veereostust') }}:</th>
+                                <td>{{ yesNo(currentObservation.water_pollution) }}</td>
+                            </tr>
+                        </table>
+                        <div class="modal-action">
+                            <button class="btn" @click="isModalVisible = false">
+                                Ok
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </section>
 
 
@@ -176,6 +331,7 @@ import 'proj4leaflet';
 import markerIconUrl from '@/assets/pin.svg';
 import {Icon} from '@iconify/vue';
 import {Link} from '@inertiajs/vue3';
+import {trans} from "laravel-vue-i18n";
 
 
 const map = ref(null);
@@ -185,6 +341,22 @@ const dragging = ref(true);
 const touchZoom = ref(true);
 const keyboard = ref(false);
 const url = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+
+let isModalVisible = ref(false);
+
+// Define a reactive variable for storing the current observation
+let currentObservation = ref(null);
+
+
+// Add a method to handle the click event
+const handleClick = (observation) => {
+    currentObservation.value = observation;
+    isModalVisible.value = true;
+};
+
+function yesNo(value) {
+    return value ? trans('Yes') : trans('No');
+}
 
 let props = defineProps({
         observation_spot: {
