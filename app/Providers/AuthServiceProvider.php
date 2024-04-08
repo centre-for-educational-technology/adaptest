@@ -6,9 +6,11 @@ namespace App\Providers;
 use App\Models\Obser;
 use App\Models\Observation;
 use App\Models\ObservationSpot;
+use App\Models\User;
 use App\Policies\ObserPolicy;
 use App\Policies\ObservationPolicy;
 use App\Policies\ObservationSpotPolicy;
+use App\Policies\UserPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 class AuthServiceProvider extends ServiceProvider
@@ -23,6 +25,7 @@ class AuthServiceProvider extends ServiceProvider
         Observation::class => ObservationPolicy::class,
         Obser::class => ObserPolicy::class,
         ObservationSpot::class => ObservationSpotPolicy::class,
+        User::class => UserPolicy::class,
     ];
 
     /**

@@ -129,7 +129,10 @@
                                                         </div>
                                                     </div>
                                                     <div>
-                                                        <div class="font-bold"> {{ observation.user.name }}</div>
+                                                        <Link :href="route('users.show', observation.user.id)"
+                                                              class="font-bold text-blue-500 hover:underline">
+                                                            {{ observation.user.name }}
+                                                        </Link>
                                                     </div>
                                                 </div>
                                             </td>

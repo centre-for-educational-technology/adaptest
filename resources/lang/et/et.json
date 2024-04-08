@@ -224,5 +224,9 @@
     "Yes": "Jah",
     "No": "Ei",
     "Add a new observation?": "Lisa uus vaatlus?",
-    "View": "Vaata"
+    "View": "Vaata",
+    "User has been deleted": "Kasutaja on kustutatud",
+    "User role has been updated.": "Kasutaja roll on uuendatud.",
+    "Roles": "Rollid",
+    "Update": "Uuenda"
 }

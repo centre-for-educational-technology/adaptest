@@ -148,6 +148,8 @@ class ObservationController extends Controller
 
         $observation->delete();
 
-        return response()->json();
+        return Redirect::route('observations.index')
+            ->with('flash.banner', __('Observation deleted.'))
+            ->with('flash.bannerStyle', 'success');
     }
 }

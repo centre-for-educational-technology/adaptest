@@ -15,6 +15,7 @@
                         <tr>
                             <th>{{ $t("Name") }}</th>
                             <th>{{ $t("Email") }}</th>
+                            <th>{{ $t("Roles") }}</th>
                             <th>{{ $t("Created at") }}</th>
                             <th>{{ $t("Actions") }}</th>
                         </tr>
@@ -23,19 +24,20 @@
                         <tr v-for="user in props.users.data" :key="user.id">
                             <td>{{ user.name }}</td>
                             <td>{{ user.email }}</td>
+                            <td>{{ user.role }}</td>
                             <td>{{ user.created_at }}</td>
                             <td>
                                 <div class="join">
-<!--                                    <Link class="btn join-item btn-primary"-->
-<!--                                          :href="route('users.show', user.id)">{{ $t('Show') }}-->
-<!--                                    </Link>-->
-<!--                                    <Link class="btn join-item btn-accent"-->
-<!--                                          :href="route('users.edit', user.id)">{{ $t('Edit') }}-->
-<!--                                    </Link>-->
-<!--                                    <button class="btn join-item btn-error" @click="deleteUser(user.id)">{{-->
-<!--                                            $t('Delete')-->
-<!--                                        }}-->
-<!--                                    </button>-->
+                                    <Link class="btn join-item btn-primary"
+                                          :href="route('users.show', user.id)">{{ $t('Show') }}
+                                    </Link>
+                                    <Link class="btn join-item btn-accent"
+                                          :href="route('users.edit', user.id)">{{ $t('Edit') }}
+                                    </Link>
+                                    <button class="btn join-item btn-error" @click="deleteUser(user.id)">{{
+                                            $t('Delete')
+                                        }}
+                                    </button>
                                 </div>
                             </td>
                         </tr>

@@ -65,6 +65,12 @@ class User extends Authenticatable
         return $this->belongsToMany(Role::class, 'user_role');
     }
 
+    //is admin
+    public function getIsAdminAttribute()
+    {
+        return $this->roles->contains('name', 'admin');
+    }
+
     public function attachRole($role)
     {
         if(is_string($role)) {
@@ -81,9 +87,26 @@ class User extends Authenticatable
 
     }
 
+    public function hasRole($role)
+    {
+        return $this->roles->contains('name', $role);
+    }
+
     //format created_at
     public function getCreatedAtAttribute($value)
     {
         return date('d.m.Y H:i', strtotime($value));
+    }
+
+    //obervations relationship
+    public function observations()
+    {
+        return $this->hasMany(Observation::class);
+    }
+
+    //observations count
+    public function getObservationsCountAttribute()
+    {
+        return $this->observations->count();
     }
 }

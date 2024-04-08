@@ -14,7 +14,7 @@ class ObservationPolicy
     public function viewAny(User $user): bool
     {
         //allow if logged in user and role is admin
-        return Auth::check() && $user->roles->contains('name', 'admin');
+        return Auth::check() && $user->is_admin;
     }
 
     public function view(User $user, Observation $observation): bool
@@ -33,12 +33,14 @@ class ObservationPolicy
     public function update(User $user, Observation $observation): bool
     {
         //allow if logged in user and role is admin
-        return Auth::check() && $user->roles->contains('name', 'admin');
+        return Auth::check() && $user->is_admin;
 
     }
 
     public function delete(User $user, Observation $observation): bool
     {
+        //allow if logged in user and role is admin
+        return Auth::check() && $user->is_admin;
     }
 
     public function restore(User $user, Observation $observation): bool

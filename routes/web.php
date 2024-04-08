@@ -12,16 +12,6 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -53,32 +43,16 @@ Route::middleware([
             ->with('main_map', false);
     })->name('my-observation-spots');
 
-    //create a new observation route
-    Route::get('/observations/create', [ObservationController::class, 'create'])->name('observations.create');
 
-    //store a new observation route
-    Route::post('/observations/store', [ObservationController::class, 'store'])->name('observations.store');
-
-    //Observations index route
-    Route::get('/observations', [ObservationController::class, 'index'])->name('observations.index');
-
-    //Observation index route
-    Route::get('/observations/{observation}', [ObservationController::class, 'show'])->name('observations.show');
-    //Observation edit route
-    Route::get('/observations/{observation}/edit', [ObservationController::class, 'edit'])->name('observations.edit');
-
-    //Observation update route
-    Route::put('/observations/{observation}', [ObservationController::class, 'update'])->name('observations.update');
+    Route::resource('observations', ObservationController::class);
 
     Route::resource('observation-spots', ObservationSpotController::class);
 
-    //Users index route
-    Route::get('/users', [UserController::class, 'index'])->name('users.index');
-
+    //User resource routes
+    Route::resource('users', UserController::class);
 
 
 });
-
 
 
 Route::get('geojson/jarved', function () {

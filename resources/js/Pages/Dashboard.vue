@@ -71,6 +71,15 @@
                         <span class="label-text mr-1">Karstijärvikud</span>
                         <input class="checkbox checkbox-lg" type="checkbox" v-model="isKarstVisible">
                     </label>
+                    <button class="btn btn-accent" @click="getUserLocation">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                             stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                  d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                  d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"/>
+                        </svg>
+                    </button>
 
 
                 </div>
@@ -142,6 +151,18 @@
             </div>
 
 
+            <!-- Modal for when the location of a user is outside of Estonia -->
+            <div class="modal" :class="{ 'modal-open': showOutsideEstoniaModal }">
+                <div class="modal-box">
+                    <h3 class="font-bold text-lg">You are outside of Estonia</h3>
+                    <div class="modal-action">
+                        <button class="btn" @click="showOutsideEstoniaModal = false">
+                            Ok
+                        </button>
+                    </div>
+                </div>
+            </div>
+
         </main>
     </AppLayout>
 </template>
@@ -180,11 +201,49 @@ let props = defineProps({
 let selectedAreaName = ref('');
 let showGeoJsonModal = ref(false);
 let showModal = ref(false);
+let showOutsideEstoniaModal = ref(false);
 
 let isJarvedVisible = ref(false);
 let isVooluvesiVisible = ref(false);
 let isKarstVisible = ref(false);
 
+const updateLocalStorage = () => {
+    localStorage.setItem('isJarvedVisible', isJarvedVisible.value);
+    localStorage.setItem('isVooluvesiVisible', isVooluvesiVisible.value);
+    localStorage.setItem('isKarstVisible', isKarstVisible.value);
+};
+
+watch([isJarvedVisible, isVooluvesiVisible, isKarstVisible], () => {
+    updateLocalStorage();
+});
+
+
+
+// Add a method to get the user's location
+const getUserLocation = () => {
+    loaderText.value = 'Laen geolokatsiooni...';
+    mapLoaded.value = false; // Start loading
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(position => {
+            let userLocation = latLng(position.coords.latitude, position.coords.longitude);
+            // Check if user's location is within the bounds of Estonia
+            if (estoniaBounds.contains(userLocation)) {
+                // Set maaametCenter to the user's current location
+                maaametCenter.value = userLocation;
+                zoom.value = 9; // Adjust this value as needed
+            } else {
+                showOutsideEstoniaModal.value = true;
+            }
+            mapLoaded.value = true; // End loading
+        }, error => {
+            console.error("Error obtaining geolocation: ", error);
+            mapLoaded.value = true; // End loading
+        });
+    } else {
+        console.error("Geolocation is not supported by this browser.");
+        mapLoaded.value = true; // End loading
+    }
+};
 
 function toggleGeoJsonModal() {
     showGeoJsonModal.value = !showGeoJsonModal.value;
@@ -445,6 +504,7 @@ let estoniaBounds = latLngBounds(
     [59.674, 28.209]  // Northeast coordinates
 );
 
+
 onMounted(async () => {
     const cache = await caches.open('geojson-cache');
 
@@ -480,10 +540,10 @@ onMounted(async () => {
     geojsonFetched.value = true;
     mapLoaded.value = true;
 
-    // Once the GeoJSON data is available, set the visibility reactive variables to true
-    isJarvedVisible.value = true;
-    isVooluvesiVisible.value = true;
-    isKarstVisible.value = true;
+    // Retrieve checkbox states from local storage
+    isJarvedVisible.value = localStorage.getItem('isJarvedVisible') === 'true' || false;
+    isVooluvesiVisible.value = localStorage.getItem('isVooluvesiVisible') === 'true' || false;
+    isKarstVisible.value = localStorage.getItem('isKarstVisible') === 'true' || false;
 
 });
 if (navigator.geolocation && props.main_map) {
