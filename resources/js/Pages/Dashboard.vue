@@ -55,7 +55,7 @@
 
 
             <div class="checkbox-container">
-                <div class="join space-x-1">
+                <div class="lg:join lg:space-x-1">
 
                     <label class="label cursor-pointer">
                         <span class="label-text mr-1">Järved</span>
@@ -108,15 +108,15 @@
 
                 <!--                ></l-wms-tile-layer>-->
 
-                <l-geo-json :visible="isJarvedVisible" :options="{ style: featureStyle1, onEachFeature: onEachFeature }"
-                            :geojson="jarvedData"></l-geo-json>
+                <!--                <l-geo-json :visible="isJarvedVisible" :options="{ style: featureStyle1, onEachFeature: onEachFeature }"-->
+                <!--                            :geojson="jarvedData"></l-geo-json>-->
 
-                <l-geo-json :visible="isVooluvesiVisible"
-                            :options="{ style: featureStyle2, onEachFeature: onEachFeature }"
-                            :geojson="vooluvesiData"></l-geo-json>
+                <!--                <l-geo-json :visible="isVooluvesiVisible"-->
+                <!--                            :options="{ style: featureStyle2, onEachFeature: onEachFeature }"-->
+                <!--                            :geojson="vooluvesiData"></l-geo-json>-->
 
-                <l-geo-json :visible="isKarstVisible" :options="{ style: featureStyle3, onEachFeature: onEachFeature }"
-                            :geojson="karstData"></l-geo-json>
+                <!--                <l-geo-json :visible="isKarstVisible" :options="{ style: featureStyle3, onEachFeature: onEachFeature }"-->
+                <!--                            :geojson="karstData"></l-geo-json>-->
 
                 <!--                <l-marker v-for="marker, index in markers" :lat-lng="marker" @click="removeMarker(index)"></l-marker>-->
 
@@ -180,6 +180,7 @@ import {router} from '@inertiajs/vue3'
 import ApplicationMark from "@/Components/ApplicationMark.vue";
 import markerIconUrl from '@/assets/pin.svg';
 import {trans} from 'laravel-vue-i18n';
+import {computed} from 'vue';
 
 
 const map = ref(null);
@@ -207,6 +208,10 @@ let isJarvedVisible = ref(false);
 let isVooluvesiVisible = ref(false);
 let isKarstVisible = ref(false);
 
+let vooluvesiLayer = null;
+let jarvedLayer = null;
+let karstLayer = null;
+
 const updateLocalStorage = () => {
     localStorage.setItem('isJarvedVisible', isJarvedVisible.value);
     localStorage.setItem('isVooluvesiVisible', isVooluvesiVisible.value);
@@ -216,8 +221,6 @@ const updateLocalStorage = () => {
 watch([isJarvedVisible, isVooluvesiVisible, isKarstVisible], () => {
     updateLocalStorage();
 });
-
-
 
 // Add a method to get the user's location
 const getUserLocation = () => {
@@ -249,22 +252,29 @@ function toggleGeoJsonModal() {
     showGeoJsonModal.value = !showGeoJsonModal.value;
 }
 
+let vooluvesiWeight = computed(() => {
+    if (zoom.value >= 7) {
+        return 15; // Increase the weight when zoomed in
+    } else {
+        return 2; // Use a smaller weight when zoomed out
+    }
+});
 
 function featureStyle1(feature) {
     return {
-        fillColor: 'blue',
-        color: 'white',
+        fillColor: '#00B1F6',
+        color: '#00B1F6',
         weight: 2,
         opacity: 1,
-        fillOpacity: 0.7,
+        fillOpacity: 0.6,
     };
 }
 
 function featureStyle2(feature) {
     return {
-        fillColor: 'red',
-        color: 'white',
-        weight: 2,
+        fillColor: '#00b5ff',
+        color: '#00b5ff',
+        weight: vooluvesiWeight.value,
         opacity: 1,
         fillOpacity: 0.7,
     };
@@ -272,13 +282,14 @@ function featureStyle2(feature) {
 
 function featureStyle3(feature) {
     return {
-        fillColor: 'green',
-        color: 'white',
+        fillColor: '#006891',
+        color: '#006891',
         weight: 2,
         opacity: 1,
         fillOpacity: 0.7,
     };
 }
+
 
 let geojsonFetched = ref(false);
 let selectedLayer = null;
@@ -292,7 +303,7 @@ const onEachFeature = (feature, layer) => {
         if (selectedLayer) {
             selectedLayer.setStyle({
                 weight: 3, // Set the border weight back to normal
-                color: '#3388ff'
+                color: '#006891'
 
             });
         }
@@ -301,9 +312,8 @@ const onEachFeature = (feature, layer) => {
         selectedAreaName = feature.properties.nimi;
 
         layer.setStyle({
-            weight: 5, // Make the border of the polygon bolder
-            //change the color of the border to red
-            color: 'red',
+            weight: 5,
+            color: '#ff5861',
         });
 
 
@@ -403,7 +413,7 @@ function addMarker(event) {
             if (selectedLayer) {
                 selectedLayer.setStyle({
                     weight: 2, // Set the border weight back to normal
-                    color: '#3388ff' // Set the border color back to normal
+                    color: '#006891' // Set the border color back to normal
                 });
                 selectedLayer = null; // Clear the selected layer
             }
@@ -506,6 +516,11 @@ let estoniaBounds = latLngBounds(
 
 
 onMounted(async () => {
+
+    // Wait for the map to be ready
+    await nextTick();
+
+
     const cache = await caches.open('geojson-cache');
 
     // Fetch jarved.json
@@ -540,10 +555,30 @@ onMounted(async () => {
     geojsonFetched.value = true;
     mapLoaded.value = true;
 
+    // Get the map instance
+    const mapInstance = map.value.leafletObject;
+
+    // Create the GeoJSON layers
+    jarvedLayer = L.geoJSON(jarvedData, {style: featureStyle1, onEachFeature: onEachFeature});
+    vooluvesiLayer = L.geoJSON(vooluvesiData, {style: featureStyle2, onEachFeature: onEachFeature});
+    karstLayer = L.geoJSON(karstData, {style: featureStyle3, onEachFeature: onEachFeature});
+
+
     // Retrieve checkbox states from local storage
     isJarvedVisible.value = localStorage.getItem('isJarvedVisible') === 'true' || false;
     isVooluvesiVisible.value = localStorage.getItem('isVooluvesiVisible') === 'true' || false;
     isKarstVisible.value = localStorage.getItem('isKarstVisible') === 'true' || false;
+
+    // Add the layers to the map
+    if (isJarvedVisible.value) {
+        jarvedLayer.addTo(mapInstance);
+    }
+    if (isVooluvesiVisible.value) {
+        vooluvesiLayer.addTo(mapInstance);
+    }
+    if (isKarstVisible.value) {
+        karstLayer.addTo(mapInstance);
+    }
 
 });
 if (navigator.geolocation && props.main_map) {
@@ -563,6 +598,13 @@ if (navigator.geolocation && props.main_map) {
 watch([center, zoom], ([newCenter, newZoom]) => {
     if (map.value) {
         map.value = {center: newCenter, zoom: newZoom};
+    }
+});
+
+
+watch(zoom, () => {
+    if (vooluvesiLayer) {
+        vooluvesiLayer.setStyle(featureStyle2);
     }
 });
 
