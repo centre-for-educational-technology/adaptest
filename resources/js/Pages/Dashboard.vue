@@ -608,5 +608,29 @@ watch(zoom, () => {
     }
 });
 
+watch(isJarvedVisible, (newVal) => {
+    if (newVal) {
+        jarvedLayer.addTo(mapInstance);
+    } else {
+        mapInstance.removeLayer(jarvedLayer);
+    }
+});
+
+watch(isVooluvesiVisible, (newVal) => {
+    if (newVal) {
+        vooluvesiLayer.addTo(mapInstance);
+    } else {
+        mapInstance.removeLayer(vooluvesiLayer);
+    }
+});
+
+watch(isKarstVisible, (newVal) => {
+    if (newVal) {
+        karstLayer.addTo(mapInstance);
+    } else {
+        mapInstance.removeLayer(karstLayer);
+    }
+});
+
 
 </script>
