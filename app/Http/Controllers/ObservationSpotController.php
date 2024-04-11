@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ObservationSpotRequest;
+use App\Http\Resources\ObservationResource;
 use App\Http\Resources\ObservationSpotResource;
 use App\Models\ObservationSpot;
 use Inertia\Inertia;
@@ -39,8 +40,7 @@ class ObservationSpotController extends Controller
                 'lat' => $observationSpot->latitude,
                 'lng' => $observationSpot->longitude,
             ],
-            'observations' => $observationSpot->observations->load('user'),
-        ]);
+            'observations' => ObservationResource::collection($observationSpot->observations->load('user')),        ]);
 
     }
 

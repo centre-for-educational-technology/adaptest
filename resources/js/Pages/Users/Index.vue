@@ -21,7 +21,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr v-for="user in props.users.data" :key="user.id">
+                        <tr v-for="user in props.users" :key="user.id">
                             <td>{{ user.name }}</td>
                             <td>{{ user.email }}</td>
                             <td>{{ user.role }}</td>

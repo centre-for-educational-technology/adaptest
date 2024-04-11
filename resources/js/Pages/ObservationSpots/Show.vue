@@ -124,14 +124,14 @@
                                                 <div class="flex items-center gap-3">
                                                     <div class="avatar">
                                                         <div class="mask mask-squircle w-12 h-12">
-                                                            <img :src="observation.user.profile_photo_url"
-                                                                 :alt="observation.user.name"/>
+                                                            <img :src="observation.author.profile_photo_url"
+                                                                 :alt="observation.author.name"/>
                                                         </div>
                                                     </div>
                                                     <div>
-                                                        <Link :href="route('users.show', observation.user.id)"
+                                                        <Link :href="route('users.show', observation.author.id)"
                                                               class="font-bold text-blue-500 hover:underline">
-                                                            {{ observation.user.name }}
+                                                            {{ observation.author.name }}
                                                         </Link>
                                                     </div>
                                                 </div>
@@ -168,145 +168,175 @@
 
                             <tr>
                                 <th>{{ $t('Measuring time') }}:</th>
-                                <td>{{ currentObservation.measuring_time }}</td>
+                                <td v-if="currentObservation.measuring_time">{{ currentObservation.measuring_time }}</td>
+                                <td v-else>-</td>
                             </tr>
                             <tr>
                                 <th>{{ $t('Odor') }}:</th>
-                                <td>{{ currentObservation.odor }}</td>
+                                <td v-if="currentObservation.odor">{{ currentObservation.odor }}</td>
+                                <td v-else>-</td>
                             </tr>
                             <tr>
                                 <th>{{ $t('Color and turbidity') }}:</th>
-                                <td>{{ currentObservation.color_turbidity }}</td>
+                                <td v-if="currentObservation.color_turbidity">{{ currentObservation.color_turbidity }}</td>
+                                <td v-else>-</td>
                             </tr>
                             <tr>
                                 <th>{{ $t('Description of natural conditions') }}:</th>
-                                <td>{{ currentObservation.conditions }}</td>
+                                <td v-if="currentObservation.conditions">{{ currentObservation.conditions }}</td>
+                                <td v-else>-</td>
                             </tr>
-                            <h3 class="text-lg mt-3 font-bold">Füüsikalised-keemilised näitajad</h3>
                             <tr>
                                 <th>{{ $t('pH') }}:</th>
-                                <td>{{ currentObservation.ph }}</td>
+                                <td v-if="currentObservation.ph">{{ currentObservation.ph }}</td>
+                                <td v-else>-</td>
                             </tr>
                             <tr>
                                 <th>{{ $t('Water temperature') }}:</th>
-                                <td>{{ currentObservation.water_temperature }}</td>
+                                <td v-if="currentObservation.water_temperature">{{ currentObservation.water_temperature }}</td>
+                                <td v-else>-</td>
                             </tr>
                             <tr>
                                 <th>{{ $t('Air temperature') }}:</th>
-                                <td>{{ currentObservation.air_temperature }}</td>
+                                <td v-if="currentObservation.air_temperature">{{ currentObservation.air_temperature }}</td>
+                                <td v-else>-</td>
                             </tr>
                             <tr>
                                 <th>{{ $t('Specific conductance') }}:</th>
-                                <td>{{ currentObservation.specific_conductance }}</td>
+                                <td v-if="currentObservation.specific_conductance">{{ currentObservation.specific_conductance }}</td>
+                                <td v-else>-</td>
                             </tr>
                             <tr>
                                 <th>{{ $t('Total dissolved solids') }}:</th>
-                                <td>{{ currentObservation.total_dissolved_solids }}</td>
+                                <td v-if="currentObservation.total_dissolved_solids">{{ currentObservation.total_dissolved_solids }}</td>
+                                <td v-else>-</td>
                             </tr>
                             <tr>
                                 <th>{{ $t('Nitrate (NO3)') }}:</th>
-                                <td>{{ currentObservation.nitrate }}</td>
+                                <td v-if="currentObservation.nitrate">{{ currentObservation.nitrate }}</td>
+                                <td v-else>-</td>
                             </tr>
                             <tr>
                                 <th>{{ $t('Bicarbonate (HCO3)') }}:</th>
-                                <td>{{ currentObservation.bicarbonate }}</td>
+                                <td v-if="currentObservation.bicarbonate">{{ currentObservation.bicarbonate }}</td>
+                                <td v-else>-</td>
                             </tr>
                             <tr>
                                 <th>{{ $t('Redox potential') }}:</th>
-                                <td>{{ currentObservation.redox_potential }}</td>
+                                <td v-if="currentObservation.redox_potential">{{ currentObservation.redox_potential }}</td>
+                                <td v-else>-</td>
                             </tr>
                             <tr>
                                 <th>{{ $t('Dissolved oxygen (%)') }}:</th>
-                                <td>{{ currentObservation.dissolved_oxygen_percent }}</td>
+                                <td v-if="currentObservation.dissolved_oxygen_percent">{{ currentObservation.dissolved_oxygen_percent }}</td>
+                                <td v-else>-</td>
                             </tr>
                             <tr>
                                 <th>{{ $t('Dissolved oxygen (mg/l)') }}:</th>
-                                <td>{{ currentObservation.dissolved_oxygen_mgl }}</td>
+                                <td v-if="currentObservation.dissolved_oxygen_mgl">{{ currentObservation.dissolved_oxygen_mgl }}</td>
+                                <td v-else>-</td>
                             </tr>
                             <tr>
                                 <th>{{ $t('Discharge') }}:</th>
-                                <td>{{ currentObservation.discharge }}</td>
+                                <td v-if="currentObservation.discharge">{{ currentObservation.discharge }}</td>
+                                <td v-else>-</td>
                             </tr>
                             <tr>
                                 <th>{{ $t('Flow velocity') }}:</th>
-                                <td>{{ currentObservation.water_flow['label'] }}</td>
+                                <td v-if="currentObservation.water_flow['label']">{{ currentObservation.water_flow['label'] }}</td>
+                                <td v-else>-</td>
                             </tr>
                             <tr>
                                 <th>{{ $t('Flow direction/water level') }}:</th>
-                                <td>{{ currentObservation.flow_direction }}</td>
+                                <td v-if="currentObservation.flow_direction">{{ currentObservation.flow_direction }}</td>
+                                <td v-else>-</td>
                             </tr>
-
-                            <h3 class="text-lg mt-3 font-bold">Hüdromorfoloogia</h3>
                             <tr>
                                 <th>{{ $t('Erosion') }}:</th>
-                                <td>{{ yesNo(currentObservation.erosion) }}</td>
+                                <td v-if="currentObservation.erosion">{{ yesNo(currentObservation.erosion) }}</td>
+                                <td v-else>-</td>
                             </tr>
                             <tr>
                                 <th>{{ $t('Nature') }}:</th>
-                                <td>{{ currentObservation.nature['label'] }}</td>
+                                <td v-if="currentObservation.nature['label']">{{ currentObservation.nature['label'] }}</td>
+                                <td v-else>-</td>
                             </tr>
                             <tr>
                                 <th>{{ $t('Riparian vegetation') }}:</th>
-                                <td>{{ currentObservation.riparian_vegetation['label'] }}</td>
+                                <td v-if="currentObservation.riparian_vegetation['label']">{{ currentObservation.riparian_vegetation['label'] }}</td>
+                                <td v-else>-</td>
                             </tr>
                             <tr>
                                 <th>{{ $t('Vegetation coverage') }}:</th>
-                                <td>{{ currentObservation.vegetation_coverage['label'] }}</td>
+                                <td v-if="currentObservation.vegetation_coverage['label']">{{ currentObservation.vegetation_coverage['label'] }}</td>
+                                <td v-else>-</td>
                             </tr>
                             <tr>
                                 <th>{{ $t('Puujuures, oksad vms ulatuvad vett') }}:</th>
-                                <td>{{ yesNo(currentObservation.tree_roots) }}</td>
+                                <td v-if="currentObservation.tree_roots">{{ yesNo(currentObservation.tree_roots) }}</td>
+                                <td v-else>-</td>
                             </tr>
                             <tr>
                                 <th>{{ $t('Veekogu põhi') }}:</th>
-                                <td>{{ currentObservation.bottom['label'] }}</td>
+                                <td v-if="currentObservation.bottom['label']">{{ currentObservation.bottom['label'] }}</td>
+                                <td v-else>-</td>
                             </tr>
                             <tr>
                                 <th>{{ $t('Veetaimestik') }}:</th>
-                                <td>{{ currentObservation.aquatic_vegetation['label'] }}</td>
+                                <td v-if="currentObservation.aquatic_vegetation['label']">{{ currentObservation.aquatic_vegetation['label'] }}</td>
+                                <td v-else>-</td>
                             </tr>
-
-                            <h3 class="text-lg mt-3 font-bold">Inimmõju</h3>
                             <tr>
                                 <th>{{ $t('Ehitisi') }}:</th>
-                                <td>{{ yesNo(currentObservation.buildings) }}</td>
+                                <td v-if="currentObservation.buildings">{{ yesNo(currentObservation.buildings) }}</td>
+                                <td v-else>-</td>
                             </tr>
                             <tr>
                                 <th>{{ $t('Põllumajanduslik tegevus') }}:</th>
-                                <td>{{ yesNo(currentObservation.agricultural_activity) }}</td>
+                                <td v-if="currentObservation.agricultural_activity">{{ yesNo(currentObservation.agricultural_activity) }}</td>
+                                <td v-else>-</td>
                             </tr>
                             <tr>
                                 <th>{{ $t('Teed, parkimisplatsid') }}:</th>
-                                <td>{{ yesNo(currentObservation.roads) }}</td>
+                                <td v-if="currentObservation.roads">{{ yesNo(currentObservation.roads) }}</td>
+                                <td v-else>-</td>
                             </tr>
                             <tr>
                                 <th>{{ $t('Park') }}:</th>
-                                <td>{{ yesNo(currentObservation.park) }}</td>
+                                <td v-if="currentObservation.park">{{ yesNo(currentObservation.park) }}</td>
+                                <td v-else>-</td>
                             </tr>
                             <tr>
                                 <th>{{ $t('Supelrand') }}:</th>
-                                <td>{{ yesNo(currentObservation.beach) }}</td>
+                                <td v-if="currentObservation.beach">{{ yesNo(currentObservation.beach) }}</td>
+                                <td v-else>-</td>
                             </tr>
                             <tr>
                                 <th>{{ $t('Paadisild, slip') }}:</th>
-                                <td>{{ yesNo(currentObservation.boat_bridge) }}</td>
+                                <td v-if="currentObservation.boat_bridge">{{ yesNo(currentObservation.boat_bridge) }}</td>
+                                <td v-else>-</td>
                             </tr>
                             <tr>
                                 <th>{{ $t('Kaldakindlustusrajatised') }}:</th>
-                                <td>{{ yesNo(currentObservation.shore_facility) }}</td>
+                                <td v-if="currentObservation.shore_facility">{{ yesNo(currentObservation.shore_facility) }}</td>
+                                <td v-else>-</td>
                             </tr>
                             <tr>
                                 <th>{{ $t('Paisud, sillad') }}:</th>
-                                <td>{{ yesNo(currentObservation.dams) }}</td>
+                                <td v-if="currentObservation.dams">{{ yesNo(currentObservation.dams) }}</td>
+                                <td v-else>-</td>
                             </tr>
                             <tr>
                                 <th>{{ $t('Kaldavööndi prügistamist') }}:</th>
-                                <td>{{ yesNo(currentObservation.littering) }}</td>
+                                <td v-if="currentObservation.littering">{{ yesNo(currentObservation.littering) }}</td>
+                                <td v-else>-</td>
                             </tr>
                             <tr>
                                 <th>{{ $t('Veereostust') }}:</th>
-                                <td>{{ yesNo(currentObservation.water_pollution) }}</td>
+                                <td v-if="currentObservation.water_pollution">{{ yesNo(currentObservation.water_pollution) }}</td>
+                                <td v-else>-</td>
                             </tr>
+
                         </table>
                         <div class="modal-action">
                             <button class="btn" @click="isModalVisible = false">

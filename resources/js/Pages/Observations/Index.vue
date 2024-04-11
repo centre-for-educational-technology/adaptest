@@ -44,7 +44,7 @@ const deleteObservation = (id) => {
                         </tr>
                         </thead>
                         <tbody>
-                        <tr v-for="observation in props.observations.data" :key="observation.id">
+                        <tr v-for="observation in props.observations" :key="observation.id">
                             <td>{{ observation.observation_spot.name }}</td>
                             <td>{{ observation.created_at }}</td>
                             <td>{{ observation.author.name }}</td>

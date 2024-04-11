@@ -127,7 +127,7 @@
                 </l-marker>
 
                 <l-marker
-                    v-for="(spot, index) in props.observation_spots.data" :key="index"
+                    v-for="(spot, index) in props.observation_spots" :key="index"
                     :lat-lng="[spot.latitude, spot.longitude]"
                     :icon="markerIcon"
                     @click="askForObservation(spot)">

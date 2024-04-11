@@ -48,7 +48,7 @@ const deleteSpot = (id) => {
                         </tr>
                         </thead>
                         <tbody>
-                        <tr v-for="spot in props.observation_spots.data" :key="spot.id">
+                        <tr v-for="spot in props.observation_spots" :key="spot.id">
                             <td>
                                 <Link class="link-accent" :href="route('observation-spots.show', spot.id)">
                                     {{ spot.name }}
