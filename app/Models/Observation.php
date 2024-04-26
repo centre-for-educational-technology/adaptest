@@ -52,10 +52,12 @@ class Observation extends Model
         'water_pollution',
         'user_id',
         'observation_spot_id',
+        'photos'
     ];
 
     protected $casts = [
         'measuring_time' => 'datetime',
+        'photos' => 'json',
 //        'nature' => Natures::class,
 //        'riparian_vegetation' => RiparianVegetations::class,
 //        'vegetation_coverage' => VegetationCoverages::class,
@@ -82,6 +84,5 @@ class Observation extends Model
     {
         return Carbon::parse($value)->format('d M Y, H:i');
     }
-
 
 }

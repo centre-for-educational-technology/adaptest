@@ -40,7 +40,10 @@ class ObservationSpotController extends Controller
                 'lat' => $observationSpot->latitude,
                 'lng' => $observationSpot->longitude,
             ],
-            'observations' => ObservationResource::collection($observationSpot->observations->load('user')),        ]);
+            //other observation spots for this water body excluding the current observation spot
+            'other_observation_spots' => ObservationSpotResource::collection($observationSpot->waterBody->observationSpots->where('id', '!=', $observationSpot->id)),
+            'observations' => ObservationResource::collection($observationSpot->observations->load('user')),]);
+
 
     }
 
@@ -73,7 +76,7 @@ class ObservationSpotController extends Controller
 
     }
 
-    public function destroy(ObservationSpot $observationSpot) : InertiaResponse
+    public function destroy(ObservationSpot $observationSpot): InertiaResponse
     {
         $this->authorize('delete', $observationSpot);
 

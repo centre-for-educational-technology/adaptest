@@ -14,10 +14,13 @@ use App\Models\Observation;
 use App\Models\ObservationSpot;
 use App\Models\WaterBody;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
-use Inertia\Testing\Concerns\Interaction;
+use Intervention\Image\ImageManager;
 
 class ObservationController extends Controller
 {
@@ -64,6 +67,7 @@ class ObservationController extends Controller
             'name' => $data['name'],
             'water_body_kr_code' => $data['water_body_kr_code'],
             'observation_spot_id' => $data['observation_spot_id'],
+            'photo_urls' => session('photo_urls', [])
 
         ]);
 
@@ -92,10 +96,26 @@ class ObservationController extends Controller
             $observationSpot = ObservationSpot::find($request->input('observation_spot_id'));
         }
 
+
+        $fileNames = [];
+        if (session()->has('photo_urls')) {
+            $fileUrls = session('photo_urls');
+            foreach ($fileUrls as $fileUrl) {
+                $fileName = basename($fileUrl);
+                $fileNames[] = $fileName;
+
+            }
+        }
+
         Observation::create(array_merge($request->validated(), [
             'observation_spot_id' => $observationSpot->id,
             'user_id' => $request->user()->id,
+            'photos' => $fileNames,
         ]));
+
+
+        // Clear the photo_urls from the session
+        session()->forget('photo_urls');
 
         return Redirect::route('dashboard');
     }
@@ -113,6 +133,7 @@ class ObservationController extends Controller
     {
         $this->authorize('update', $observation);
 
+
         return Inertia::render('Observations/Edit', [
             'observation' => new ObservationResource($observation),
             'water_flows' => WaterFlows::getWaterFlowLabels(),
@@ -127,13 +148,15 @@ class ObservationController extends Controller
             ],
             'observation_spot_id' => $observation->observationSpot->id,
             'water_body_kr_code' => $observation->observationSpot->waterBody->code,
+            'photo_urls' => !empty($observation->photos) ? array_merge($observation->photos, session('photo_urls', [])) : session('photo_urls', [])
         ]);
     }
 
 
-    public function update(ObservationRequest $request, Observation $observation) : InertiaResponse
+    public function update(ObservationRequest $request, Observation $observation): InertiaResponse
     {
         $this->authorize('update', $observation);
+
 
         $observation->update($request->validated());
 
@@ -152,4 +175,109 @@ class ObservationController extends Controller
             ->with('flash.banner', __('Observation deleted.'))
             ->with('flash.bannerStyle', 'success');
     }
+
+
+    public function uploadFiles(Request $request)
+    {
+        $messages = [
+            'photos.*.image' => 'The uploaded file must be an image.',
+            'photos.*.mimes' => 'The image must be a file of type: jpeg, png, jpg.',
+        ];
+
+        // Validate the request
+        $validator = Validator::make($request->all(), [
+            'photos.*' => 'image|mimes:jpeg,png,jpg',
+        ], $messages);
+
+        if ($validator->fails()) {
+            // Redirect back with errors
+            session()->flash('message', 'Invalid file type, only jpeg, png, jpg allowed.');
+            return Redirect::back()->withErrors($validator);
+        }
+
+        // Retrieve the existing fileUrls from the session
+        $fileNames = session('photo_urls', []);
+
+        if ($request->hasFile('photos')) {
+            $photos = $request->file('photos');
+
+            foreach ($photos as $file) {
+                // Generate a unique name for the file
+                $filename = uniqid('', false) . '.' . $file->getClientOriginalExtension();
+
+
+                $manager = new ImageManager(['driver' => 'imagick']);
+
+                $img = $manager->make($file);
+                $img->resize(1280, null, function ($constraint) {
+                    $constraint->aspectRatio();
+                    $constraint->upsize();
+                });
+
+                // Reduce quality to 80%
+                $img->stream('jpg', 80);
+
+                // Store the file in the public disk
+                Storage::disk('public')->put('observations/' . $filename, $img);
+
+                // Add the filename to the array of file names
+                $fileNames[] = $filename;
+            }
+
+            // Store the updated fileNames in the session
+            session(['photo_urls' => $fileNames]);
+
+            // Set a flash message and return the file URLs
+            session()->flash('message', 'Images stored successfully.');
+        } else {
+            session()->flash('message', 'No photos uploaded.');
+        }
+
+        // Redirect back to the form
+        return Redirect::back();
+    }
+
+    public function deleteFile($file)
+    {
+
+        // Find the observation in the database
+        $observation = Observation::where('photos', 'like', '%' . $file . '%')->first();
+
+        if ($observation) {
+            // Decode the photos json into an array
+            $photos = $observation->photos;
+
+            // Search for the file URL in the array and remove it
+            if (($key = array_search($file, $photos)) !== false) {
+                unset($photos[$key]);
+            }
+
+            // Update the photos in the database
+            $observation->photos = $photos;
+
+            $observation->save();
+        }
+        // Delete the file from storage
+        if (Storage::exists('public/observations/' . $file)) {
+
+            Storage::delete('public/observations/' . $file);
+
+            $fileUrls = session('photo_urls', []);
+            $fileUrls = array_diff($fileUrls, [$file]);
+            session(['photo_urls' => $fileUrls]);
+
+            session()->flash('message', 'File deleted successfully.');
+        } else {
+
+            session()->flash('message', 'File not found.');
+
+        }
+    }
+
+    public function clearFileUrls()
+    {
+        session()->forget('photo_urls');
+
+    }
 }
+

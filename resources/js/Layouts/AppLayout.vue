@@ -58,6 +58,13 @@ const logout = () => {
                                     {{ $t('My observation spots') }}
                                 </NavLink>
                             </div>
+
+
+                            <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+                                <NavLink :href="route('latest-observations')" :active="route().current('latest-observations')">
+                                    {{ $t('Latest observations') }}
+                                </NavLink>
+                            </div>
                         </div>
 
                         <div class="hidden sm:flex sm:items-center sm:ml-6">

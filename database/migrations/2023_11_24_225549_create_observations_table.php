@@ -43,6 +43,7 @@ return new class extends Migration {
             $table->boolean('dams')->nullable();
             $table->boolean('littering')->nullable();
             $table->boolean('water_pollution')->nullable();
+            $table->json('photos')->nullable();
             $table->foreignId('user_id')->references('id')->on('users')->cascadeOnDelete();
             $table->foreignId('observation_spot_id')->references('id')->on('observation_spots')->cascadeOnDelete();
             $table->timestamps();

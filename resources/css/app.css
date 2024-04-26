@@ -174,3 +174,7 @@ body {
     padding: 10px;
     border-radius: 5px;
 }
+
+.file-uploads{
+    display: inline-flex !important;
+}

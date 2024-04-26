@@ -9,6 +9,8 @@ use Database\Seeders\RolesSeeder;
 use Database\Seeders\WaterBodiesSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Testing\AssertableInertia;
 use Tests\TestCase;
 
@@ -294,5 +296,37 @@ class ObservationControllerTest extends TestCase
 
     }
 
+    /**
+     * @test
+     */
+    /**
+     * @test
+     */
+    public function it_can_upload_files()
+    {
+        // Fake the storage disk
+        Storage::fake('public');
+
+        // Create a user and authenticate as this user
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        // Create a fake file
+        $file = UploadedFile::fake()->image('photo.jpg');
+
+        // Make a POST request to the uploadFiles route
+        $response = $this->post(route('files.upload'), [
+            'photos' => [$file],
+        ]);
+
+        // Get the new file name from the response
+        $fileNames = $response->getSession()->get('photo_urls');
+
+        // Assert the file was uploaded successfully
+        foreach ($fileNames as $fileName) {
+            // Ensure the file exists in the correct location
+            Storage::disk('public')->assertExists('observations/' . $fileName);
+        }
+    }
 
 }

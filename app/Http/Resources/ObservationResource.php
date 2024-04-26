@@ -79,6 +79,9 @@ class ObservationResource extends JsonResource
             'updated_at' => $this->updated_at,
             'observation_spot' => new ObservationSpotResource($this->observationSpot),
             'author' => new UserResource($this->user),
+            'photos' => $this->photos,
+            //just one photo
+            'photo' => $this->photos[0] ?? null,
         ];
     }
 }

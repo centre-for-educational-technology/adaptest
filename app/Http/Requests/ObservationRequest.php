@@ -11,6 +11,7 @@ class ObservationRequest extends FormRequest
     {
         return true;
     }
+
     public function rules(): array
     {
         return [
@@ -57,6 +58,8 @@ class ObservationRequest extends FormRequest
 
             'observation_spot_name' => 'required_if:observation_spot_id,null',
             'observation_spot_description' => 'required_if:observation_spot_id,null',
+
+            'photos' => 'nullable|array',
         ];
     }
 }

@@ -47,6 +47,11 @@ let props = defineProps({
         required: true,
         default: null,
     },
+    photo_urls: {
+        type: Object,
+        required: false,
+        default: null
+    },
 });
 
 </script>
@@ -71,7 +76,7 @@ let props = defineProps({
                                   :coordinates="coordinates"
                                   :water_body_kr_code="water_body_kr_code"
                                   :observation_spot_id="observation_spot_id"
-
+                                  :photo_urls="photo_urls"
                 ></observation-form>
             </div>
         </div>

@@ -51,8 +51,20 @@ Route::middleware([
     //User resource routes
     Route::resource('users', UserController::class);
 
+    //Latest observations
+    Route::get('/latest-observations', function () {
+        $observations = ObservationResource::collection(Observation::latest()->limit(10)->get());
+        return Inertia::render('Observations/Latest', [
+            'observations' => $observations,
+        ]);
+    })->name('latest-observations');
 
+    Route::post('/upload-files', [ObservationController::class, 'uploadFiles'])->name('files.upload');
+
+    //delete file
+    Route::delete('/delete-file/{file}', [ObservationController::class, 'deleteFile'])->name('files.delete');
 });
+
 
 
 Route::get('geojson/jarved', function () {
@@ -75,3 +87,6 @@ Route::get('geojson/karst', function () {
         'Content-Type' => 'application/json',
     ]);
 })->middleware(GzipMiddleware::class);
+
+
+Route::post('/clear-file-urls', [ObservationController::class, 'clearFileUrls']);

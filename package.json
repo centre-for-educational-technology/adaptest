@@ -27,6 +27,8 @@
     "dependencies": {
         "laravel-vue-i18n": "^2.7.1",
         "proj4": "^2.9.0",
-        "vue-i18n": "^9.4.1"
+        "vue-i18n": "^9.4.1",
+        "vue-toast-notification": "^3.1.2",
+        "vue-upload-component": "^3.1.15"
     }
 }

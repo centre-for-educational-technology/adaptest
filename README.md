@@ -23,6 +23,10 @@ ADMIN_NAME=
 ADMIN_EMAIL=
 ADMIN_PASSWORD=
 ```
+Set Vite app URL in .env file
+```
+VITE_APP_URL=
+```
 Launch sail
 ```
 alias sail='[ -f sail ] && bash sail || bash vendor/bin/sail'

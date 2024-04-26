@@ -2,23 +2,25 @@
 
 import Input from "@/CustomComponents/Input.vue";
 
-import {defineProps, ref, watch} from "vue";
+import {defineProps, ref, watch, onUnmounted} from "vue";
 import {useForm} from "@inertiajs/vue3";
 import InputError from "@/CustomComponents/InputError.vue";
 import Label from "@/CustomComponents/Label.vue";
 import Checkbox from "@/CustomComponents/Checkbox.vue";
 import SelectOption from "@/CustomComponents/Select.vue";
 import {usePage} from '@inertiajs/vue3'
-
+import {router} from '@inertiajs/vue3'
 import {Link} from '@inertiajs/vue3'
 
-import {LGeoJson, LMap, LMarker, LPopup, LTileLayer} from "@vue-leaflet/vue-leaflet";
+import {LMap, LMarker, LTileLayer} from "@vue-leaflet/vue-leaflet";
 import "leaflet/dist/leaflet.css";
-import {nextTick, onMounted} from 'vue';
 import {latLng, latLngBounds} from "leaflet/dist/leaflet-src.esm.js";
 import * as L from 'leaflet';
 import 'proj4leaflet';
 import markerIconUrl from '@/assets/pin.svg';
+import {useToast} from 'vue-toast-notification';
+import 'vue-toast-notification/dist/theme-sugar.css';
+
 
 const page = usePage()
 
@@ -69,14 +71,26 @@ let props = defineProps({
         required: true,
         default: null,
     },
+    photo_urls: {
+        type: Object,
+        required: false,
+        default: null
+    }
 
 });
+
+const baseUrl = import.meta.env.VITE_APP_URL + '/storage/observations/';
 
 let hasObservation = props.observation !== null;
 let observation = props.observation;
 
+let isUploading = ref(false);
+
+let measuring_time = hasObservation ? new Date(observation.measuring_time) : new Date();
+measuring_time = measuring_time.toISOString().slice(0, 16);
+
 let form = useForm({
-    measuring_time: hasObservation ? observation.measuring_time : new Date().toISOString().slice(0, 16),
+    measuring_time: measuring_time,
     odor: hasObservation ? observation.odor : '',
     color_turbidity: hasObservation ? observation.color_turbidity : '',
     conditions: hasObservation ? observation.conditions : '',
@@ -116,6 +130,7 @@ let form = useForm({
     longitude: props.coordinates.lng,
     observation_spot_name: hasObservation ? observation.observation_spot.name : '',
     observation_spot_description: hasObservation ? observation.observation_spot.description : '',
+    photos: [],
 });
 
 const map = ref(null);
@@ -141,12 +156,14 @@ const newMarkerIcon = L.icon({
     popupAnchor: [0, -55],
 });
 
+const $toast = useToast();
+
+
 watch(props.coordinates, (newCoordinates) => {
     if (newCoordinates && mapInstance) {
         mapInstance.setView(newCoordinates, zoom.value);
     }
 });
-
 
 function mapReady() {
     console.log('map ready');
@@ -161,22 +178,67 @@ function mapReady() {
     }
 }
 
+
+function handleFileChange(event) {
+    if (event.target && event.target.files) {
+        form.photos.value = [...event.target.files]; // Convert FileList to an array
+    } else {
+        console.error('No photos found in the event.');
+    }
+}
+
+
+function uploadFiles() {
+    if (!form.photos.value || form.photos.value.length === 0) {
+        $toast.error('Please add photos before uploading.');
+        return;
+    }
+
+    isUploading.value = true;
+    let formData = new FormData();
+    form.photos.value.forEach(file => {
+        formData.append('photos[]', file);
+    });
+
+
+    router.post('/upload-files', formData, {
+        preserveState: true,
+        preserveScroll: true,
+        onSuccess: () => {
+            isUploading.value = false;
+            if (page.props.flash.message) {
+                $toast.success(page.props.flash.message);
+            }
+        },
+        onError: () => {
+            isUploading.value = false;
+            if (page.props.flash.message) {
+                $toast.error(page.props.flash.message);
+            }
+        }
+
+    });
+}
+
+
 let submit = () => {
+
     const options = {
         forceFormData: true,
     }
 
     form.transform((data) => ({
         ...data,
+        photos: props.photo_urls,
         water_body_kr_code: props.water_body_kr_code,
         observation_spot_id: props.observation_spot_id,
     }));
-
 
     if (hasObservation) {
         form
             .transform((data) => ({
                 ...data,
+                photos: props.photo_urls,
                 _method: 'PUT',// Read the issue for more details: https://bugs.php.net/bug.php?id=55815
             }))
             .post(route('observations.update', observation.id), options)
@@ -187,6 +249,57 @@ let submit = () => {
 
 
 }
+
+function deleteFile(fileUrl) {
+
+    // Split the file path into segments
+    let pathSegments = fileUrl.split('/');
+
+    // Get the last segment, which should be the filename
+    let filename = pathSegments[pathSegments.length - 1];
+
+    // Use the filename in the DELETE request
+    router.delete(`/delete-file/${filename}`,
+        {
+            preserveState: true,
+            preserveScroll: true,
+            onSuccess: () => {
+                if (page.props.flash.message) {
+                    $toast.info(page.props.flash.message);
+                }
+                console.log('File deleted successfully')
+                // Find the index of the file in the photo_urls array
+                let index = props.photo_urls.findIndex(url => url === fileUrl);
+                // Remove the file from photos array
+                if (index !== -1) {
+                    props.photo_urls.splice(index, 1);
+                }
+
+                //remove the file from form.photos array
+                form.photos.splice(index, 1);
+            },
+            onError: () => {
+                if (page.props.flash.message) {
+                    $toast.error(page.props.flash.message);
+                }
+            }
+        }
+    );
+}
+
+function clearFileUrls() {
+    router.post('/clear-file-urls', {}, {
+        preserveState: true,
+        onSuccess: () => {
+            console.log('File urls cleared successfully')
+        },
+        onError: errors => console.error('Error clearing file urls', errors)
+    });
+}
+
+onUnmounted(() => {
+    clearFileUrls();
+});
 
 
 </script>
@@ -260,6 +373,41 @@ let submit = () => {
 
                 </div>
 
+                <div class="mt-5 space-x-2 space-y-2 col-span-12">
+                    <input type="file" multiple @change="handleFileChange"
+                           class="file-input file-input-bordered w-full max-w-xs"
+                           accept=".jpeg,.jpg,.png" placeholder="Upload files (jpeg, jpg, png only)"/>
+                    <button class="btn btn-accent" type="button" @click="uploadFiles">
+                        <span class="loading loading-spinner" v-if="isUploading"></span>
+                        Upload
+                    </button>
+                    <div class="badge badge-ghost">{{ $t('JPEG, JPG, PNG') }}</div>
+
+                    <ul v-if="form.photos.length">
+                        <li v-for="file of form.photos" :key="file.id">
+                            {{ file.id }} - {{ file.name }}
+                        </li>
+
+                    </ul>
+
+                    <div class="grid-cols-6">
+                        <div class="avatar" v-for="(url, index) in photo_urls" :key="index">
+                            <div class="w-48 rounded">
+                                <img :src="baseUrl + url" alt="image" class="rounded">
+                            </div>
+                            <button type="button" @click="deleteFile(url)" class="btn m-2 btn-error">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                     stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                          d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/>
+                                </svg>
+                            </button>
+                        </div>
+
+                    </div>
+
+                </div>
+
                 <div class="col-span-12">
                     <Label for="measuring_time" :value="$t('Time of measurement *')"/>
                     <Input id="measuring_time" class="mt-1 block w-full" v-model.trim="form.measuring_time"
@@ -277,7 +425,8 @@ let submit = () => {
 
                 <div class="col-span-12">
                     <Label for="color_turbidity" :value="$t('Color and turbidity')"/>
-                    <textarea id="color_turbidity" class="mt-1 textarea textarea-bordered block w-full" v-model.trim="form.color_turbidity"
+                    <textarea id="color_turbidity" class="mt-1 textarea textarea-bordered block w-full"
+                              v-model.trim="form.color_turbidity"
                               ref="color_turbidity" autocomplete="color_turbidity" dusk="color_turbidity">
                     </textarea>
                     <InputError :message="form.errors.color_turbidity" class="mt-2"/>
@@ -570,7 +719,7 @@ let submit = () => {
 
                 <div class="col-span-12">
                     <div class="flex space-x-2 justify-end">
-<!--                        Cancel-->
+                        <!--                        Cancel-->
                         <Link :href="route('dashboard')" class="btn btn-secondary" dusk="cancel">
                             {{ $t('Cancel') }}
                         </Link>
