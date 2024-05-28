@@ -7,6 +7,7 @@ import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
+import Footer from "@/Layouts/Footer.vue";
 
 defineProps({
     title: String,
@@ -54,14 +55,16 @@ const logout = () => {
                             </div>
 
                             <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                                <NavLink :href="route('my-observation-spots')" :active="route().current('my-observations')">
+                                <NavLink :href="route('my-observation-spots')"
+                                         :active="route().current('my-observations')">
                                     {{ $t('My observation spots') }}
                                 </NavLink>
                             </div>
 
 
                             <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                                <NavLink :href="route('latest-observations')" :active="route().current('latest-observations')">
+                                <NavLink :href="route('latest-observations')"
+                                         :active="route().current('latest-observations')">
                                     {{ $t('Latest observations') }}
                                 </NavLink>
                             </div>
@@ -358,14 +361,8 @@ const logout = () => {
 
         </div>
 
-        <footer class="footer footer-center p-10 bg-secondary text-primary-content">
-            <aside>
-                <ApplicationMark class="inline-block fill-white w-20 h-20 mr-2"/>
-                <p class="font-bold">
-                    AdaptEST
-                </p>
-                <p>Database of observations of Estonian water bodies</p>
-            </aside>
-        </footer>
+        <Footer/>
+
+
     </div>
 </template>

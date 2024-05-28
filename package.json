@@ -25,6 +25,7 @@
         "vue": "^3.2.31"
     },
     "dependencies": {
+        "@turf/turf": "^6.5.0",
         "laravel-vue-i18n": "^2.7.1",
         "proj4": "^2.9.0",
         "vue-i18n": "^9.4.1",

@@ -1,6 +1,7 @@
 <script setup>
 import {Head, Link} from '@inertiajs/vue3';
 import ApplicationLogo from "@/Components/ApplicationLogo.vue";
+import Footer from "@/Layouts/Footer.vue";
 
 defineProps({
     canLogin: Boolean,
@@ -55,6 +56,8 @@ defineProps({
 
 
     </div>
+
+    <Footer/>
 </template>
 
 <style>

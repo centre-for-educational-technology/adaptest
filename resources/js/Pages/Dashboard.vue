@@ -54,33 +54,45 @@
             </div>
 
 
-            <div class="checkbox-container">
-                <div class="lg:join lg:space-x-1">
+            <div tabindex="0" ref="collapseRef"
+                 class="collapse w-auto checkbox-container bg-primary text-primary-content focus:bg-secondary focus:text-secondary-content">
+                <div class="collapse-title text-xl font-medium" @click="isCollapsed = !isCollapsed">
+                    <Icon icon="lucide:layers" class="w-6 h-6 inline-block"/>
+                    {{ $t('Options') }}
+                </div>
+                <div class="collapse-content" v-show="!isCollapsed">
+                    <div class="lg:join lg:space-x-1">
 
-                    <label class="label cursor-pointer">
-                        <span class="label-text mr-1">Järved</span>
-                        <input class="checkbox checkbox-lg" type="checkbox" v-model="isJarvedVisible">
-                    </label>
+                        <label class="label cursor-pointer">
+                            <span class="label-text mr-1">Järved</span>
+                            <input class="checkbox checkbox-lg" type="checkbox" v-model="isJarvedVisible"
+                                   @mousedown.prevent>
+                        </label>
 
-                    <label class="label cursor-pointer">
-                        <span class="label-text mr-1">Vooluveekogud</span>
-                        <input class="checkbox checkbox-lg" type="checkbox" v-model="isVooluvesiVisible">
-                    </label>
+                        <label class="label cursor-pointer">
+                            <span class="label-text mr-1">Vooluveekogud</span>
+                            <input class="checkbox checkbox-lg" type="checkbox" v-model="isVooluvesiVisible"
+                                   @mousedown.prevent>
+                        </label>
 
-                    <label class="label cursor-pointer">
-                        <span class="label-text mr-1">Karstijärvikud</span>
-                        <input class="checkbox checkbox-lg" type="checkbox" v-model="isKarstVisible">
-                    </label>
-                    <button class="btn btn-accent" @click="getUserLocation">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                             stroke="currentColor" class="w-6 h-6">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                  d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                  d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"/>
-                        </svg>
-                    </button>
+                        <label class="label cursor-pointer">
+                            <span class="label-text mr-1">Karstijärvikud</span>
+                            <input class="checkbox checkbox-lg" type="checkbox" v-model="isKarstVisible"
+                                   @mousedown.prevent>
+                        </label>
 
+                        <button class="btn btn-accent" @mousedown.prevent="getUserLocation">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                 stroke="currentColor" class="w-6 h-6">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                      d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                      d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"/>
+                            </svg>
+                        </button>
+
+
+                    </div>
 
                 </div>
             </div>
@@ -163,6 +175,20 @@
                 </div>
             </div>
 
+
+            <!-- Modal for when observation spot is not within 100m of water body borders -->
+            <div class="modal" :class="{ 'modal-open': showTooFarModal }">
+                <div class="modal-box">
+                    <h3 class="font-bold text-lg">The observation spot must be within 100 meters of the water body
+                        border.</h3>
+                    <div class="modal-action">
+                        <button class="btn" @click="showTooFarModal = false">
+                            Ok
+                        </button>
+                    </div>
+                </div>
+            </div>
+
         </main>
     </AppLayout>
 </template>
@@ -181,6 +207,8 @@ import ApplicationMark from "@/Components/ApplicationMark.vue";
 import markerIconUrl from '@/assets/pin.svg';
 import {trans} from 'laravel-vue-i18n';
 import {computed} from 'vue';
+import * as turf from '@turf/turf';
+import {Icon} from "@iconify/vue";
 
 
 const map = ref(null);
@@ -203,6 +231,7 @@ let selectedAreaName = ref('');
 let showGeoJsonModal = ref(false);
 let showModal = ref(false);
 let showOutsideEstoniaModal = ref(false);
+let showTooFarModal = ref(false);
 
 let isJarvedVisible = ref(false);
 let isVooluvesiVisible = ref(false);
@@ -211,6 +240,9 @@ let isKarstVisible = ref(false);
 let vooluvesiLayer = null;
 let jarvedLayer = null;
 let karstLayer = null;
+
+let isCollapsed = ref(true);
+let collapseRef = ref(null);
 
 const updateLocalStorage = () => {
     localStorage.setItem('isJarvedVisible', isJarvedVisible.value);
@@ -234,6 +266,10 @@ const getUserLocation = () => {
                 // Set maaametCenter to the user's current location
                 maaametCenter.value = userLocation;
                 zoom.value = 9; // Adjust this value as needed
+
+                // Add a marker at the user's location
+                const userMarker = L.marker(userLocation, {icon: markerIcon});
+                mapInstance.addLayer(userMarker);
             } else {
                 showOutsideEstoniaModal.value = true;
             }
@@ -250,6 +286,7 @@ const getUserLocation = () => {
 
 function toggleGeoJsonModal() {
     showGeoJsonModal.value = !showGeoJsonModal.value;
+
 }
 
 let vooluvesiWeight = computed(() => {
@@ -366,14 +403,25 @@ const markerIcon = L.icon({
 
 // Add a marker to the map
 function addMarker(event) {
-
     if (!selectedLayer) {
-
         showGeoJsonModal.value = true;
         return;
     }
     //if below is geo-json layer, then do not add marker
     if (event.originalEvent.target.classList.contains('leaflet-interactive')) {
+        return;
+    }
+
+    const clickedPoint = turf.point([event.latlng.lng, event.latlng.lat]);
+    const selectedLake = turf.polygon(selectedLayer.feature.geometry.coordinates);
+    const selectedLakeLine = turf.polygonToLine(selectedLake);
+    const nearestPointOnLakeBorder = turf.nearestPointOnLine(selectedLakeLine, clickedPoint);
+    const distance = turf.distance(clickedPoint, nearestPointOnLakeBorder, {units: 'meters'});
+
+    if (distance > 100) {
+        // Show an error message and return
+        console.error('The observation spot must be within 100 meters of the lake border.');
+        showTooFarModal.value = true;
         return;
     }
 
@@ -516,6 +564,12 @@ let estoniaBounds = latLngBounds(
 
 
 onMounted(async () => {
+
+    document.addEventListener('click', (event) => {
+        if (collapseRef.value && !collapseRef.value.contains(event.target)) {
+            isCollapsed.value = true;
+        }
+    });
 
     // Wait for the map to be ready
     await nextTick();
