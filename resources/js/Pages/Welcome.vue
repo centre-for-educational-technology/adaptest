@@ -27,7 +27,7 @@ defineProps({
 
 
         <div class="hero min-h-screen"
-             :style="{ backgroundImage: 'url(https://source.unsplash.com/Gj8d1NoEBlE/1600x900)' }">
+             :style="{ backgroundImage: 'url(/img/bg.jpg' }">
             <div class="hero-overlay bg-opacity-60"></div>
             <div class="hero-content text-center text-neutral-content">
                 <div class="max-w-xs">
