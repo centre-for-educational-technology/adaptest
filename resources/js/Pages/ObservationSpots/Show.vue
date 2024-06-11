@@ -10,7 +10,7 @@
 
 
             <l-map ref="map" :crs="crs" v-model:zoom="zoom"
-                   :useGlobalLeaflet="true" :center="maaametCenter" :bounds="bounds" :maxZoom="14" :minZoom="3"
+                   :useGlobalLeaflet="true" :center="mapCenter" :bounds="bounds" :maxZoom="14" :minZoom="3"
                    :scrollWheelZoom="false" @ready="mapReady">
 
 
@@ -526,7 +526,7 @@ let mapLoaded = ref(false);
 
 // let zoom = ref(6);
 let tms = ref(true);
-let maaametCenter = latLng(58.379, 24.554)
+let mapCenter = ref(props.coordinates);
 //
 let bounds = latLngBounds(
     [60.4349, 29.4338],
