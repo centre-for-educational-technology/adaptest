@@ -14,9 +14,8 @@
                     <div v-for="observation in props.observations" :key="observation.id"
                          class="card lg:w-1/2 w-full bg-base-100 shadow-xl">
                         <figure>
-                            <img
-                                :src="observation.photo ? `${baseUrl}${observation.photo}` : 'https://source.unsplash.com/Gj8d1NoEBlE/900x600'"
-                                alt="Observation photo"/>
+                            <img :src="observation.photo ? `${baseUrl}${observation.photo}` : '/img/bg.jpg'"
+                                 alt="Observation photo"/>
                         </figure>
 
                         <div class="card-body">
@@ -61,6 +60,7 @@
 import {defineProps} from 'vue';
 import AppLayout from "@/Layouts/AppLayout.vue";
 import {Link} from "@inertiajs/vue3";
+import * as url from "node:url";
 
 const baseUrl = import.meta.env.VITE_APP_URL + '/storage/observations/';
 
