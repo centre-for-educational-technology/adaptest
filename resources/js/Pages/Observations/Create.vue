@@ -80,7 +80,7 @@ let props = defineProps({
                                   :name="name"
                                   :coordinates="coordinates"
                                   :water_body_kr_code="water_body_kr_code"
-                                  :observation_spot_id="Number(observation_spot_id)"
+                                  :observation_spot_id="observation_spot_id"
                                   :photo_urls="photo_urls"
                 ></observation-form>
             </div>

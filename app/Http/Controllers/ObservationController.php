@@ -39,12 +39,14 @@ class ObservationController extends Controller
 
         //get data from post request
         $data = request()->all();
+        $obervervationSpot = null;
 
         //if we have observation_spot_id, we need to get the data from observation_spot
-        if ($data['observation_spot_id'] != null && $data['observation_spot_id'] != 'null') {
+        if (isset($data['observation_spot_id']) && $data['observation_spot_id'] != 'null') {
             $observationSpot = ObservationSpot::find($data['observation_spot_id']);
             $data['name'] = $observationSpot->waterBody->title;
             $data['water_body_kr_code'] = $observationSpot->waterBody->code;
+            $obervervationSpot = $data['observation_spot_id'];
 
             $data['coordinates'] = [
                 'lat' => $observationSpot->latitude,
@@ -66,7 +68,7 @@ class ObservationController extends Controller
             'coordinates' => $data['coordinates'],
             'name' => $data['name'],
             'water_body_kr_code' => $data['water_body_kr_code'],
-            'observation_spot_id' => $data['observation_spot_id'],
+            'observation_spot_id' => $obervervationSpot,
             'photo_urls' => session('photo_urls', [])
 
         ]);
@@ -78,9 +80,9 @@ class ObservationController extends Controller
     {
         $this->authorize('create', Observation::class);
 
-
         //check if this is a first observation for this spot, we need to create a new observation spot first
-        if ($request->input('observation_spot_id') == null || $request->input('observation_spot_id') == 'null') {
+        if (is_null($request->input('observation_spot_id'))) {
+
             //find WaterBody id by water_body_kr_code
             $waterBody = WaterBody::where('code', $request->input('water_body_kr_code'))->first();
             $observationSpot = ObservationSpot::create([

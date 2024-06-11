@@ -529,10 +529,8 @@ function addNewSpotAndObservation(latlng) {
         const coordinates = JSON.stringify(latlng);
         const name = selectedLayer.feature.properties.nimi;
         const water_body_kr_code = selectedLayer.feature.properties.kr_kood;
-        const observation_spot_id = null;
-        router.get(`/observations/create?coordinates=${coordinates}&name=${name}&water_body_kr_code=${water_body_kr_code}&observation_spot_id=${observation_spot_id}`)
+        router.get(`/observations/create?coordinates=${coordinates}&name=${name}&water_body_kr_code=${water_body_kr_code}`);
     }
-
 }
 
 // Add a new observation
