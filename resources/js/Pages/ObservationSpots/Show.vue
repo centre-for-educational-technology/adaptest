@@ -453,12 +453,7 @@ import {trans} from "laravel-vue-i18n";
 
 
 const map = ref(null);
-const zoom = ref(4);
-const center = ref([51.505, -0.09]);
-const dragging = ref(true);
-const touchZoom = ref(true);
-const keyboard = ref(false);
-const url = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+const zoom = ref(6);
 
 let isModalVisible = ref(false);
 
@@ -568,11 +563,6 @@ onMounted(async () => {
     mapLoaded.value = true;
 });
 
-watch([center, zoom], ([newCenter, newZoom]) => {
-    if (map.value) {
-        map.value = {center: newCenter, zoom: newZoom};
-    }
-});
 
 
 </script>
