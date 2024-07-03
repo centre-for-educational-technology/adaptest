@@ -12,8 +12,8 @@ enum VegetationCoverages: int
     {
 
         return match ($this) {
-            self::VAGA_TIHE => 'väga tihe',
-            self::HORE => 'hõre',
+            self::VAGA_TIHE => 'väga tihe kuni keskmine',
+            self::HORE => 'hõre või puudub',
         };
     }
 

@@ -263,15 +263,17 @@ const getUserLocation = () => {
             let userLocation = latLng(position.coords.latitude, position.coords.longitude);
             // Check if user's location is within the bounds of Estonia
             if (estoniaBounds.contains(userLocation)) {
+
                 // Set maaametCenter to the user's current location
-                maaametCenter.value = userLocation;
-                zoom.value = 9; // Adjust this value as needed
+                maaametCenter = userLocation;
+                zoom.value = 11; // Adjust this value as needed
 
                 // Add a marker at the user's location
                 const userMarker = L.marker(userLocation, {icon: markerIcon});
                 mapInstance.addLayer(userMarker);
             } else {
                 showOutsideEstoniaModal.value = true;
+
             }
             mapLoaded.value = true; // End loading
         }, error => {

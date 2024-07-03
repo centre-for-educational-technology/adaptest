@@ -86,8 +86,23 @@ let observation = props.observation;
 
 let isUploading = ref(false);
 
-let measuring_time = hasObservation ? new Date(observation.measuring_time) : new Date();
-measuring_time = measuring_time.toISOString().slice(0, 16);
+const getCurrentDateTimeLocal = () => {
+    const now = new Date();
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const formattedDateTime = new Intl.DateTimeFormat('en-CA', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        timeZone: timeZone,
+        hour12: false
+    }).format(now).replace(/\//g, '-').replace(', ', 'T');
+    return formattedDateTime.slice(0, 16); // YYYY-MM-DDTHH:MM format
+};
+
+let measuring_time = ref(getCurrentDateTimeLocal());
+
 
 let form = useForm({
     measuring_time: measuring_time,

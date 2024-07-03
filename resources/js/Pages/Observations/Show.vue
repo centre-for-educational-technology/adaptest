@@ -176,7 +176,7 @@
                                             <td v-else>-</td>
                                         </tr>
                                         <tr>
-                                            <th>{{ $t('Puujuures, oksad vms ulatuvad vett') }}:</th>
+                                            <th>{{ $t('Puujuured, oksad vms ulatuvad vette') }}:</th>
                                             <td v-if="props.observation.tree_roots">
                                                 {{ yesNo(props.observation.tree_roots) }}
                                             </td>

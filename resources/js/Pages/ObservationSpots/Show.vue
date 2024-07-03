@@ -40,8 +40,10 @@
                 <div class="flex flex-wrap -m-4">
                     <div class="p-4 lg:w-1/3 md:w-full">
 
+
                         <div class="card bg-base-100 shadow-xl">
                             <div class="card-body gap-4">
+
                                 <h2 class="card-title">{{ props.water_body.title }}</h2>
 
                                 <div>
@@ -124,6 +126,24 @@
 
                         <div class="card bg-base-100 shadow-xl">
                             <div class="card-body gap-4">
+
+
+                                <!-- Gallery of photos -->
+
+
+                                    <div
+                                        v-if="props.observations && props.observations.some(observation => observation.photos && observation.photos.length > 0)">
+                                        <div class="grid mb-3 lg:grid-cols-2 gap-4"
+                                            v-for="observation in props.observations.filter(observation => observation.photos && observation.photos.length > 0)"
+                                            :key="observation.id">
+                                            <div v-for="(photo, index) in observation.photos" :key="index">
+                                                <img :src="`${baseUrl}${photo}`" alt="Observation photo"
+                                                     class="rounded-lg"/>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
                                 <h2 class="card-title">{{ props.observation_spot.name }}</h2>
 
                                 <p class="text-lg leading-relaxed">
@@ -557,12 +577,13 @@ var crs = new L.Proj.CRS('EPSG:3301', '+proj=lcc +lat_1=59.33333333333334 +lat_2
     bounds: L.bounds([40500, 5993000], [1064500, 7017000])
 })
 
+const baseUrl = import.meta.env.VITE_APP_URL + '/storage/observations/';
+
 
 onMounted(async () => {
 
     mapLoaded.value = true;
 });
-
 
 
 </script>
