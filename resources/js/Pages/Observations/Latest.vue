@@ -28,7 +28,7 @@
                             <div class="card-footer mt-3">
                                 <div class="flex items-center">
                                     <div class="avatar">
-                                        <div class="w-18 mr-3 rounded-full">
+                                        <div class="w-20 mr-3 rounded-full">
                                             <img :src="observation.author.profile_photo_url"
                                                  :alt="observation.author.name"/>
                                         </div>
