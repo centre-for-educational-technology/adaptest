@@ -400,6 +400,41 @@ const markerIcon = L.icon({
     className: 'marker-icon'
 });
 
+/**
+ * Converts supported GeoJSON feature types to corresponding Turf.js line or multiline representation.
+ *
+ * @param feature
+ * @returns {Feature<LineString | MultiLineString, Properties>|FeatureCollection<LineString | MultiLineString, Properties>|Feature<LineString, Properties>|Feature<MultiLineString, Properties>}
+ */
+function featureToLine(feature) {
+    switch(feature.geometry.type) {
+        case 'Polygon':
+            return turf.polygonToLine(turf.polygon(feature.geometry.coordinates));
+        case 'MultiPolygon':
+            return turf.polygonToLine(turf.multiPolygon(feature.geometry.coordinates));
+        case 'LineString':
+            return turf.lineString(feature.geometry.coordinates);
+        case 'MultiLineString':
+            return turf.multiLineString(feature.geometry.coordinates);
+        default:
+            throw new Error(`Unsupported geometry type of ${feature.geometry.type}!`);
+    }
+}
+
+/**
+ * Calculates distance in meters between provided point and feature. Feature is converted to line or multiline
+ * representation to determine the nearest point on line to be used in distance determination.
+ *
+ * @param point
+ * @param feature
+ * @returns {number}
+ */
+function pointDistanceFromFeature(point, feature) {
+    const line = featureToLine(feature);
+    const nearestPointOnLine = turf.nearestPointOnLine(line, point);
+
+    return turf.distance(point, nearestPointOnLine, { units: 'meters' });
+}
 
 // Add a marker to the map
 function addMarker(event) {
@@ -413,10 +448,7 @@ function addMarker(event) {
     }
 
     const clickedPoint = turf.point([event.latlng.lng, event.latlng.lat]);
-    const selectedLake = turf.polygon(selectedLayer.feature.geometry.coordinates);
-    const selectedLakeLine = turf.polygonToLine(selectedLake);
-    const nearestPointOnLakeBorder = turf.nearestPointOnLine(selectedLakeLine, clickedPoint);
-    const distance = turf.distance(clickedPoint, nearestPointOnLakeBorder, {units: 'meters'});
+    const distance = pointDistanceFromFeature(clickedPoint, selectedLayer.feature);
 
     if (distance > 100) {
         // Show an error message and return
