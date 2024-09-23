@@ -23,7 +23,6 @@
 </template>
 
 <script setup>
-import {defineProps} from 'vue';
 import AppLayout from "@/Layouts/AppLayout.vue";
 
 const props = defineProps({

@@ -55,7 +55,6 @@
 
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
-import {defineProps} from 'vue';
 import {Link, router} from '@inertiajs/vue3';
 import {useForm} from '@inertiajs/vue3';
 import Pagination from "@/CustomComponents/Pagination.vue";

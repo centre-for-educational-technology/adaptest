@@ -57,10 +57,8 @@
 </template>
 
 <script setup>
-import {defineProps} from 'vue';
 import AppLayout from "@/Layouts/AppLayout.vue";
 import {Link} from "@inertiajs/vue3";
-import * as url from "node:url";
 
 const baseUrl = import.meta.env.VITE_APP_URL + '/storage/observations/';
 

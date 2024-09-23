@@ -30,6 +30,7 @@
                                     </Link>
 
                                     <table class="table">
+                                        <tbody>
                                         <tr>
                                             <th>{{ $t('Measuring time') }}:</th>
                                             <td v-if="props.observation.measuring_time">
@@ -261,6 +262,7 @@
                                             <td v-else>-</td>
                                         </tr>
 
+                                        </tbody>
                                     </table>
                                 </div>
                             </div>
@@ -276,7 +278,6 @@
 
 <script setup>
 import AppLayout from "@/Layouts/AppLayout.vue";
-import {defineProps} from 'vue';
 import {Link} from '@inertiajs/vue3';
 import {trans} from "laravel-vue-i18n";
 

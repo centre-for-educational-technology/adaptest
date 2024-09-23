@@ -220,6 +220,7 @@
                     <div style="overflow: auto; height: 500px;">
                         <h3 class="font-bold text-lg">{{ $t('Observation details') }}</h3>
                         <table class="table">
+                            <tbody>
 
                             <tr>
                                 <th>{{ $t('Measuring time') }}:</th>
@@ -442,6 +443,7 @@
                                 <td v-else>-</td>
                             </tr>
 
+                            </tbody>
                         </table>
                         <div class="modal-action">
                             <button class="btn" @click="isModalVisible = false">

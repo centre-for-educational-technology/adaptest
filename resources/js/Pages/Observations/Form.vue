@@ -2,7 +2,7 @@
 
 import Input from "@/CustomComponents/Input.vue";
 
-import {defineProps, ref, watch, onUnmounted} from "vue";
+import {ref, watch, onUnmounted} from "vue";
 import {useForm} from "@inertiajs/vue3";
 import InputError from "@/CustomComponents/InputError.vue";
 import Label from "@/CustomComponents/Label.vue";
