@@ -21,7 +21,7 @@
                         <div class="card-body">
                             <h2 class="card-title">
                                 {{ observation.observation_spot.name }}
-                                <div class="badge badge-secondary">{{ observation.observation_spot.water_body }}</div>
+                                <span class="badge badge-secondary">{{ observation.observation_spot.water_body }}</span>
                             </h2>
                             <p>{{ observation.conditions }}</p>
 

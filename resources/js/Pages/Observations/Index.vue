@@ -3,6 +3,7 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 import {defineProps} from 'vue';
 import {Link, router} from '@inertiajs/vue3';
 import {useForm} from '@inertiajs/vue3';
+import Pagination from "@/CustomComponents/Pagination.vue";
 
 const props = defineProps({
     observations: {
@@ -44,7 +45,7 @@ const deleteObservation = (id) => {
                         </tr>
                         </thead>
                         <tbody>
-                        <tr v-for="observation in props.observations" :key="observation.id">
+                        <tr v-for="observation in props.observations.data" :key="observation.id">
                             <td>{{ observation.observation_spot.name }}</td>
                             <td>{{ observation.created_at }}</td>
                             <td>{{ observation.author.name }}</td>
@@ -66,6 +67,7 @@ const deleteObservation = (id) => {
                         </tbody>
                     </table>
 
+                    <Pagination :links="props.observations.meta.links" class="mb-4"/>
                 </div>
 
             </div>

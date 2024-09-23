@@ -29,7 +29,7 @@ class ObservationController extends Controller
         $this->authorize('viewAny', Observation::class);
 
         return Inertia::render('Observations/Index', [
-            'observations' => ObservationResource::collection(Observation::all()),
+            'observations' => ObservationResource::collection(Observation::paginate(self::PAGE_SIZE)),
         ]);
     }
 
@@ -39,14 +39,13 @@ class ObservationController extends Controller
 
         //get data from post request
         $data = request()->all();
-        $obervervationSpot = null;
+        $observationSpot = null;
 
         //if we have observation_spot_id, we need to get the data from observation_spot
         if (isset($data['observation_spot_id']) && $data['observation_spot_id'] != 'null') {
             $observationSpot = ObservationSpot::find($data['observation_spot_id']);
             $data['name'] = $observationSpot->waterBody->title;
             $data['water_body_kr_code'] = $observationSpot->waterBody->code;
-            $obervervationSpot = $data['observation_spot_id'];
 
             $data['coordinates'] = [
                 'lat' => $observationSpot->latitude,
@@ -68,7 +67,7 @@ class ObservationController extends Controller
             'coordinates' => $data['coordinates'],
             'name' => $data['name'],
             'water_body_kr_code' => $data['water_body_kr_code'],
-            'observation_spot_id' => $obervervationSpot,
+            'observation_spot_id' => $observationSpot->id ?? null,
             'photo_urls' => session('photo_urls', [])
 
         ]);

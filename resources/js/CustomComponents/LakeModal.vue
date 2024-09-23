@@ -6,7 +6,7 @@
             <p class="py-4">{{ $t('Now set the marker of your observation by clicking on the map') }}</p>
             <div class="modal-action">
                 <button class="btn" @click="$emit('update:showModal', false)">
-                    Ok
+                    {{ $t('Ok') }}
                 </button>
             </div>
         </div>

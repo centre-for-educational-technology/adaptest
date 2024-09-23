@@ -47,8 +47,8 @@ let props = defineProps({
         required: true,
     },
     observation_spot_id: {
-        type: String,
-        required: true,
+        type: Number,
+        required: false,
         default: null,
     },
     photo_urls: {

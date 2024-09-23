@@ -6,8 +6,10 @@ import Footer from "@/Layouts/Footer.vue";
 defineProps({
     canLogin: Boolean,
     canRegister: Boolean,
-    laravelVersion: String,
-    phpVersion: String,
+    observationCount: Number,
+    observationSpotCount: Number,
+    weeklyObservationCont: Number,
+    weeklyObservationSpotCount: Number,
 });
 </script>
 

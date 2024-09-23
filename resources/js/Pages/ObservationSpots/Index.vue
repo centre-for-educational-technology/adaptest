@@ -3,6 +3,7 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 import {defineProps} from 'vue';
 import {Link, router} from '@inertiajs/vue3';
 import {useForm} from '@inertiajs/vue3';
+import Pagination from "@/CustomComponents/Pagination.vue";
 
 const props = defineProps({
     observation_spots: {
@@ -48,7 +49,7 @@ const deleteSpot = (id) => {
                         </tr>
                         </thead>
                         <tbody>
-                        <tr v-for="spot in props.observation_spots" :key="spot.id">
+                        <tr v-for="spot in props.observation_spots.data" :key="spot.id">
                             <td>
                                 <Link class="link-accent" :href="route('observation-spots.show', spot.id)">
                                     {{ spot.name }}
@@ -74,6 +75,8 @@ const deleteSpot = (id) => {
                         </tr>
                         </tbody>
                     </table>
+
+                    <Pagination :links="props.observation_spots.meta.links" class="mb-4"/>
 
                 </div>
 

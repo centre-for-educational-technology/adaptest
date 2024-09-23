@@ -17,6 +17,10 @@ export default {
             fontFamily: {
                 sans: ['Futura', ...defaultTheme.fontFamily.sans],
             },
+            colors: {
+                "primary-green-light": "oklch(var(--primary-green-light) / <alpha-value>)",
+                "primary-green-dark": "oklch(var(--primary-green-dark) / <alpha-value>)",
+            },
         },
     },
 
@@ -33,6 +37,8 @@ export default {
                     "success": "#ffffff",
                     "warning": "#ffbe00",
                     "error": "#ff5861",
+                    "--primary-green-light": "86.9% 0.031 173.5",
+                    "--primary-green-dark": "66.58% 0.053 176.62",
                 },
             }
         ]

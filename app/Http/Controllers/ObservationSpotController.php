@@ -16,7 +16,7 @@ class ObservationSpotController extends Controller
         $this->authorize('viewAny', ObservationSpot::class);
 
         return Inertia::render('ObservationSpots/Index', [
-            'observation_spots' => ObservationSpotResource::collection(ObservationSpot::all()),
+            'observation_spots' => ObservationSpotResource::collection(ObservationSpot::paginate(self::PAGE_SIZE)),
         ]);
 
     }

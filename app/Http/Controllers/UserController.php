@@ -21,9 +21,9 @@ class UserController extends Controller
         // Show all users
         //authorize
         $this->authorize('viewAny', User::class);
-        $users = UserResource::collection(User::all());
+
         return Inertia::render('Users/Index', [
-            'users' => $users,
+            'users' => UserResource::collection(User::paginate(self::PAGE_SIZE)),
         ]);
     }
 

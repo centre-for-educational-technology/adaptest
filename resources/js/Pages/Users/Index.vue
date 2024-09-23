@@ -21,7 +21,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr v-for="user in props.users" :key="user.id">
+                        <tr v-for="user in props.users.data" :key="user.id">
                             <td>{{ user.name }}</td>
                             <td>{{ user.email }}</td>
                             <td>{{ user.role }}</td>
@@ -44,6 +44,8 @@
                         </tbody>
                     </table>
 
+                    <Pagination :links="props.users.meta.links" class="mb-4"/>
+
                 </div>
 
             </div>
@@ -56,6 +58,7 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 import {defineProps} from 'vue';
 import {Link, router} from '@inertiajs/vue3';
 import {useForm} from '@inertiajs/vue3';
+import Pagination from "@/CustomComponents/Pagination.vue";
 
 const props = defineProps({
     users: {

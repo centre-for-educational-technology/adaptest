@@ -8,19 +8,51 @@ use App\Http\Resources\ObservationResource;
 use App\Http\Resources\ObservationSpotResource;
 use App\Models\Observation;
 use App\Models\ObservationSpot;
-use Illuminate\Foundation\Application;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 
 Route::get('/', function () {
+    $ttl = 60;
+    $observationCount = Cache::remember('observationCount', $ttl, function () {
+        return Observation::all()->count();
+    });
+    $observationSpotCount = Cache::remember('observationSpotCount', $ttl, function () {
+        return ObservationSpot::all()->count();
+    });
+    $weeklyObservationCont = Cache::remember('weeklyObservationCont', $ttl, function () {
+        return Observation::where('created_at', '>', Carbon::now()
+            ->startOfWeek())->where('created_at', '<', Carbon::now()->endOfWeek())
+            ->count();
+    });
+    $weeklyObservationSpotCount = Cache::remember('weeklyObservationSpotCount', $ttl, function () {
+        return ObservationSpot::where('created_at', '>', Carbon::now()->startOfWeek())
+            ->where('created_at', '<', Carbon::now()->endOfWeek())
+            ->count();
+    });
+    // @todo It would be ideal to make it work with other drivers as well; one way to access it is a macro
+    //dd(Observation::select(DB::raw('sum(json_length(photos)) as count'))->whereNotNull('photos')->whereJsonLength('photos', '>', 0)->value('count'));
+
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
+        'observationCount' => $observationCount,
+        'observationSpotCount' => $observationSpotCount,
+        'weeklyObservationCont' => $weeklyObservationCont,
+        'weeklyObservationSpotCount' => $weeklyObservationSpotCount,
     ]);
 });
+
+Route::get('instructions', function() {
+    return Inertia::render('Instructions');
+})->name('instructions');
+
+Route::get('contact', function() {
+    return Inertia::render('Contact');
+})->name('contact');
 
 
 Route::middleware([
@@ -29,16 +61,16 @@ Route::middleware([
     'verified',
 ])->group(function () {
     Route::get('/dashboard', function () {
-        $obervationSpots = ObservationSpotResource::collection(ObservationSpot::all());
-        return Inertia::render('Dashboard')->with('observation_spots', $obervationSpots)
+        $observationSpots = ObservationSpotResource::collection(ObservationSpot::all());
+        return Inertia::render('Dashboard')->with('observation_spots', $observationSpots)
             ->with('title', __('Main map'))
             ->with('main_map', true);
     })->name('dashboard');
 
     Route::get('/my-observations', function () {
-        $obervationSpots = ObservationSpotResource::collection(ObservationSpot::where('user_id', auth()->id())->get());
+        $observationSpots = ObservationSpotResource::collection(ObservationSpot::where('user_id', auth()->id())->get());
         return Inertia::render('Dashboard')
-            ->with('observation_spots', $obervationSpots)
+            ->with('observation_spots', $observationSpots)
             ->with('title', __('My observation spots'))
             ->with('main_map', false);
     })->name('my-observation-spots');

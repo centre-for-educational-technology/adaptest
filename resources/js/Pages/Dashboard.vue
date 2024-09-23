@@ -7,19 +7,6 @@
         </template>
 
         <main class="relative" style="height: calc(100vh - 188px); width: 100%;">
-            <!--                        <l-map ref="map" v-model:zoom="zoom" :center=center :useGlobalLeaflet="false"-->
-            <!--                               :crs="projection"-->
-            <!--                               :tilelayers="relief_layers"-->
-            <!--                               :tms="tms"-->
-            <!--                               :bounds="bounds">-->
-            <!--                            <l-tile-layer-->
-            <!--                                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"-->
-            <!--                                layer-type="base"-->
-            <!--                                name="OpenStreetMap"-->
-            <!--                            ></l-tile-layer>-->
-
-            <!--                            <l-geo-json :geojson_jarved="geojson_jarved"/>-->
-            <!--                        </l-map>-->
             <div v-if="!mapLoaded"
                  class="absolute inset-0 flex flex-col items-center justify-center bg-primary opacity-80 z-10">
                 <div class="spinner z-50">
@@ -114,24 +101,6 @@
                     :full-screen="false" :worldCopyJump="true" :z-index="2"
                     :options="{ maxNativeZoom: 13, maxZoom: 13, minZoom: 3 }"/>
 
-                <!--                <l-wms-tile-layer-->
-                <!--                    url="https://gsavalik.envir.ee/geoserver/eelis/ows?service=WMS"-->
-                <!--                    layers="eelis:kr_jarv"-->
-
-                <!--                ></l-wms-tile-layer>-->
-
-                <!--                <l-geo-json :visible="isJarvedVisible" :options="{ style: featureStyle1, onEachFeature: onEachFeature }"-->
-                <!--                            :geojson="jarvedData"></l-geo-json>-->
-
-                <!--                <l-geo-json :visible="isVooluvesiVisible"-->
-                <!--                            :options="{ style: featureStyle2, onEachFeature: onEachFeature }"-->
-                <!--                            :geojson="vooluvesiData"></l-geo-json>-->
-
-                <!--                <l-geo-json :visible="isKarstVisible" :options="{ style: featureStyle3, onEachFeature: onEachFeature }"-->
-                <!--                            :geojson="karstData"></l-geo-json>-->
-
-                <!--                <l-marker v-for="marker, index in markers" :lat-lng="marker" @click="removeMarker(index)"></l-marker>-->
-
                 <l-marker v-for="(marker, index) in markers" :key="index" :lat-lng="marker">
                     <l-popup ref="popup">
                         Popup content
@@ -194,10 +163,10 @@
 </template>
 
 <script setup>
-import {LGeoJson, LMap, LMarker, LPopup, LTileLayer} from "@vue-leaflet/vue-leaflet";
+import {LMap, LMarker, LPopup, LTileLayer} from "@vue-leaflet/vue-leaflet";
 import AppLayout from "@/Layouts/AppLayout.vue";
 import "leaflet/dist/leaflet.css";
-import {nextTick, onMounted, ref, watch} from 'vue';
+import {nextTick, onBeforeUnmount, onMounted, ref, watch} from 'vue';
 import {latLng, latLngBounds} from "leaflet/dist/leaflet-src.esm.js";
 import * as L from 'leaflet';
 import 'proj4leaflet';
@@ -336,21 +305,23 @@ let mapLoaded = ref(false);
 const onEachFeature = (feature, layer) => {
     layer.on('click', () => {
 
-        // Reset the style of the previously selected layer
+        // Reset the style of the previously selected layer using previously stored values
         if (selectedLayer) {
             selectedLayer.setStyle({
-                weight: 3, // Set the border weight back to normal
-                color: '#006891'
-
+                weight: selectedLayer.options.previousWeight,
+                color: selectedLayer.options.previousColor,
             });
         }
 
 
         selectedAreaName = feature.properties.nimi;
 
+        // Set the weight and color for the selected feature while simultaneously storing the previous values in custom options
         layer.setStyle({
             weight: 5,
             color: '#ff5861',
+            previousWeight: layer.options.weight,
+            previousColor: layer.options.color,
         });
 
 
@@ -490,10 +461,11 @@ function addMarker(event) {
         const noButton = document.getElementById('noButton');
         noButton.addEventListener('click', () => {
             mapInstance.removeLayer(marker);
+            // Reset the style of the previously selected layer using previously stored values
             if (selectedLayer) {
                 selectedLayer.setStyle({
-                    weight: 2, // Set the border weight back to normal
-                    color: '#006891' // Set the border color back to normal
+                    weight: selectedLayer.options.previousWeight,
+                    color: selectedLayer.options.previousColor,
                 });
                 selectedLayer = null; // Clear the selected layer
             }
@@ -573,15 +545,9 @@ function addNewObservation(spotId) {
 }
 
 
-//init geojson
-var jarvedData = null;
-var vooluvesiData = null;
-var karstData = null;
+let loaderText = ref('Laen andmeid...');
 
-let loaderText = ref('Laen järved...');
-
-
-var crs = new L.Proj.CRS('EPSG:3301', '+proj=lcc +lat_1=59.33333333333334 +lat_2=58 +lat_0=57.51755393055556 +lon_0=24 +x_0=500000 +y_0=6375000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs', {
+const crs = new L.Proj.CRS('EPSG:3301', '+proj=lcc +lat_1=59.33333333333334 +lat_2=58 +lat_0=57.51755393055556 +lon_0=24 +x_0=500000 +y_0=6375000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs', {
     resolutions: [4000, 2000, 1000, 500, 250, 125, 62.5, 31.25, 15.625, 7.8125, 3.90625, 1.953125, 0.9765625, 0.48828125, 0.244140625, 0.122070313, 0.061035156, 0.030517578, 0.015258789],
     origin: [40500, 5993000],
     bounds: L.bounds([40500, 5993000], [1064500, 7017000])
@@ -605,36 +571,22 @@ onMounted(async () => {
     await nextTick();
 
 
+    // Open GeoJSON data cache
     const cache = await caches.open('geojson-cache');
+    const keys = await cache.keys();
 
-    // Fetch jarved.json
-    let response = await cache.match('/geojson/jarved');
-    if (!response) {
-        response = await fetch('/geojson/jarved');
-        cache.put('/geojson/jarved', response.clone());
+    // Check if all the GeoJSON data requests are cached and fetch and cache the data id not
+    if (keys.filter((key) => /\/geojson\/(jarved|vooluvesi|karst)/.test(key.url)).length !== 3) {
+        await cache.addAll(['/geojson/jarved', '/geojson/vooluvesi', '/geojson/karst']);
     }
-    let data = await response.json();
-    loaderText.value = 'Laen vooluveekogud...';
-    jarvedData = data;
 
-    // Fetch vooluvesi.json
-    response = await cache.match('/geojson/vooluvesi');
-    if (!response) {
-        response = await fetch('/geojson/vooluvesi');
-        cache.put('/geojson/vooluvesi', response.clone());
-    }
-    data = await response.json();
-    loaderText.value = 'Laen karstijärvikud...';
-    vooluvesiData = data;
+    // Fetch the data from cache, instantiate a data container and fill it with GeoJSON data
+    const responses = await cache.matchAll();
+    const data = {};
 
-    // Fetch karst.json
-    response = await cache.match('/geojson/karst');
-    if (!response) {
-        response = await fetch('/geojson/karst');
-        cache.put('/geojson/karst', response.clone());
+    for (const response of responses) {
+        data[response.url.split('/geojson/')[1]] = await response.json();
     }
-    data = await response.json();
-    karstData = data;
 
     geojsonFetched.value = true;
     mapLoaded.value = true;
@@ -643,9 +595,9 @@ onMounted(async () => {
     const mapInstance = map.value.leafletObject;
 
     // Create the GeoJSON layers
-    jarvedLayer = L.geoJSON(jarvedData, {style: featureStyle1, onEachFeature: onEachFeature});
-    vooluvesiLayer = L.geoJSON(vooluvesiData, {style: featureStyle2, onEachFeature: onEachFeature});
-    karstLayer = L.geoJSON(karstData, {style: featureStyle3, onEachFeature: onEachFeature});
+    jarvedLayer = L.geoJSON(data.jarved, {style: featureStyle1, onEachFeature: onEachFeature});
+    vooluvesiLayer = L.geoJSON(data.vooluvesi, {style: featureStyle2, onEachFeature: onEachFeature});
+    karstLayer = L.geoJSON(data.karst, {style: featureStyle3, onEachFeature: onEachFeature});
 
 
     // Retrieve checkbox states from local storage
@@ -665,6 +617,29 @@ onMounted(async () => {
     }
 
 });
+
+// Remove any GeoJSON layers from the map, remove all feature layers, removes all listeners and overwrite variable with null
+onBeforeUnmount(async () => {
+    if (jarvedLayer) {
+        mapInstance.removeLayer(jarvedLayer);
+        jarvedLayer.clearLayers();
+        jarvedLayer.off();
+        jarvedLayer = null;
+    }
+    if (vooluvesiLayer) {
+        mapInstance.removeLayer(vooluvesiLayer);
+        vooluvesiLayer.clearLayers();
+        vooluvesiLayer.off();
+        vooluvesiLayer = null;
+    }
+    if (karstLayer) {
+        mapInstance.removeLayer(karstLayer);
+        karstLayer.clearLayers();
+        karstLayer.off();
+        karstLayer = null;
+    }
+});
+
 if (navigator.geolocation && props.main_map) {
     navigator.geolocation.getCurrentPosition(position => {
         let userLocation = latLng(position.coords.latitude, position.coords.longitude);

@@ -18,10 +18,10 @@ import ApplicationMark from "@/Components/ApplicationMark.vue";
                 õigsuse ja sisu kasutamise eest.</p>
         </aside>
         <div class="flex justify-around space-x-3 mt-10">
-            <img src="/img/Life.png" class="h-10 w-auto">
-            <img src="/img/nat2000.png" class="h-10 w-auto">
-            <img src="/img/TLU.png" class="h-10 w-auto">
-            <img src="/img/Ok.png" class="h-10 w-auto">
+            <img src="/img/Life.png" alt="life-logo" class="h-10 w-auto">
+            <img src="/img/nat2000.png" alt="nat2000-logo" class="h-10 w-auto">
+            <img src="/img/TLU.png" alt="tlu-logo" class="h-10 w-auto">
+            <img src="/img/Ok.png" alt="ok-logo" class="h-10 w-auto">
         </div>
     </footer>
 </template>
