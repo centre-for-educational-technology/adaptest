@@ -10,6 +10,7 @@ defineProps({
     observationSpotCount: Number,
     weeklyObservationCont: Number,
     weeklyObservationSpotCount: Number,
+    photoCount: Number,
 });
 </script>
 

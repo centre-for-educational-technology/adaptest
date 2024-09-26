@@ -64,18 +64,23 @@ const steps = ref([
             </div>
         </div>
 
-        <div class="bg-primary-green-dark text-base-100 lg:p-10">
+        <div class="bg-primary-green-dark text-base-100 lg:p-10 pt-10">
             <h2 class="text-4xl font-bold">{{ $t("How to observe?") }}</h2>
 
-            <p class="my-10">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent eu urna sit amet mi pellentesque tristique eu id est. Cras tortor diam, mattis id nunc sed, porttitor semper metus. Curabitur vitae tincidunt lectus. Mauris sodales vulputate ligula at volutpat. Praesent lacinia vestibulum neque ut rutrum. Pellentesque mollis magna id ornare sollicitudin. Nullam ornare ullamcorper ornare. Donec est risus, gravida nec tempor sed, accumsan eget dui. Sed tincidunt volutpat malesuada. Aliquam et fermentum urna, eu vehicula quam.
-            </p>
+            <div class="grid grid-cols-12 gap-8 my-10">
+                <div class="col-span-12 md:col-span-8">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent eu urna sit amet mi pellentesque tristique eu id est. Cras tortor diam, mattis id nunc sed, porttitor semper metus. Curabitur vitae tincidunt lectus. Mauris sodales vulputate ligula at volutpat. Praesent lacinia vestibulum neque ut rutrum. Pellentesque mollis magna id ornare sollicitudin. Nullam ornare ullamcorper ornare. Donec est risus, gravida nec tempor sed, accumsan eget dui. Sed tincidunt volutpat malesuada. Aliquam et fermentum urna, eu vehicula quam.
+                </div>
 
-            <!-- @todo Need a special class or concrete classes for height and padding -->
-            <a href="">
-                <span class="badge badge-base-100 badge-lg text-primary-green-dark font-bold">pdf</span>
-                {{ $t("Download file") }}
-            </a>
+                <a href="" target="_blank" class="col-span-12 md:col-span-4">
+                    <span class="rounded-full bg-white w-12 h-12 inline-flex items-center justify-center text-primary-green-dark font-bold">
+                        pdf
+                    </span>
+
+                    {{ $t("Download instructions") }}
+                </a>
+            </div>
+
         </div>
 
         <div class="bg-primary-green-light lg:p-10">

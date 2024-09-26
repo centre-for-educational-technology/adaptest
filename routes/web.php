@@ -4,48 +4,18 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ObservationController;
 use App\Http\Controllers\ObservationSpotController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\WelcomeController;
 use App\Http\Middleware\GzipMiddleware;
 use App\Http\Resources\ObservationResource;
 use App\Http\Resources\ObservationSpotResource;
 use App\Models\Observation;
 use App\Models\ObservationSpot;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 
-Route::get('/', function () {
-    $ttl = 60;
-    $observationCount = Cache::remember('observationCount', $ttl, function () {
-        return Observation::all()->count();
-    });
-    $observationSpotCount = Cache::remember('observationSpotCount', $ttl, function () {
-        return ObservationSpot::all()->count();
-    });
-    $weeklyObservationCont = Cache::remember('weeklyObservationCont', $ttl, function () {
-        return Observation::where('created_at', '>', Carbon::now()
-            ->startOfWeek())->where('created_at', '<', Carbon::now()->endOfWeek())
-            ->count();
-    });
-    $weeklyObservationSpotCount = Cache::remember('weeklyObservationSpotCount', $ttl, function () {
-        return ObservationSpot::where('created_at', '>', Carbon::now()->startOfWeek())
-            ->where('created_at', '<', Carbon::now()->endOfWeek())
-            ->count();
-    });
-    // @todo It would be ideal to make it work with other drivers as well; one way to access it is a macro
-    //dd(Observation::select(DB::raw('sum(json_length(photos)) as count'))->whereNotNull('photos')->whereJsonLength('photos', '>', 0)->value('count'));
-
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'observationCount' => $observationCount,
-        'observationSpotCount' => $observationSpotCount,
-        'weeklyObservationCont' => $weeklyObservationCont,
-        'weeklyObservationSpotCount' => $weeklyObservationSpotCount,
-    ]);
-});
+Route::get('/', [WelcomeController::class, 'index']);
 
 Route::get('instructions', function() {
     return Inertia::render('Instructions');
