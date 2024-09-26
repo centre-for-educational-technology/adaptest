@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ObservationController;
 use App\Http\Controllers\ObservationSpotController;
 use App\Http\Controllers\UserController;
@@ -50,10 +51,9 @@ Route::get('instructions', function() {
     return Inertia::render('Instructions');
 })->name('instructions');
 
-Route::get('contact', function() {
-    return Inertia::render('Contact');
-})->name('contact');
-
+// Contact routes
+Route::get('contact', [ContactController::class, 'index'])->name('contact');
+Route::post('contact', [ContactController::class, 'store']);
 
 Route::middleware([
     'auth:sanctum',

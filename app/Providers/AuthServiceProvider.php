@@ -2,12 +2,9 @@
 
 namespace App\Providers;
 
-// use Illuminate\Support\Facades\Gate;
-use App\Models\Obser;
 use App\Models\Observation;
 use App\Models\ObservationSpot;
 use App\Models\User;
-use App\Policies\ObserPolicy;
 use App\Policies\ObservationPolicy;
 use App\Policies\ObservationSpotPolicy;
 use App\Policies\UserPolicy;
@@ -21,9 +18,7 @@ class AuthServiceProvider extends ServiceProvider
      * @var array<class-string, class-string>
      */
     protected $policies = [
-        //
         Observation::class => ObservationPolicy::class,
-        Obser::class => ObserPolicy::class,
         ObservationSpot::class => ObservationSpotPolicy::class,
         User::class => UserPolicy::class,
     ];

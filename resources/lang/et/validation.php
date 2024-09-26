@@ -153,5 +153,8 @@ return [
         'image'                   => 'Pilt',
         'result_text_under_image' => 'Tulemuse tekst pildi all',
         'short_text'              => 'Lühitekst',
+        'name' => 'Nimi',
+        'email' => 'E-post',
+        'message' => 'Sõnum',
     ],
 ];

@@ -57,7 +57,7 @@ body {
 
 @keyframes drop {
     0% {
-        bottom: 0px;
+        bottom: 0;
         opacity: 1;
     }
 
@@ -175,6 +175,11 @@ body {
     border-radius: 5px;
 }
 
-.file-uploads{
+.file-uploads {
     display: inline-flex !important;
+}
+
+/* Fixes an issue with hover:text-white selector being less specific than .btn-outline.btn-primary:hover */
+.btn.btn-outline.btn-primary.hover\:text-white:hover {
+    color:rgb(255 255 255 / var(--tw-text-opacity));
 }
