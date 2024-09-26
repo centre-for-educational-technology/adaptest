@@ -280,5 +280,14 @@ class ObservationController extends Controller
         session()->forget('photo_urls');
 
     }
+
+    public function latest(): InertiaResponse
+    {
+        $observations = ObservationResource::collection(Observation::latest()->limit(10)->get());
+
+        return Inertia::render('Observations/Latest', [
+            'observations' => $observations,
+        ]);
+    }
 }
 

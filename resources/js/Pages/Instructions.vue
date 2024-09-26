@@ -49,22 +49,27 @@ const steps = ref([
 <template>
     <div class="flex flex-col min-h-screen">
 
-        <div class="flex-grow">
+        <div class="bg-cover bg-center h-80" :style="{ 'background-image': 'url(/img/header/instructions.webp)' }"></div>
+
+        <div class="flex-grow bg-base-100">
             <h1 class="text-4xl font-bold">{{ $t("Instructions") }}</h1>
         </div>
 
-        <div class="bg-secondary p-10">
-            <div class="pt-10 grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="bg-base-100 py-10 md:px-10">
+            <div class="pt-10 grid md:grid-cols-2 lg:grid-cols-3 gap-10">
                 <div class="text-center" v-for="step in steps" :key="step.index">
                     <div class="indicator">
                         <span class="indicator-item indicator-start badge bg-primary-green-dark text-base-100 text-2xl h-auto">{{ step.index }}</span>
-                        <div class="grid w-64 h-64 bg-base-100 place-items-center rounded-lg border-primary-green-dark border">{{ step.text }}</div>
+                        <div class="grid w-96 h-96 bg-white place-items-center rounded-lg border-primary-green-dark border">
+                            <img :src="'/img/instructions/step-' + step.index + '.webp'" :alt="step.text" class="w-3/4 h-3/4">
+                            <span class="absolute bottom-2">{{ step.text }}</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="bg-primary-green-dark text-base-100 lg:p-10 pt-10">
+        <div class="bg-primary-green-dark text-white lg:p-10 pt-10">
             <h2 class="text-4xl font-bold">{{ $t("How to observe?") }}</h2>
 
             <div class="grid grid-cols-12 gap-8 my-10">
@@ -73,7 +78,7 @@ const steps = ref([
                 </div>
 
                 <a href="" target="_blank" class="col-span-12 md:col-span-4">
-                    <span class="rounded-full bg-white w-12 h-12 inline-flex items-center justify-center text-primary-green-dark font-bold">
+                    <span class="rounded-full bg-white w-12 h-12 inline-flex items-center justify-center text-primary-green-dark font-bold mr-4">
                         pdf
                     </span>
 

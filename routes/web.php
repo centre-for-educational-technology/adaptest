@@ -6,9 +6,7 @@ use App\Http\Controllers\ObservationSpotController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WelcomeController;
 use App\Http\Middleware\GzipMiddleware;
-use App\Http\Resources\ObservationResource;
 use App\Http\Resources\ObservationSpotResource;
-use App\Models\Observation;
 use App\Models\ObservationSpot;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Route;
@@ -17,6 +15,7 @@ use Inertia\Inertia;
 
 Route::get('/', [WelcomeController::class, 'index']);
 
+// Instructions route
 Route::get('instructions', function() {
     return Inertia::render('Instructions');
 })->name('instructions');
@@ -37,13 +36,7 @@ Route::middleware([
             ->with('main_map', true);
     })->name('dashboard');
 
-    Route::get('/my-observations', function () {
-        $observationSpots = ObservationSpotResource::collection(ObservationSpot::where('user_id', auth()->id())->get());
-        return Inertia::render('Dashboard')
-            ->with('observation_spots', $observationSpots)
-            ->with('title', __('My observation spots'))
-            ->with('main_map', false);
-    })->name('my-observation-spots');
+    Route::get('/my-observations', [ObservationSpotController::class, 'mine'])->name('my-observation-spots');
 
 
     Route::resource('observations', ObservationController::class);
@@ -54,12 +47,7 @@ Route::middleware([
     Route::resource('users', UserController::class);
 
     //Latest observations
-    Route::get('/latest-observations', function () {
-        $observations = ObservationResource::collection(Observation::latest()->limit(10)->get());
-        return Inertia::render('Observations/Latest', [
-            'observations' => $observations,
-        ]);
-    })->name('latest-observations');
+    Route::get('/latest-observations', [ObservationController::class, 'latest'])->name('latest-observations');
 
     Route::post('/upload-files', [ObservationController::class, 'uploadFiles'])->name('files.upload');
 

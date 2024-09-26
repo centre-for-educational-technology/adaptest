@@ -80,13 +80,21 @@ class ObservationSpotController extends Controller
     {
         $this->authorize('delete', $observationSpot);
 
-        $result = $observationSpot->delete();
-
-        \Log::info('Delete result: ' . $result);
+        $observationSpot->delete();
 
         //index page
         return Inertia::render('ObservationSpots/Index', [
             'observation_spots' => ObservationSpotResource::collection(ObservationSpot::all()),
         ]);
+    }
+
+    public function mine(): InertiaResponse
+    {
+        $observationSpots = ObservationSpotResource::collection(ObservationSpot::where('user_id', auth()->id())->get());
+
+        return Inertia::render('Dashboard')
+            ->with('observation_spots', $observationSpots)
+            ->with('title', __('My observation spots'))
+            ->with('main_map', false);
     }
 }
