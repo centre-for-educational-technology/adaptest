@@ -17,8 +17,8 @@ class ContactController extends Controller
     {
         return Inertia::render('Contact')
             ->with('mailFromAddress', config('mail.from.address'))
-            ->with('phoneNumber', '+372 555 5555')// @todo Need to be replaced with a real value
-            ->with('address', 'Järve 27, Tallinn');// @todo Needs to be replaced with a real value
+            ->with('phoneNumber', env('CONTACT_PHONE', ''))
+            ->with('address', env('CONTACT_ADDRESS', ''));
     }
 
     /**

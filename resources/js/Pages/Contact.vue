@@ -1,5 +1,4 @@
 <script setup>
-import Footer from "@/Layouts/Footer.vue";
 import {Icon} from "@iconify/vue";
 import {ref, useTemplateRef} from "vue";
 import Input from "@/CustomComponents/Input.vue";
@@ -9,6 +8,7 @@ import Textarea from "@/CustomComponents/Textarea.vue";
 import {useToast} from "vue-toast-notification";
 import 'vue-toast-notification/dist/theme-sugar.css';
 import {trans} from "laravel-vue-i18n";
+import ExperimentalLayout from "@/Layouts/ExperimentalLayout.vue";
 
 defineProps({
     mailFromAddress: {
@@ -82,14 +82,13 @@ const replaceSpacesWithPrefix = (text, prefix = '', replaceValue = '') => {
 </script>
 
 <template>
-    <div class="flex flex-col min-h-screen bg-base-100">
-
-        <div class="flex-grow">
-            <h1 class="text-4xl font-bold">{{ $t("Contact") }}</h1>
-        </div>
-
+    <ExperimentalLayout
+        :title="$t('Contact')"
+        background-image="/img/header/contact.webp"
+        class="bg-base-100"
+    >
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-16 gap-y-4 md:mx-8 my-8">
-            <div class="grid grid-cols-12 gap-4 border border-primary rounded-lg p-8 bg-white">
+            <div class="grid grid-cols-12 gap-4 sm:border-0 md:border border-primary sm:rounded-none md:rounded-lg p-8 bg-white">
                 <div class="font-bold col-span-4 lg:col-span-2">{{ $t('Email') }}</div>
                 <div class="col-span-8 lg:col-span-10">
                     <a :href="'mailto:' + mailFromAddress">
@@ -113,7 +112,7 @@ const replaceSpacesWithPrefix = (text, prefix = '', replaceValue = '') => {
                     </a>
                 </div>
             </div>
-            <div class="grid grid-cols-1 gap-2">
+            <div class="grid grid-cols-1 gap-2 ml-8 md:ml-0">
                 <div v-for="(item, index) in socialPresence" :key="index" class="flex flex-row gap-4 items-center">
                     <a
                         :href="item.url"
@@ -135,11 +134,15 @@ const replaceSpacesWithPrefix = (text, prefix = '', replaceValue = '') => {
             </div>
         </div>
 
-        <div class="bg-primary md:px-8 py-8">
-            <h2 class="text-4xl text-base-100">{{ $t('Team') }}</h2>
+        <div class="bg-primary py-8">
+            <h2 class="text-2xl text-base-100 px-4 sm:px-6 lg:px-8">{{ $t('Team') }}</h2>
 
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4 place-items-center my-8">
-                <div v-for="(member, index) in teamMembers" :key="index" class="card w-96 bg-base-100 shadow-xl">
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4 place-items-center my-8 mx-2">
+                <div
+                    v-for="(member, index) in teamMembers"
+                    :key="index"
+                    class="card w-96 bg-base-100 shadow-xl hover:scale-105 transition transform"
+                >
                     <figure><img :src="member.image" :alt="member.name" /></figure>
                     <div class="card-body">
                         <h2 class="card-title">{{ member.name }}</h2>
@@ -149,9 +152,9 @@ const replaceSpacesWithPrefix = (text, prefix = '', replaceValue = '') => {
             </div>
         </div>
 
-        <form>
-            <div class="px-4 max-w-screen-lg card bg-white shadow-xl my-5 mx-auto py-5 sm:p-6 rounded-lg border border-primary">
-                <h2 class="text-center text-4xl font-bold">{{ $t('Contact us') }}</h2>
+        <form class="my-16">
+            <div class="px-4 max-w-screen-lg card bg-white shadow-xl my-5 mx-auto py-5 sm:p-6 rounded-none md:rounded-lg border-0 md:border md:border-primary">
+                <h2 class="text-center text-2xl font-bold mb-4">{{ $t('Contact us') }}</h2>
 
                 <div class="grid grid-cols-12">
                     <div class="col-span-12 border-b-2 bg-base-100 rounded-t-md border-t-2 border-t-base-100">
@@ -208,8 +211,5 @@ const replaceSpacesWithPrefix = (text, prefix = '', replaceValue = '') => {
                 </div>
             </div>
         </form>
-
-        <Footer/>
-
-    </div>
+    </ExperimentalLayout>
 </template>

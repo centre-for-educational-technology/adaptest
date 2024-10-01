@@ -1,7 +1,8 @@
 <script setup>
-import Footer from "@/Layouts/Footer.vue";
 import Accordion from "@/CustomComponents/Accordion.vue";
 import {ref} from "vue";
+import ExperimentalLayout from "@/Layouts/ExperimentalLayout.vue";
+import {wTrans} from "laravel-vue-i18n";
 
 const items = ref([
     {
@@ -33,33 +34,30 @@ const items = ref([
 const steps = ref([
     {
         index: 1,
-        text: 'Leia veekogu'
+        text: wTrans('Find water body')
     },
     {
         index: 2,
-        text: 'Vaatle ja mõõda'
+        text: wTrans('Observe and measure')
     },
     {
         index: 3,
-        text: 'Sisesta andmed'
+        text: wTrans('Enter data')
     }
 ]);
 </script>
 
 <template>
-    <div class="flex flex-col min-h-screen">
-
-        <div class="bg-cover bg-center h-80" :style="{ 'background-image': 'url(/img/header/instructions.webp)' }"></div>
-
-        <div class="flex-grow bg-base-100">
-            <h1 class="text-4xl font-bold">{{ $t("Instructions") }}</h1>
-        </div>
-
+    <ExperimentalLayout
+        :title="$t('Instructions')"
+        background-image="/img/header/instructions.webp"
+        class="bg-base-100"
+    >
         <div class="bg-base-100 py-10 md:px-10">
             <div class="pt-10 grid md:grid-cols-2 lg:grid-cols-3 gap-10">
                 <div class="text-center" v-for="step in steps" :key="step.index">
-                    <div class="indicator">
-                        <span class="indicator-item indicator-start badge bg-primary-green-dark text-base-100 text-2xl h-auto">{{ step.index }}</span>
+                    <div class="indicator hover:scale-105 transition transform">
+                        <span class="indicator-item indicator-start badge bg-primary-green-dark text-base-100 text-2xl font-bold h-auto">{{ step.index }}</span>
                         <div class="grid w-96 h-96 bg-white place-items-center rounded-lg border-primary-green-dark border">
                             <img :src="'/img/instructions/step-' + step.index + '.webp'" :alt="step.text" class="w-3/4 h-3/4">
                             <span class="absolute bottom-2">{{ step.text }}</span>
@@ -69,10 +67,10 @@ const steps = ref([
             </div>
         </div>
 
-        <div class="bg-primary-green-dark text-white lg:p-10 pt-10">
-            <h2 class="text-4xl font-bold">{{ $t("How to observe?") }}</h2>
+        <div class="bg-primary-green-dark text-white p-5 lg:p-10">
+            <h2 class="text-2xl font-bold">{{ $t("How to observe?") }}</h2>
 
-            <div class="grid grid-cols-12 gap-8 my-10">
+            <div class="grid grid-cols-12 gap-8">
                 <div class="col-span-12 md:col-span-8">
                     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent eu urna sit amet mi pellentesque tristique eu id est. Cras tortor diam, mattis id nunc sed, porttitor semper metus. Curabitur vitae tincidunt lectus. Mauris sodales vulputate ligula at volutpat. Praesent lacinia vestibulum neque ut rutrum. Pellentesque mollis magna id ornare sollicitudin. Nullam ornare ullamcorper ornare. Donec est risus, gravida nec tempor sed, accumsan eget dui. Sed tincidunt volutpat malesuada. Aliquam et fermentum urna, eu vehicula quam.
                 </div>
@@ -85,7 +83,6 @@ const steps = ref([
                     {{ $t("Download instructions") }}
                 </a>
             </div>
-
         </div>
 
         <div class="bg-primary-green-light lg:p-10">
@@ -97,8 +94,5 @@ const steps = ref([
                 :active="item.active"
             />
         </div>
-
-        <Footer/>
-
-    </div>
+    </ExperimentalLayout>
 </template>

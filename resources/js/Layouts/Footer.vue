@@ -4,7 +4,7 @@ import ApplicationMark from "@/Components/ApplicationMark.vue";
 </script>
 
 <template>
-    <footer class="footer p-10 bg-secondary text-primary-content">
+    <footer class="footer p-10 bg-white text-primary-content">
         <aside>
             <ApplicationMark class="inline-block fill-white w-20 h-20 mr-2"/>
             <p class="font-bold">

@@ -35,7 +35,7 @@ const logout = () => {
         <Banner/>
 
         <div class="flex-grow bg-gray-100 dark:bg-gray-900">
-            <nav class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
+            <nav class="bg-base-100 border-b border-primary">
                 <!-- Primary Navigation Menu -->
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="flex justify-between h-16">
@@ -122,7 +122,7 @@ const logout = () => {
                                                         <DropdownLink as="button">
                                                             <div class="flex items-center">
                                                                 <svg
-                                                                    v-if="team.id == $page.props.auth.user.current_team_id"
+                                                                    v-if="team.id === $page.props.auth.user.current_team_id"
                                                                     class="mr-2 h-5 w-5 text-green-400"
                                                                     xmlns="http://www.w3.org/2000/svg" fill="none"
                                                                     viewBox="0 0 24 24" stroke-width="1.5"
@@ -324,7 +324,7 @@ const logout = () => {
                                         <form @submit.prevent="switchToTeam(team)">
                                             <ResponsiveNavLink as="button">
                                                 <div class="flex items-center">
-                                                    <svg v-if="team.id == $page.props.auth.user.current_team_id"
+                                                    <svg v-if="team.id === $page.props.auth.user.current_team_id"
                                                          class="mr-2 h-5 w-5 text-green-400"
                                                          xmlns="http://www.w3.org/2000/svg" fill="none"
                                                          viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
