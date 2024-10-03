@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue';
 import { Link } from '@inertiajs/vue3';
+import ExternalLink from "@/CustomComponents/ExternalLink.vue";
 
 const props = defineProps({
     href: String,
@@ -23,7 +24,7 @@ const classes = computed(() => {
     <Link :href="href" :class="classes" v-if="!external">
         <slot />
     </Link>
-    <a :href="href" target="_blank" :class="classes" rel="nofollow noopener noreferrer" v-else>
-        <slot />
-    </a>
+    <ExternalLink :href="href" :class="classes" v-else>
+        <slot/>
+    </ExternalLink>
 </template>

@@ -2,7 +2,6 @@
 import {Head, Link} from "@inertiajs/vue3";
 import Footer from "@/Layouts/Footer.vue";
 import NavLink from "@/Components/NavLink.vue";
-import {Icon} from "@iconify/vue";
 
 defineProps({
     title: String,
@@ -10,6 +9,11 @@ defineProps({
         type: String,
         required: false,
         default: '',
+    },
+    hideTitle: {
+      type: Boolean,
+      required: false,
+      default: false,
     },
 });
 </script>
@@ -40,11 +44,10 @@ defineProps({
                             </div>
 
                             <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                                <NavLink href="https://allikad.info/"
+                                <NavLink :href="$page.props.waterActUrl"
                                          :active="false"
                                          :external="true">
                                     {{ $t('Spring observation') }}
-                                    <Icon icon="line-md:external-link" class="w-4 h-4 ml-2"/>
                                 </NavLink>
                             </div>
 
@@ -62,6 +65,21 @@ defineProps({
                                     {{ $t('Contact') }}
                                 </NavLink>
                             </div>
+
+                            <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+                                <NavLink href="https://lifeadaptest.ee/"
+                                         :active="false"
+                                         :external="true">
+                                    AdaptEST
+                                </NavLink>
+                            </div>
+
+                            <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex" v-if="!$page.props.auth.user">
+                                <NavLink :href="route('login')"
+                                         :active="route().current('login')">
+                                    {{ $t('Log in') }}
+                                </NavLink>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -74,7 +92,7 @@ defineProps({
                     class="bg-cover bg-center h-80"
                     :style="{ 'background-image': 'url(' + backgroundImage + ')' }"
                 ></div>
-                <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8" :class="{ 'hidden': hideTitle }">
                     <h1 class="font-semibold text-xl leading-tight">
                         {{ title }}
                     </h1>

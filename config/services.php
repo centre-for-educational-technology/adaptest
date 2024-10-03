@@ -31,4 +31,8 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'water_act' => [
+        'url' => env('WATER_ACT_URL'),
+    ],
+
 ];

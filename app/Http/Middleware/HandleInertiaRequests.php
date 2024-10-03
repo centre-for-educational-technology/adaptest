@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
 use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
@@ -41,6 +42,7 @@ class HandleInertiaRequests extends Middleware
                 'message' => fn() => $request->session()->get('message')
             ],
             'file_urls' => fn() => $request->session()->get('file_urls'),
+            'waterActUrl' => fn() => Config::get('services.water_act.url'),
         ]);
     }
 }
