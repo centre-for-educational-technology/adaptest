@@ -20,6 +20,8 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
+use Intervention\Image\Drivers\Imagick\Driver;
+use Intervention\Image\Encoders\AutoEncoder;
 use Intervention\Image\ImageManager;
 
 class ObservationController extends Controller
@@ -207,19 +209,16 @@ class ObservationController extends Controller
                 $filename = uniqid('', false) . '.' . $file->getClientOriginalExtension();
 
 
-                $manager = new ImageManager(['driver' => 'imagick']);
+                $manager = new ImageManager(Driver::class);
 
-                $img = $manager->make($file);
-                $img->resize(1280, null, function ($constraint) {
-                    $constraint->aspectRatio();
-                    $constraint->upsize();
-                });
+                $img = $manager->read($file);
+                $img->scaleDown(width: 1280);
 
-                // Reduce quality to 80%
-                $img->stream('jpg', 80);
 
                 // Store the file in the public disk
-                Storage::disk('public')->put('observations/' . $filename, $img);
+                Storage::disk('public')->put('observations/' . $filename, $img->encode(new AutoEncoder(quality: 80))->toFilePointer());
+
+                // @todo Need to see if we have to remove the original image object
 
                 // Add the filename to the array of file names
                 $fileNames[] = $filename;
