@@ -329,4 +329,34 @@ class ObservationControllerTest extends TestCase
         }
     }
 
+    /**
+     * @test
+     */
+    public function it_requires_authentication_for_latest_observations()
+    {
+        $this->get(route('latest-observations'))
+            ->assertStatus(302)
+            ->assertRedirect(route('login'));
+    }
+
+    /**
+     * @test
+     */
+    public function it_shows_latest_observations()
+    {
+        $this->withoutExceptionHandling();
+
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        Observation::factory()->count(3)->create();
+
+        $response = $this->get(route('latest-observations'));
+
+        $response->assertInertia(fn(AssertableInertia $page) => $page
+            ->component('Observations/Latest')
+            ->has('observations', 3)
+        );
+    }
+
 }
