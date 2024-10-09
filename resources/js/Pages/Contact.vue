@@ -9,6 +9,7 @@ import {useToast} from "vue-toast-notification";
 import 'vue-toast-notification/dist/theme-sugar.css';
 import {trans} from "laravel-vue-i18n";
 import ExperimentalLayout from "@/Layouts/ExperimentalLayout.vue";
+import Frog from "@/CustomComponents/Frog.vue";
 
 defineProps({
     mailFromAddress: {
@@ -87,6 +88,12 @@ const replaceSpacesWithPrefix = (text, prefix = '', replaceValue = '') => {
         background-image="/img/header/contact.webp"
         class="bg-base-100"
     >
+        <template #header-frog>
+            <div class="flex h-full justify-end items-center">
+                <Frog type="thinking" class="h-40"/>
+            </div>
+        </template>
+
         <div class="container 2xl:mx-auto">
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-16 gap-y-4 md:mx-8 my-8">
                 <div class="grid grid-cols-12 gap-4 sm:border-0 md:border border-primary sm:rounded-none md:rounded-lg p-8 bg-white">

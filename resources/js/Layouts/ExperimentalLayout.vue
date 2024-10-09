@@ -30,7 +30,7 @@ defineProps({
                         <div class="flex">
                             <!-- Logo -->
                             <div class="shrink-0 flex items-center">
-                                <Link :href="route('welcome')" class="text-2xl font-bold hover:text-primary">
+                                <Link :href="route('welcome')" class="text-2xl font-bold hover:text-primary focus:text-primary outline-none">
                                     veestik
                                 </Link>
                             </div>
@@ -80,6 +80,13 @@ defineProps({
                                     {{ $t('Log in') }}
                                 </NavLink>
                             </div>
+
+                            <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex" v-if="!$page.props.auth.user">
+                                <NavLink :href="route('register')"
+                                         :active="route().current('register')">
+                                    {{ $t('Register') }}
+                                </NavLink>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -91,7 +98,9 @@ defineProps({
                     v-if="backgroundImage"
                     class="bg-cover bg-center h-80"
                     :style="{ 'background-image': 'url(' + backgroundImage + ')' }"
-                ></div>
+                >
+                    <slot name="header-frog"/>
+                </div>
                 <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8" :class="{ 'hidden': hideTitle }">
                     <h1 class="font-semibold text-xl leading-tight">
                         {{ title }}

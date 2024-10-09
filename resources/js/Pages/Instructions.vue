@@ -4,6 +4,7 @@ import {ref} from "vue";
 import ExperimentalLayout from "@/Layouts/ExperimentalLayout.vue";
 import {wTrans} from "laravel-vue-i18n";
 import AddNewObservationBlock from "@/CustomComponents/AddNewObservationBlock.vue";
+import Frog from "@/CustomComponents/Frog.vue";
 
 const items = ref([
     {
@@ -54,6 +55,12 @@ const steps = ref([
         background-image="/img/header/instructions.webp"
         class="bg-base-100"
     >
+        <template #header-frog>
+            <div class="flex h-full justify-end items-end md:mr-40">
+                <Frog type="should_observe" :is-translatable="true" class="h-64"/>
+            </div>
+        </template>
+
         <div class="container 2xl:mx-auto">
             <div class="bg-base-100 py-10 md:px-10 xl:px-0">
                 <div class="pt-10 grid md:grid-cols-2 lg:grid-cols-3 gap-10">
@@ -72,7 +79,7 @@ const steps = ref([
             <div class="bg-primary-green-dark text-white p-5 lg:p-10">
                 <h2 class="text-2xl font-bold">{{ $t("How to observe?") }}</h2>
 
-                <div class="grid grid-cols-12 gap-8">
+                <div class="grid grid-cols-12 gap-8 mt-10">
                     <div class="col-span-12 md:col-span-8">
                         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent eu urna sit amet mi pellentesque tristique eu id est. Cras tortor diam, mattis id nunc sed, porttitor semper metus. Curabitur vitae tincidunt lectus. Mauris sodales vulputate ligula at volutpat. Praesent lacinia vestibulum neque ut rutrum. Pellentesque mollis magna id ornare sollicitudin. Nullam ornare ullamcorper ornare. Donec est risus, gravida nec tempor sed, accumsan eget dui. Sed tincidunt volutpat malesuada. Aliquam et fermentum urna, eu vehicula quam.
                     </div>

@@ -1,6 +1,4 @@
 import defaultTheme from 'tailwindcss/defaultTheme';
-import forms from '@tailwindcss/forms';
-import typography from '@tailwindcss/typography';
 
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -37,8 +35,8 @@ export default {
                     "success": "#ffffff",
                     "warning": "#ffbe00",
                     "error": "#ff5861",
-                    "--primary-green-light": "86.9% 0.031 173.5",
-                    "--primary-green-dark": "66.58% 0.053 176.62",
+                    "--primary-green-light": "86.63% 0.039 176.18",
+                    "--primary-green-dark": "66.27% 0.068 178.11",
                 },
             }
         ]

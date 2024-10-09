@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Console\Callable\FetchAndCacheSpringCount;
 use App\Http\Resources\ObservationResource;
 use App\Models\Observation;
+use App\Models\ObservationSpot;
 use App\Models\WaterBody;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
@@ -20,6 +21,7 @@ class WelcomeController extends Controller
         $springCount = Cache::get(FetchAndCacheSpringCount::CACHE_KEY, 0);
         $ttl = 60;
         $waterBodyCount = Cache::remember('waterBodyCount', $ttl, fn() => WaterBody::count());
+        $observationSpotCount = Cache::remember('observationSpotCount', $ttl, fn() => ObservationSpot::count());
         $observationCount = Cache::remember('observationCount', $ttl, fn() => Observation::count());
         $weeklyObservationCont = Cache::remember('weeklyObservationCont', $ttl, function () {
             return Observation::where('created_at', '>', Carbon::now()
@@ -47,6 +49,7 @@ class WelcomeController extends Controller
             'canRegister' => Route::has('register'),
             'springCount' => $springCount,
             'waterBodyCount' => $waterBodyCount,
+            'observationSpotCount' => $observationSpotCount,
             'observationCount' => $observationCount,
             'weeklyObservationCont' => $weeklyObservationCont,
             'photoCount' => $photoCount,

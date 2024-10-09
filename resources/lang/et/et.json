@@ -231,7 +231,7 @@
     "Update": "Uuenda",
     "Other observation spots": "Teised vaatluskohad",
     "Options": "Valikud",
-    "Latest observations": "Viimased vaatlused",
+    "Latest observations": "Viimased seired",
     "Contact": "Kontakt",
     "Phone": "Telefon",
     "Address": "Aadress",
@@ -247,5 +247,14 @@
     "Enter data": "Sisesta andmed",
     "Spring observation": "Allika vaatlus",
     "Water body observation": "Pinnaveekogu vaatlus",
-    "Add new observation": "Lisa vaatlus"
+    "Add new observation": "Lisa vaatlus",
+    "I would like to observe a <span class=':class'>lake</span> or <span class=':class'>watercourse</span>": "Soovin vaadelda <span class=':class'>järve</span> või <span class=':class'>vooluveekogu</span>",
+    "I would like to observe a <span class=':class'>spring</span> or enter a new one": "Soovin vaadelda <span class=':class'>allikat</span> või sisestada uue allika",
+    "springs": "allikat",
+    "water body": "pinnaveekogu",
+    "total observation spots": "vaatluskohta koku",
+    "total observations": "vaatlust koku",
+    "observations this week": "vaatlust sel nädalal",
+    "photos": "fotot",
+    "Why observe water?": "Miks vett seirata?"
 }
