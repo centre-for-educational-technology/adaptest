@@ -218,8 +218,6 @@ class ObservationController extends Controller
                 // Store the file in the public disk
                 Storage::disk('public')->put('observations/' . $filename, $img->encode(new AutoEncoder(quality: 80))->toFilePointer());
 
-                // @todo Need to see if we have to remove the original image object
-
                 // Add the filename to the array of file names
                 $fileNames[] = $filename;
             }

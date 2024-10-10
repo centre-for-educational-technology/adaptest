@@ -12,6 +12,9 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Testing\AssertableInertia;
+use Intervention\Image\Drivers\Imagick\Driver;
+use Intervention\Image\ImageManager;
+use JsonException;
 use Tests\TestCase;
 
 class ObservationControllerTest extends TestCase
@@ -298,7 +301,57 @@ class ObservationControllerTest extends TestCase
 
     /**
      * @test
+     * @throws JsonException
      */
+    public function it_requires_authentication_to_upload_files()
+    {
+        $this->post(route('files.upload'))
+            ->assertRedirect(route('login'))
+            ->assertSessionHasNoErrors();
+
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $this->post(route('files.upload'))
+            ->assertRedirect(url('/'))
+            ->assertSessionHasNoErrors();
+    }
+
+    /**
+     * @test
+     * @throws JsonException
+     */
+    public function it_validates_file_uploads()
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $this->post(route('files.upload'))
+            ->assertRedirect(url('/'))
+            ->assertSessionHas('message', 'No photos uploaded.')
+            ->assertSessionHasNoErrors();
+
+        $this->post(route('files.upload'), [
+            'photos' => [
+                UploadedFile::fake()->create('photo.txt', 0, 'text/plain'),
+                UploadedFile::fake()->image('photo.jpg'),
+                UploadedFile::fake()->image('photo.webp'),
+                UploadedFile::fake()->image('photo.png'),
+            ],
+        ])
+            ->assertStatus(302)
+            ->assertSessionHas('message', 'Invalid file type, only jpeg, png, jpg allowed.')
+            ->assertInvalid([
+                'photos.0' => [
+                    'The uploaded file must be an image.',
+                    'The image must be a file of type: jpeg, png, jpg.',
+                ],
+                'photos.2' => [
+                    'The image must be a file of type: jpeg, png, jpg.',
+                ]
+            ]);
+    }
+
     /**
      * @test
      */
@@ -311,21 +364,50 @@ class ObservationControllerTest extends TestCase
         $user = User::factory()->create();
         $this->actingAs($user);
 
-        // Create a fake file
-        $file = UploadedFile::fake()->image('photo.jpg');
+        $photos = [
+            [
+                'file' => UploadedFile::fake()->image('photo.jpg'),
+                'expectedWidth' => 10,
+                'expectedHeight' => 10,
+                'expectedAspectRatio' => 1,
+            ],
+            [
+                'file' => UploadedFile::fake()->image('photo.png', 1280, 1024),
+                'expectedWidth' => 1280,
+                'expectedHeight' => 1024,
+                'expectedAspectRatio' => 1.25,
+            ],
+            [
+                'file' => UploadedFile::fake()->image('photo.png', 1920, 1200),
+                'expectedWidth' => 1280,
+                'expectedHeight' => 800,
+                'expectedAspectRatio' => 1.6,
+            ],
+        ];
 
         // Make a POST request to the uploadFiles route
         $response = $this->post(route('files.upload'), [
-            'photos' => [$file],
+            'photos' => array_map(fn($photo) => $photo['file'], $photos),
         ]);
 
         // Get the new file name from the response
         $fileNames = $response->getSession()->get('photo_urls');
 
+        $manager = new ImageManager(Driver::class);
+
         // Assert the file was uploaded successfully
-        foreach ($fileNames as $fileName) {
+        foreach ($fileNames as $key => $fileName) {
             // Ensure the file exists in the correct location
             Storage::disk('public')->assertExists('observations/' . $fileName);
+
+            $size = $manager
+                ->read(Storage::disk('public')->get('observations/' . $fileName))
+                ->size();
+
+            // Make sure that resulting image dimensions and aspect ratio are correct
+            $this->assertEquals($photos[$key]['expectedWidth'], $size->width());
+            $this->assertEquals($photos[$key]['expectedHeight'], $size->height());
+            $this->assertEquals($photos[$key]['expectedAspectRatio'], $size->aspectRatio());
         }
     }
 
