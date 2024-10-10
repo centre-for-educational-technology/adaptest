@@ -256,5 +256,18 @@
     "total observations": "vaatlust koku",
     "observations this week": "vaatlust sel nädalal",
     "photos": "fotot",
-    "Why observe water?": "Miks vett seirata?"
+    "Why observe water?": "Miks vett seirata?",
+    "Ok": "Sain aru",
+    "Please select a water source first": "Palun esmalt vali veekogu",
+    "You are outside of Estonia": "Sa oled väljaspool Eestit",
+    "The observation spot must be within 100 meters of the water body border.": "Vaatluskoht peaks paiknema saja meetri raaadiuses veekogust.",
+    "You have chosen": "Valisid veekogu",
+    "Now set the marker of your observation by clicking on the map": "Nüüd klõpsa kaardil ja vali oma vaatluskoht",
+    "Lakes": "Järved",
+    "Watersources": "Vooluveekogud",
+    "Karst lakes": "Karstijärvikud",
+    "Loading data...": "Laen andmeid...",
+    "Loading geolocation...": "Laen geolokatsiooni...",
+    "Deselect current water body": "Tühista veekogu valik",
+    "Your current location": "Sinu praegune asukoht"
 }

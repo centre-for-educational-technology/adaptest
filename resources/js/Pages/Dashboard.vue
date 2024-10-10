@@ -51,19 +51,19 @@
                     <div class="lg:join lg:space-x-1">
 
                         <label class="label cursor-pointer">
-                            <span class="label-text mr-1">Järved</span>
+                            <span class="label-text mr-1">{{ $t('Lakes') }}</span>
                             <input class="checkbox checkbox-lg" type="checkbox" v-model="isJarvedVisible"
                                    @mousedown.prevent>
                         </label>
 
                         <label class="label cursor-pointer">
-                            <span class="label-text mr-1">Vooluveekogud</span>
+                            <span class="label-text mr-1">{{ $t('Watersources') }}</span>
                             <input class="checkbox checkbox-lg" type="checkbox" v-model="isVooluvesiVisible"
                                    @mousedown.prevent>
                         </label>
 
                         <label class="label cursor-pointer">
-                            <span class="label-text mr-1">Karstijärvikud</span>
+                            <span class="label-text mr-1">{{ $t('Karst lakes') }}</span>
                             <input class="checkbox checkbox-lg" type="checkbox" v-model="isKarstVisible"
                                    @mousedown.prevent>
                         </label>
@@ -77,6 +77,13 @@
                                       d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"/>
                             </svg>
                         </button>
+
+
+                        <div class="tooltip tooltip-left" :data-tip="$t('Deselect current water body')">
+                            <button class="btn btn-accent" @mousedown.stop.prevent="deselectWaterBody" :disabled="!selectedLayer">
+                                <Icon icon="lucide:eraser" class="w-6 h-6 inline-block"></Icon>
+                            </button>
+                        </div>
 
 
                     </div>
@@ -122,10 +129,10 @@
             <!-- Modal for when a GeoJSON layer is not selected -->
             <div class="modal" :class="{ 'modal-open': showGeoJsonModal }">
                 <div class="modal-box">
-                    <h3 class="font-bold text-lg">Please select a water source first</h3>
+                    <h3 class="font-bold text-lg">{{ $t('Please select a water source first') }}</h3>
                     <div class="modal-action">
                         <button class="btn" @click="toggleGeoJsonModal">
-                            Ok
+                            {{ $t('Ok') }}
                         </button>
                     </div>
                 </div>
@@ -135,10 +142,10 @@
             <!-- Modal for when the location of a user is outside of Estonia -->
             <div class="modal" :class="{ 'modal-open': showOutsideEstoniaModal }">
                 <div class="modal-box">
-                    <h3 class="font-bold text-lg">You are outside of Estonia</h3>
+                    <h3 class="font-bold text-lg">{{ $t('You are outside of Estonia') }}</h3>
                     <div class="modal-action">
                         <button class="btn" @click="showOutsideEstoniaModal = false">
-                            Ok
+                            {{ $t('Ok') }}
                         </button>
                     </div>
                 </div>
@@ -148,11 +155,12 @@
             <!-- Modal for when observation spot is not within 100m of water body borders -->
             <div class="modal" :class="{ 'modal-open': showTooFarModal }">
                 <div class="modal-box">
-                    <h3 class="font-bold text-lg">The observation spot must be within 100 meters of the water body
-                        border.</h3>
+                    <h3 class="font-bold text-lg">
+                        {{ $t('The observation spot must be within 100 meters of the water body border.') }}
+                    </h3>
                     <div class="modal-action">
                         <button class="btn" @click="showTooFarModal = false">
-                            Ok
+                            {{ $t('Ok') }}
                         </button>
                     </div>
                 </div>
@@ -174,7 +182,8 @@ import Modal from "@/CustomComponents/LakeModal.vue";
 import {router} from '@inertiajs/vue3'
 import ApplicationMark from "@/Components/ApplicationMark.vue";
 import markerIconUrl from '@/assets/pin.svg';
-import {trans} from 'laravel-vue-i18n';
+import userMarkerIconUrl from '@/assets/pin-accent.svg';
+import {trans, wTrans} from 'laravel-vue-i18n';
 import {computed} from 'vue';
 import * as turf from '@turf/turf';
 import {Icon} from "@iconify/vue";
@@ -225,7 +234,7 @@ watch([isJarvedVisible, isVooluvesiVisible, isKarstVisible], () => {
 
 // Add a method to get the user's location
 const getUserLocation = () => {
-    loaderText.value = 'Laen geolokatsiooni...';
+    loaderText.value = wTrans('Loading geolocation...');
     mapLoaded.value = false; // Start loading
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(position => {
@@ -237,7 +246,11 @@ const getUserLocation = () => {
                 mapInstance.setView(userLocation, 11);
 
                 // Add a marker at the user's location
-                const userMarker = L.marker(userLocation, {icon: markerIcon});
+                const userMarker = L.marker(userLocation, {icon: userMarkerIcon}).bindTooltip(trans('Your current location'),{
+                    permanent: false,
+                    direction: "top",
+                    className: "user-tooltip",
+                });
                 mapInstance.addLayer(userMarker);
             } else {
                 showOutsideEstoniaModal.value = true;
@@ -250,6 +263,13 @@ const getUserLocation = () => {
     } else {
         console.error("Geolocation is not supported by this browser.");
         mapLoaded.value = true; // End loading
+    }
+};
+
+// Triggers click on currently selected water body that will in turn deselect it
+const deselectWaterBody = () => {
+    if (selectedLayer.value) {
+        selectedLayer.value.fire('click');
     }
 };
 
@@ -298,7 +318,7 @@ function featureStyle3(feature) {
 
 
 let geojsonFetched = ref(false);
-let selectedLayer = null;
+const selectedLayer = ref(null);
 let mapLoaded = ref(false);
 
 // Add a click event listener to the map
@@ -306,16 +326,17 @@ const onEachFeature = (feature, layer) => {
     layer.on('click', () => {
 
         // Reset the style of the previously selected layer using previously stored values
-        if (selectedLayer) {
-            selectedLayer.setStyle({
-                weight: selectedLayer.options.previousWeight,
-                color: selectedLayer.options.previousColor,
+        if (selectedLayer.value) {
+            selectedLayer.value.setStyle({
+                weight: selectedLayer.value.options.previousWeight,
+                color: selectedLayer.value.options.previousColor,
             });
 
             // Remove selection if already selected layers is clicked
-            if (layer === selectedLayer) {
+            if (layer._leaflet_id === selectedLayer.value._leaflet_id) {
                 nextTick(() => {
-                    selectedLayer = null;
+                    selectedLayer.value = null;
+                    tooltip.closeTooltip();
                 });
                 return;
             }
@@ -335,7 +356,7 @@ const onEachFeature = (feature, layer) => {
 
         showModal.value = true;
         console.log('show modal')
-        selectedLayer = layer;
+        selectedLayer.value = layer;
         tooltip.openTooltip();
     });
 
@@ -378,6 +399,13 @@ const markerIcon = L.icon({
     popupAnchor: [0, -55],
     className: 'marker-icon'
 });
+const userMarkerIcon = L.icon({
+    iconUrl: userMarkerIconUrl,
+    iconSize: [55, 55],
+    iconAnchor: [25, 5],
+    popupAnchor: [0, -55],
+    className: 'user-marker-icon'
+});
 
 /**
  * Converts supported GeoJSON feature types to corresponding Turf.js line or multiline representation.
@@ -417,7 +445,7 @@ function pointDistanceFromFeature(point, feature) {
 
 // Add a marker to the map
 function addMarker(event) {
-    if (!selectedLayer) {
+    if (!selectedLayer.value) {
         showGeoJsonModal.value = true;
         return;
     }
@@ -427,7 +455,7 @@ function addMarker(event) {
     }
 
     const clickedPoint = turf.point([event.latlng.lng, event.latlng.lat]);
-    const distance = pointDistanceFromFeature(clickedPoint, selectedLayer.feature);
+    const distance = pointDistanceFromFeature(clickedPoint, selectedLayer.value.feature);
 
     if (distance > 100) {
         // Show an error message and return
@@ -470,12 +498,12 @@ function addMarker(event) {
         noButton.addEventListener('click', () => {
             mapInstance.removeLayer(marker);
             // Reset the style of the previously selected layer using previously stored values
-            if (selectedLayer) {
-                selectedLayer.setStyle({
-                    weight: selectedLayer.options.previousWeight,
-                    color: selectedLayer.options.previousColor,
+            if (selectedLayer.value) {
+                selectedLayer.value.setStyle({
+                    weight: selectedLayer.value.options.previousWeight,
+                    color: selectedLayer.value.options.previousColor,
                 });
-                selectedLayer = null; // Clear the selected layer
+                selectedLayer.value = null; // Clear the selected layer
             }
 
         });
@@ -537,10 +565,10 @@ function askForObservation(spot) {
 // Add a new spot and observation
 function addNewSpotAndObservation(latlng) {
     console.log('add new spot and observation');
-    if (selectedLayer) {
+    if (selectedLayer.value) {
         const coordinates = JSON.stringify(latlng);
-        const name = selectedLayer.feature.properties.nimi;
-        const water_body_kr_code = selectedLayer.feature.properties.kr_kood;
+        const name = selectedLayer.value.feature.properties.nimi;
+        const water_body_kr_code = selectedLayer.value.feature.properties.kr_kood;
         router.get(`/observations/create?coordinates=${coordinates}&name=${name}&water_body_kr_code=${water_body_kr_code}`);
     }
 }
@@ -553,7 +581,7 @@ function addNewObservation(spotId) {
 }
 
 
-let loaderText = ref('Laen andmeid...');
+let loaderText = ref(wTrans('Loading data...'));
 
 const crs = new L.Proj.CRS('EPSG:3301', '+proj=lcc +lat_1=59.33333333333334 +lat_2=58 +lat_0=57.51755393055556 +lon_0=24 +x_0=500000 +y_0=6375000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs', {
     resolutions: [4000, 2000, 1000, 500, 250, 125, 62.5, 31.25, 15.625, 7.8125, 3.90625, 1.953125, 0.9765625, 0.48828125, 0.244140625, 0.122070313, 0.061035156, 0.030517578, 0.015258789],
@@ -628,6 +656,10 @@ onMounted(async () => {
 
 // Remove any GeoJSON layers from the map, remove all feature layers, removes all listeners and overwrite variable with null
 onBeforeUnmount(async () => {
+    if (selectedLayer) {
+        selectedLayer.value = null;
+    }
+
     if (jarvedLayer) {
         mapInstance.removeLayer(jarvedLayer);
         jarvedLayer.clearLayers();

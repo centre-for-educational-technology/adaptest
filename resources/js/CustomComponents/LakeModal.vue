@@ -14,7 +14,6 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
 
 // Declare selectedAreaName and showModal as props
 const props = defineProps({
