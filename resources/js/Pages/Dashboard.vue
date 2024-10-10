@@ -311,6 +311,14 @@ const onEachFeature = (feature, layer) => {
                 weight: selectedLayer.options.previousWeight,
                 color: selectedLayer.options.previousColor,
             });
+
+            // Remove selection if already selected layers is clicked
+            if (layer === selectedLayer) {
+                nextTick(() => {
+                    selectedLayer = null;
+                });
+                return;
+            }
         }
 
 
